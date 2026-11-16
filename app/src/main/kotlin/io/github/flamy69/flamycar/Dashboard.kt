@@ -21,7 +21,7 @@ object Dashboard {
     )
 
     private val SECOND = listOf(
-        Signal.RPM, Signal.TORQUE, Signal.LOAD, Signal.EXHAUST_TEMP, Signal.TIMING,
+        Signal.RPM, Signal.TORQUE, Signal.LOAD, Signal.EXHAUST_TEMP,
         Signal.FUEL_RAIL, Signal.THROTTLE, Signal.MAF, Signal.INTAKE_TEMP, Signal.VOLTAGE,
         Signal.SPEED, Signal.AMBIENT, Signal.FUEL_LEVEL,
     )
