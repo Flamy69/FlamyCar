@@ -26,6 +26,7 @@ enum class Signal(
     BOOST(R.string.signal_boost, "bar", -1f, 1.6f, 2, -1.1f..3f, quick = true, zero = 0f),
     OIL_TEMP(R.string.signal_oil_temp, "°C", 0f, 150f, 0, -40f..200f, coldBelow = 70f, warnAbove = 130f),
     OIL_PRESSURE(R.string.signal_oil_pressure, "bar", 0f, 6f, 1, 0f..12f, quick = true),
+    PEDAL(R.string.signal_pedal, "%", 0f, 100f, 0, 0f..100f, quick = true),
     COOLANT(R.string.signal_coolant, "°C", 0f, 130f, 0, -40f..215f, coldBelow = 60f, warnAbove = 110f),
     INTAKE_TEMP(R.string.signal_intake_temp, "°C", -20f, 80f, 0, -40f..215f, zero = 0f, warnAbove = 60f),
     EXHAUST_TEMP(R.string.signal_exhaust_temp, "°C", 0f, 1000f, 0, -40f..1300f, warnAbove = 950f),
@@ -123,10 +124,22 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     ),
     Signal.OIL_TEMP to listOf(
         standard(0x5C, 1) { it.u8() - 40f },
+        // The same standard value, kept among the identifiers of the manufacturer.
+        engine(0xF45C, 1) { it.u8() - 40f },
         engine(0x11BE, decode = deciKelvin),
         engine(0x202F, decode = deciKelvin),
         engine(0x179C, decode = deciKelvin),
-        engine(0x20A1) { it.s16() / 10f },
+        engine(0x1632, decode = deciKelvin),
+        engine(0x10A7, decode = deciKelvin),
+        engine(0x179E, decode = deciKelvin),
+        engine(0x11BD, decode = deciKelvin),
+        // Hundredths of 18 degrees Fahrenheit above absolute zero.
+        engine(0x15B7) { (it.u16() * 0.18f - 460f - 32f) / 1.8f },
+        engine(0x40D5) { it.s16() / 10f },
+        engine(0x201A) { it.s16() / 10f },
+        // One byte on some engines, two on others.
+        engine(0x20A1, 1) { if (it.size >= 2) it.s16() / 10f else it.u8() - 40f },
+        engine(0x1102, 1) { it.u8() - 40f },
         // The value behind the oil temperature on the instrument cluster.
         Query(Target.CLUSTER, 0x22, 0x202F, 1) { it.u8() - 58f },
     ),
@@ -134,8 +147,17 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
         // Tenths of a kilopascal.
         engine(0x177D) { it.s16() / 1000f },
         engine(0x25CD) { it.s16() / 1000f },
+        engine(0x381D) { it.s16() / 1000f },
         // 1/416 psi.
         engine(0x1503) { it.u16() / 416f * 0.0689476f },
+    ),
+    // How far the right foot is down. The relative position runs from 0 to 100; the plain
+    // one is what the sensor gives and keeps a little off both ends.
+    Signal.PEDAL to listOf(
+        standard(0x5A, 1) { it.u8() * 100f / 255f },
+        standard(0x49, 1) { it.u8() * 100f / 255f },
+        engine(0x3804) { it.u16() / 100f },
+        engine(0xF449, 1) { it.u8() * 100f / 255f },
     ),
     Signal.COOLANT to listOf(standard(0x05, 1) { it.u8() - 40f }),
     Signal.INTAKE_TEMP to listOf(standard(0x0F, 1) { it.u8() - 40f }),

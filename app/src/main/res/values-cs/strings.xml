@@ -3,6 +3,7 @@
     <string name="signal_boost">Tlak turba</string>
     <string name="signal_oil_temp">Teplota oleje</string>
     <string name="signal_oil_pressure">Tlak oleje</string>
+    <string name="signal_pedal">Plyn</string>
     <string name="signal_coolant">Chlazení</string>
     <string name="signal_intake_temp">Nasávaný vzduch</string>
     <string name="signal_exhaust_temp">Výfukové plyny</string>
@@ -54,7 +55,15 @@
     <string name="values_unverified">Hodnoty s číslem vedle sebe se čtou identifikátory specifickými pro koncern Volkswagen. Na tomhle motoru nejsou ověřené: než jim začneš věřit, porovnej je s tím, co znáš.</string>
 
     <string name="auto_title">Na displeji auta</string>
-    <string name="auto_text">Android Auto ukazuje aplikace tohoto druhu jen tehdy, když je nainstaloval Google Play. APK nainstalované ručně funguje v telefonu, ale v autě zůstane skryté.\n\nSpolehlivá cesta: nahraj APK do Interního sdílení aplikací ve své Google Play Console a nainstaluj ho z odkazu, který tam dostaneš.\n\nRychlá cesta, kterou přijmou jen některé telefony: instalace z počítače příkazem\nadb install -i com.android.vending -r FlamyCar.apk\n\nV obou případech ještě otevři Nastavení, Android Auto, desetkrát ťukni na Verzi a v nabídce se třemi tečkami zapni v Nastavení pro vývojáře Neznámé zdroje. Pak telefon připoj k autu znovu.</string>
+    <string name="auto_text">Android Auto ukazuje aplikace tohoto druhu jen tehdy, když je nainstaloval Google Play. APK nainstalované ručně funguje v telefonu, ale v autě zůstane skryté, ať nastavíš cokoli.\n\nSpolehlivá cesta: založ aplikaci ve své Google Play Console, nahraj soubor .aab z vydání do interního testování se sebou jako testerem a nainstaluj ji z Obchodu Play. Tuhle kopii předtím odinstaluj a dál už aktualizuj jen přes Play.\n\nPo instalaci připoj telefon k autu znovu.</string>
+
+    <string name="survey_title">Průzkum motoru</string>
+    <string name="survey_text">Zeptá se řídicí jednotky motoru na všechny hodnoty známé z aut koncernu Volkswagen a zapíše, co odpoví. Tak se najdou hodnoty, které nahoře chybí, třeba tlak oleje. Trvá to pár minut a budíky při tom stojí, takže to dělej na místě.\n\nUdělej jedno měření na volnoběh, druhé při držených asi 3000 otáčkách a pokud to jde, třetí se zahřátým motorem. Potom nasdílej záznam níže.</string>
+    <string name="survey_start">Změřit</string>
+    <string name="survey_again">Změřit znovu</string>
+    <string name="survey_progress">Dotazy: %1$d z %2$d</string>
+    <string name="survey_readings">Hotových měření: %1$d</string>
+    <string name="survey_problem">Poslední měření se nepovedlo: %1$s</string>
 
     <string name="report_title">Když něco nefunguje</string>
     <string name="report_text">Zkopíruj nebo nasdílej záznam toho, co si aplikace s adaptérem řekly. Je z něj vidět, co auto umí a kde se to zadrhlo.</string>

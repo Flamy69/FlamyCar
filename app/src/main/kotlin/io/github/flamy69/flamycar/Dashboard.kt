@@ -16,8 +16,8 @@ object Dashboard {
 
     // What a turbocharged engine is watched for, the most wanted first.
     private val FIRST = listOf(
-        Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.COOLANT, Signal.INTAKE_TEMP,
-        Signal.VOLTAGE, Signal.EXHAUST_TEMP,
+        Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.PEDAL, Signal.COOLANT,
+        Signal.INTAKE_TEMP, Signal.VOLTAGE, Signal.EXHAUST_TEMP,
     )
 
     private val SECOND = listOf(

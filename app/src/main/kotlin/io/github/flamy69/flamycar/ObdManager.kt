@@ -13,8 +13,11 @@ import io.github.flamy69.flamycar.obd.ElmTransport
 import io.github.flamy69.flamycar.obd.ObdSession
 import io.github.flamy69.flamycar.obd.Signal
 import io.github.flamy69.flamycar.obd.SimulatedCar
+import io.github.flamy69.flamycar.obd.Survey
 import java.io.Closeable
+import java.io.File
 import java.io.IOException
+import java.util.Date
 import java.util.WeakHashMap
 import kotlin.concurrent.thread
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +49,16 @@ data class Status(
     val problem: String? = null,
     /** What is known about the car; kept while waiting for the ignition to come back. */
     val car: CarInfo? = null,
+)
+
+/** Where a look around the engine control unit stands. */
+data class SurveyState(
+    val running: Boolean = false,
+    val done: Int = 0,
+    val total: Int = 0,
+    /** How many readings have been taken. */
+    val readings: Int = 0,
+    val problem: String? = null,
 )
 
 class Readings(
@@ -94,6 +107,33 @@ class ObdManager(private val context: Context) : ObdSession.Events {
 
     private val transcript = Transcript()
 
+    // Kept across reconnects, and written to a file with each reading: the readings are taken
+    // in the car and usually sent from somewhere else, later.
+    private val survey = Survey()
+    private val surveyFile = File(context.filesDir, "survey.txt")
+    private val sessionFile = File(context.filesDir, "last-session.txt")
+
+    private val _surveyState = MutableStateFlow(SurveyState())
+    val surveyState: StateFlow<SurveyState> = _surveyState
+
+    /** Starts a reading of the survey. Takes a few minutes; the gauges stand still meanwhile. */
+    fun startSurvey() {
+        synchronized(lock) {
+            val session = session ?: return
+            session.requestSurvey()
+        }
+        _surveyState.update { it.copy(running = true, done = 0, total = 0, problem = null) }
+    }
+
+    override fun onSurveyProgress(done: Int, total: Int) {
+        _surveyState.update { it.copy(running = true, done = done, total = total) }
+    }
+
+    override fun onSurveyDone(survey: Survey, problem: String?) {
+        if (survey.readings > 0) save(surveyFile, survey.text())
+        _surveyState.value = SurveyState(readings = survey.readings, problem = problem)
+    }
+
     /**
      * Everything worth knowing when something does not work: the state of the app, what the
      * car was found to give, and what was said between the app and the adapter.
@@ -108,8 +148,36 @@ class ObdManager(private val context: Context) : ObdSession.Events {
         appendLine()
         status.car?.let { appendLine(it.report) }
         appendLine("Conversation with the adapter:")
+        appendLine(transcript.text())
+        load(surveyFile)?.let { appendLine(it) }
+        if (status.phase != Phase.LIVE) {
+            load(sessionFile)?.let {
+                appendLine("The last time an adapter was connected, " + Date(sessionFile.lastModified()) + ":")
+                appendLine(it)
+            }
+        }
+    }
+
+    /** The part of the diagnostics that is gone once the next attempt to connect begins. */
+    private fun sessionRecord(): String = buildString {
+        _status.value.car?.let { appendLine(it.report) }
         append(transcript.text())
     }
+
+    private fun save(file: File, text: String) {
+        try {
+            file.writeText(text)
+        } catch (_: IOException) {
+            // Only a convenience for troubleshooting; the app works without it.
+        }
+    }
+
+    private fun load(file: File): String? =
+        try {
+            file.takeIf { it.isFile }?.readText()
+        } catch (_: IOException) {
+            null
+        }
 
     /** Announces somebody who wants to see values. The connection starts with the first one. */
     fun attach(watcher: Any) {
@@ -213,6 +281,7 @@ class ObdManager(private val context: Context) : ObdSession.Events {
                     events = this,
                     running = { current(mine) },
                     pause = { rest(it, mine) },
+                    survey = survey,
                 )
                 synchronized(lock) {
                     open = io
@@ -242,6 +311,8 @@ class ObdManager(private val context: Context) : ObdSession.Events {
                     session = null
                 }
                 closeQuietly(io)
+                if (io != null && !_status.value.demo) save(sessionFile, sessionRecord())
+                _surveyState.update { it.copy(running = false) }
                 _readings.value = Readings()
             }
         }

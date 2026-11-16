@@ -1,7 +1,8 @@
 name: Build
 
-# Every push to main is tested and built; the APK is attached to the workflow run.
-# Pushing a tag like v1.2.3 additionally publishes it as a GitHub release.
+# Every push to main is tested and built; the APK (for the phone) and the app bundle (for
+# Google Play, the only way onto the display of a car) are attached to the workflow run.
+# Pushing a tag like v1.2.3 additionally publishes both as a GitHub release.
 
 on:
   push:
@@ -55,15 +56,19 @@ jobs:
           FLAMY_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         # The tests draw the gauges with Android's own drawing code (Robolectric), which
         # fetches the Android runtime it needs on the first run.
-        run: ./gradlew testDebugUnitTest lintDebug assembleRelease
+        run: ./gradlew testDebugUnitTest lintDebug assembleRelease bundleRelease
 
-      - name: Name the package
-        run: cp app/build/outputs/apk/release/app-release.apk "$PACKAGE_NAME.apk"
+      - name: Name the packages
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk "$PACKAGE_NAME.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "$PACKAGE_NAME.aab"
 
       - uses: actions/upload-artifact@v7
         with:
           name: FlamyCar-apk
-          path: FlamyCar-*.apk
+          path: |
+            FlamyCar-*.apk
+            FlamyCar-*.aab
           if-no-files-found: error
 
   release:
@@ -81,7 +86,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >
-          gh release create "$GITHUB_REF_NAME" FlamyCar-*.apk
+          gh release create "$GITHUB_REF_NAME" FlamyCar-*.apk FlamyCar-*.aab
           --repo "$GITHUB_REPOSITORY"
           --title "FlamyCar ${GITHUB_REF_NAME#v}"
           --generate-notes

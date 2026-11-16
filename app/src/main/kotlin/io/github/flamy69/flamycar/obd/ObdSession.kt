@@ -23,6 +23,8 @@ class ObdSession(
     private val events: Events,
     private val running: () -> Boolean,
     private val pause: (Long) -> Unit = { Thread.sleep(it) },
+    /** What a look around the engine control unit has found so far. */
+    val survey: Survey = Survey(),
 ) {
     interface Events {
         /** The adapter answers, but the car does not: the ignition is off. */
@@ -35,11 +37,25 @@ class ObdSession(
         fun onReady(info: CarInfo)
 
         fun onValues(values: Map<Signal, Float>)
+
+        /** A survey of the engine control unit is under way: [done] of [total] questions asked. */
+        fun onSurveyProgress(done: Int, total: Int) = Unit
+
+        /** A reading of the survey is finished, or could not be taken ([problem]). */
+        fun onSurveyDone(survey: Survey, problem: String?) = Unit
     }
 
     /** The values on screen right now. The [Signal.quick] ones among them are read every round. */
     @Volatile
     var focus: Set<Signal> = setOf(Signal.BOOST)
+
+    @Volatile
+    private var surveyWanted = false
+
+    /** Asks for a reading of the [survey], taken as soon as the round under way is finished. */
+    fun requestSurvey() {
+        surveyWanted = true
+    }
 
     private var info: CarInfo? = null
     private var engine: Ecu? = null
@@ -159,11 +175,13 @@ class ObdSession(
     /** Asks for a manufacturer value once, and notes down what came back. */
     private fun probe(signal: Signal, query: Query, report: StringBuilder): Boolean {
         val ecu = ecuOf(query)
-        val line = StringBuilder("%-12s %s @%s  ".format(signal, query.title, ecu ?: "-"))
+        val line = StringBuilder("%-12s %s @%s  ".format(signal, query.title, ecu ?: "all"))
         var usable = false
-        if (ecu == null) {
+        if (query.target == Target.CLUSTER && ecu == null) {
             line.append("cannot be addressed")
         } else {
+            // An engine that cannot be addressed alone is asked by broadcast: slower, but
+            // control units answer the questions they know that way too.
             when (val answer = elm.request(ecu, query.hex)) {
                 is Answer.Replies -> {
                     line.append(answer.replies.joinToString("; ") { it.data.toHex() })
@@ -196,6 +214,10 @@ class ObdSession(
         var turn = 0
         var silentRounds = 0
         while (running()) {
+            if (surveyWanted) {
+                surveyWanted = false
+                if (!takeSurvey()) return
+            }
             val quick = quickOf(info, focus)
             // One of the others per round, so that the quick ones stay quick.
             val rest = queries.filter { it !in quick }
@@ -224,6 +246,45 @@ class ObdSession(
             if (asked > 0) silentRounds = if (answered == 0) silentRounds + 1 else 0
             if (silentRounds >= SILENT_ROUNDS) return
         }
+    }
+
+    /**
+     * Takes one reading of the survey: asks the engine for every identifier on the list and
+     * notes down which answered. False when the car went silent meanwhile.
+     */
+    private fun takeSurvey(): Boolean {
+        val targets = survey.targets()
+        val condition = listOf(Signal.RPM, Signal.COOLANT, Signal.MAP, Signal.SPEED, Signal.PEDAL, Signal.VOLTAGE)
+            .mapNotNull { signal -> values[signal]?.let { "$signal=" + "%.2f".format(Locale.ROOT, it) } }
+            .joinToString(" ")
+        val found = LinkedHashMap<Int, ByteArray>()
+        var silent = 0
+        for ((index, did) in targets.withIndex()) {
+            if (!running()) return true
+            if (index % 10 == 0) events.onSurveyProgress(index, targets.size)
+            when (val answer = elm.request(engine, "22%04X".format(did))) {
+                is Answer.Replies -> {
+                    silent = 0
+                    val reply = answer.replies.sortedBy { it.ecu != engineRx }.firstOrNull {
+                        it.data.size > 3 && it.data[0].u() == 0x62 && it.data[1].u() == did shr 8 && it.data[2].u() == did and 0xFF
+                    }
+                    if (reply != null) found[did] = reply.data.copyOfRange(3, reply.data.size)
+                }
+                is Answer.NoBus -> {
+                    events.onSurveyDone(survey, answer.reason)
+                    return false
+                }
+                else -> if (++silent >= SURVEY_SILENCE && found.isEmpty()) {
+                    // Nothing at all from the start: this adapter or this engine does not do
+                    // such questions, and asking the other eight hundred will not change it.
+                    events.onSurveyDone(survey, "no answer to the first $silent questions")
+                    return true
+                }
+            }
+        }
+        survey.add(condition.ifEmpty { "no values" }, found)
+        events.onSurveyDone(survey, null)
+        return true
     }
 
     /** True when the value was read, false when not, null when the bus is gone. */
@@ -319,5 +380,6 @@ class ObdSession(
         private const val LAST_RETRY = 15_000L
         private const val SILENT_ROUNDS = 4
         private const val STALE_AFTER = 3
+        private const val SURVEY_SILENCE = 40
     }
 }

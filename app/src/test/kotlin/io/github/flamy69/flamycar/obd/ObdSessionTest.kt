@@ -133,7 +133,7 @@ class ObdSessionTest {
     }
 
     @Test
-    fun `an engine that answers only broadcasts still gives the standard values`() {
+    fun `an engine that answers only broadcasts is asked by broadcast`() {
         val bench = Bench { answersDirectly = false }
 
         bench.session.run()
@@ -141,8 +141,48 @@ class ObdSessionTest {
         val info = bench.info!!
         assertTrue(info.report.contains("addressed by broadcast"))
         assertTrue(Signal.BOOST in info.signals)
-        assertFalse(Signal.OIL_PRESSURE in info.signals)
         assertNotNull(bench.latest(Signal.RPM))
+        // The values of the manufacturer too, without the count of answers.
+        assertTrue(Signal.OIL_PRESSURE in info.signals)
+        assertNotNull(bench.latest(Signal.OIL_PRESSURE))
+        assertTrue("22177D" in bench.car.log)
+        assertFalse("22177D1" in bench.car.log)
+    }
+
+    @Test
+    fun `a survey finds what the engine answers and reads it again on request`() {
+        var done: Survey? = null
+        var progress = 0
+        val bench = Bench(stopAfter = 24)
+        val events = object : ObdSession.Events by bench {
+            override fun onSurveyProgress(done: Int, total: Int) {
+                progress++
+            }
+
+            override fun onSurveyDone(survey: Survey, problem: String?) {
+                assertNull(problem)
+                done = survey
+            }
+        }
+        val session = ObdSession(Elm327(bench.car), events, running = { bench.rounds < 24 }, pause = { bench.rounds++ })
+        bench.afterRound = { if (bench.seen.size == 10 || bench.seen.size == 16) session.requestSurvey() }
+
+        session.run()
+
+        val survey = done!!
+        assertEquals(2, survey.readings)
+        assertTrue(progress > 50)
+        val lines = survey.text().lines()
+        assertTrue(lines[0], lines[0].contains("4 identifiers answered"))
+        assertTrue(lines[1], lines[1].startsWith("#1: ") && lines[1].contains("RPM="))
+        // Oil temperature, 11BE: two bytes at each of the two readings.
+        val oil = lines.single { it.startsWith("11BE") }.split(" | ")
+        assertEquals(3, oil.size)
+        assertTrue(oil[1].matches(Regex("[0-9A-F]{2} [0-9A-F]{2}")))
+        // The second reading asked only for what had answered the first.
+        val asked = bench.car.log.filter { it.startsWith("2211BE") }.size
+        assertTrue(asked >= 3)
+        assertEquals(1, bench.car.log.count { it.startsWith("221000") })
     }
 
     @Test
@@ -199,7 +239,7 @@ class ObdSessionTest {
 
         val report = bench.info!!.report
         assertTrue(report, report.contains("Control units: 7E8 7E9"))
-        assertTrue(report, report.contains("Standard values: 04 05 0B 0C 0D 0E 0F 10 11 20 23 2F 33 40 42 46"))
+        assertTrue(report, report.contains("Standard values: 04 05 0B 0C 0D 0E 0F 10 11 20 23 2F 33 40 42 46 49 5A"))
         assertTrue(report, report.contains("Engine: 7E8, addressed directly"))
         assertTrue(report, report.contains("OIL_PRESSURE"))
     }

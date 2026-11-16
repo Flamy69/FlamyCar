@@ -22,6 +22,8 @@ No accounts, no ads, no tracking. The app does not even have the permission to u
 - Oil and coolant are shown blue while cold and red when too hot
 - Only the values the car really gives are shown; the app finds out which once after connecting
 - Demo mode: a simulated car instead of the adapter, to try the gauges without one
+- *Survey of the engine*: asks the engine control unit for some 850 values known from Volkswagen
+  group cars and notes down which it answers, to find the ones the app does not read yet
 - *When something does not work*: a record of what the app and the adapter said to each other,
   which can be copied or shared. It tells what the car supports and where things went wrong;
   attach it to an [issue](https://github.com/Flamy69/FlamyCar/issues) when a value is wrong or
@@ -35,6 +37,9 @@ No accounts, no ads, no tracking. The app does not even have the permission to u
 Grab the APK of the [latest release](https://github.com/Flamy69/FlamyCar/releases/latest) and
 open it on your phone. Android will ask you to allow installing apps from your browser or file
 manager the first time. Newer releases install over older ones.
+
+The `.aab` file next to it is the same app packaged for Google Play; it cannot be installed
+directly. It is what gets the app onto the display of a car, see [Android Auto](#android-auto).
 
 Requires Android 8.0 or newer.
 
@@ -68,19 +73,20 @@ to consist of gauges. Three things follow:
 
 Ways to get it onto the display of the car:
 
-- **Internal app sharing** of your own Google Play Console: upload the APK, open the link on the
-  phone and let Google Play install it. This is the way Google documents for trying an app in a
-  real car.
-- **From a computer**, pretending that Google Play did it:
-  `adb install -i com.android.vending -r FlamyCar.apk`. Quick, but only some phones and Android
-  versions accept it.
+- **Internal testing in your own Google Play Console**: create an app with the same package
+  name, upload the `.aab` file of the release to the internal testing track with yourself as
+  the tester, and install it from the Play Store. Google Play signs the app with a key of its
+  own, so uninstall the copy from the APK first, and update only through Play afterwards: an
+  update installed by hand hides the app in the car again.
+- **Installers that make the install look like one by Google Play**, such as KingInstaller or
+  UnknownAuto with Shizuku. They need no computer and no account, but work on some phones and
+  Android versions only.
 - **Without a car**, the [Desktop Head Unit](https://developer.android.com/training/cars/testing/dhu)
   of the Android SDK shows on a computer what the display of the car would, for an app installed
   in any way.
 
-In all cases switch on the developer settings of Android Auto as well: in the settings of the
-phone find Android Auto, tap *Version* at the very bottom ten times, and in the menu with three
-dots switch on *Unknown sources* under *Developer settings*.
+Installing with `adb install -i com.android.vending` does not help: Android Auto looks at who
+started the installation, which then is the shell.
 
 ## Which values a car gives
 
@@ -105,6 +111,7 @@ Requirements: JDK 17 and the Android SDK (either set `ANDROID_HOME`, or create a
 
 ```sh
 ./gradlew assembleRelease        # optimized build
+./gradlew bundleRelease          # the same as an app bundle for Google Play
 ./gradlew testDebugUnitTest      # unit tests
 ```
 
@@ -130,7 +137,7 @@ The same four names work as environment variables, which is how the CI build get
 ### Releases
 
 Every push to `main` is tested and built by [GitHub Actions](.github/workflows/build.yml), and the
-APK is attached to the workflow run. Pushing a version tag of the form `vMAJOR.MINOR.PATCH`
+APK and the app bundle are attached to the workflow run. Pushing a version tag of the form `vMAJOR.MINOR.PATCH`
 publishes it as a release and sets the version of the app. The workflow reads the signing key
 from the repository secrets `KEYSTORE_BASE64` (the keystore file, Base64 encoded),
 `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.

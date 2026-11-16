@@ -25,6 +25,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -101,6 +102,7 @@ fun MainScreen(obd: ObdManager, watcher: Any) {
             val car = status.car
             if (car != null && status.phase == Phase.LIVE) ValuesCard(car, readings)
             AndroidAutoCard()
+            SurveyCard(obd, live = status.phase == Phase.LIVE)
             TroubleshootingCard(obd, car)
         }
     }
@@ -253,6 +255,49 @@ private fun AndroidAutoCard() {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.auto_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.auto_text), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+/**
+ * A look around the engine control unit, for finding values the app does not know where to
+ * read yet. What it finds goes out with the record of the card below.
+ */
+@Composable
+private fun SurveyCard(obd: ObdManager, live: Boolean) {
+    val state by obd.surveyState.collectAsStateWithLifecycle()
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.survey_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.survey_text), style = MaterialTheme.typography.bodyMedium)
+            if (state.running) {
+                if (state.total > 0) {
+                    LinearProgressIndicator(
+                        progress = { state.done.toFloat() / state.total },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        stringResource(R.string.survey_progress, state.done, state.total),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                } else {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
+            } else {
+                if (state.readings > 0) {
+                    Text(stringResource(R.string.survey_readings, state.readings), style = MaterialTheme.typography.bodyMedium)
+                }
+                state.problem?.let {
+                    Text(
+                        stringResource(R.string.survey_problem, it),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+                OutlinedButton(onClick = obd::startSurvey, enabled = live) {
+                    Text(stringResource(if (state.readings == 0) R.string.survey_start else R.string.survey_again))
+                }
+            }
         }
     }
 }

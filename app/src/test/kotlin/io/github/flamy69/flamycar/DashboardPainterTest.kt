@@ -34,7 +34,7 @@ class DashboardPainterTest {
     private val driving = Readings(
         values = mapOf(
             Signal.BOOST to 0.87f, Signal.MAP to 1.85f, Signal.BARO to 0.98f,
-            Signal.OIL_TEMP to 104f, Signal.OIL_PRESSURE to 3.4f, Signal.COOLANT to 91f,
+            Signal.OIL_TEMP to 104f, Signal.OIL_PRESSURE to 3.4f, Signal.PEDAL to 64f, Signal.COOLANT to 91f,
             Signal.INTAKE_TEMP to 38f, Signal.EXHAUST_TEMP to 720f, Signal.VOLTAGE to 14.2f,
             Signal.RPM to 4350f, Signal.TORQUE to 186f, Signal.LOAD to 82f, Signal.THROTTLE to 100f,
             Signal.TIMING to 11.5f, Signal.FUEL_RAIL to 212f, Signal.MAF to 78.4f, Signal.SPEED to 96f,

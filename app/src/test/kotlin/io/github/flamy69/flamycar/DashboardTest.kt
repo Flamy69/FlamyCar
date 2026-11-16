@@ -14,7 +14,7 @@ class DashboardTest {
         val page = Dashboard.page(0, everything)
 
         assertEquals(Signal.BOOST, page.hero)
-        assertEquals(listOf(Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.COOLANT, Signal.INTAKE_TEMP), page.tiles)
+        assertEquals(listOf(Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.PEDAL, Signal.COOLANT), page.tiles)
     }
 
     @Test
@@ -34,7 +34,7 @@ class DashboardTest {
         val first = Dashboard.page(0, standard)
         val second = Dashboard.page(1, standard)
 
-        assertEquals(listOf(Signal.COOLANT, Signal.INTAKE_TEMP, Signal.VOLTAGE), first.tiles)
+        assertEquals(listOf(Signal.PEDAL, Signal.COOLANT, Signal.INTAKE_TEMP, Signal.VOLTAGE), first.tiles)
         assertEquals(Signal.RPM, second.tiles.first())
         assertTrue(second.signals.none { it in first.signals })
     }
