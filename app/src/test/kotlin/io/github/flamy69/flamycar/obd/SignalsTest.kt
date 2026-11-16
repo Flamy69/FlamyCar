@@ -1,0 +1,71 @@
+package io.github.flamy69.flamycar.obd
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class SignalsTest {
+    private fun bytes(vararg values: Int) = ByteArray(values.size) { values[it].toByte() }
+
+    private fun query(signal: Signal, id: Int) =
+        CATALOG.getValue(signal).filterIsInstance<Query>().first { it.id == id }
+
+    @Test
+    fun `standard values follow the formulas of the norm`() {
+        assertEquals(1.01f, query(Signal.MAP, 0x0B).read(bytes(0x41, 0x0B, 101))!!, 0.001f)
+        assertEquals(3000f, query(Signal.RPM, 0x0C).read(bytes(0x41, 0x0C, 0x2E, 0xE0))!!, 0.001f)
+        assertEquals(90f, query(Signal.COOLANT, 0x05).read(bytes(0x41, 0x05, 130))!!, 0.001f)
+        assertEquals(14.2f, query(Signal.VOLTAGE, 0x42).read(bytes(0x41, 0x42, 0x37, 0x78))!!, 0.001f)
+        assertEquals(-4f, query(Signal.TIMING, 0x0E).read(bytes(0x41, 0x0E, 120))!!, 0.001f)
+        assertEquals(200f, query(Signal.FUEL_RAIL, 0x23).read(bytes(0x41, 0x23, 0x07, 0xD0))!!, 0.001f)
+    }
+
+    @Test
+    fun `manufacturer temperatures come in tenths of a kelvin`() {
+        // 0x0E9B = 3739 -> 373.9 K -> 100.8 °C
+        assertEquals(100.8f, query(Signal.OIL_TEMP, 0x11BE).read(bytes(0x62, 0x11, 0xBE, 0x0E, 0x9B))!!, 0.01f)
+    }
+
+    @Test
+    fun `oil pressure in tenths of a kilopascal becomes bar`() {
+        // 0x0D48 = 3400 -> 340 kPa -> 3.4 bar
+        assertEquals(3.4f, query(Signal.OIL_PRESSURE, 0x177D).read(bytes(0x62, 0x17, 0x7D, 0x0D, 0x48))!!, 0.001f)
+    }
+
+    @Test
+    fun `signed values go below zero`() {
+        // Engine braking: 0xFF38 = -200 -> -20 Nm
+        assertEquals(-20f, query(Signal.TORQUE, 0x1010).read(bytes(0x62, 0x10, 0x10, 0xFF, 0x38))!!, 0.001f)
+    }
+
+    @Test
+    fun `an answer to something else is not read`() {
+        val oil = query(Signal.OIL_TEMP, 0x11BE)
+
+        assertNull(oil.read(bytes(0x7F, 0x22, 0x31)))
+        assertNull(oil.read(bytes(0x62, 0x11, 0xBF, 0x0E, 0x9B)))
+        assertNull(oil.read(bytes(0x62, 0x11, 0xBE, 0x0E)))
+        assertNull(query(Signal.RPM, 0x0C).read(bytes(0x41, 0x0D, 0x2E, 0xE0)))
+    }
+
+    @Test
+    fun `requests are written the way the adapter wants them`() {
+        assertEquals("010B", query(Signal.MAP, 0x0B).hex)
+        assertEquals("2211BE", query(Signal.OIL_TEMP, 0x11BE).hex)
+    }
+
+    @Test
+    fun `boost is what the manifold has over the air outside`() {
+        val boost = CATALOG.getValue(Signal.BOOST).single() as Derived
+
+        assertEquals(1.2f, boost.compute(mapOf(Signal.MAP to 2.18f, Signal.BARO to 0.98f))!!, 0.001f)
+        assertEquals(-0.613f, boost.compute(mapOf(Signal.MAP to 0.4f))!!, 0.001f)
+        assertNull(boost.compute(emptyMap()))
+    }
+
+    @Test
+    fun `every value has a way of being read`() {
+        assertTrue(Signal.entries.all { !CATALOG[it].isNullOrEmpty() })
+    }
+}

@@ -1,0 +1,323 @@
+package io.github.flamy69.flamycar.obd
+
+import java.util.EnumMap
+import java.util.Locale
+
+/** What the session found out about the car after connecting. */
+class CarInfo(
+    val adapter: String,
+    val protocol: Int,
+    /** The values this car gives, in the order of the catalog, each with where it comes from. */
+    val signals: Map<Signal, Source>,
+    /** Everything that was asked and answered while finding out, for troubleshooting. */
+    val report: String,
+)
+
+/**
+ * One conversation with a car through a connected adapter: set the adapter up, wait for the
+ * ignition, find out which values the car gives, then read them in a loop until [running]
+ * turns false or the connection breaks (which surfaces as an IOException from [run]).
+ */
+class ObdSession(
+    private val elm: Elm327,
+    private val events: Events,
+    private val running: () -> Boolean,
+    private val pause: (Long) -> Unit = { Thread.sleep(it) },
+) {
+    interface Events {
+        /** The adapter answers, but the car does not: the ignition is off. */
+        fun onWaitingForCar()
+
+        /** The car talks, but in a protocol older than CAN. */
+        fun onUnsupported(protocol: Int)
+
+        /** The car answered and the values in [info] are about to be read. */
+        fun onReady(info: CarInfo)
+
+        fun onValues(values: Map<Signal, Float>)
+    }
+
+    /** The values on screen right now. The [Signal.quick] ones among them are read every round. */
+    @Volatile
+    var focus: Set<Signal> = setOf(Signal.BOOST)
+
+    private var info: CarInfo? = null
+    private var engine: Ecu? = null
+    private var engineRx = 0x7E8
+
+    // Set when the car went silent in the middle of being asked what it gives.
+    private var busLost = false
+
+    private val values = EnumMap<Signal, Float>(Signal::class.java)
+    private val misses = EnumMap<Signal, Int>(Signal::class.java)
+
+    fun run() {
+        while (running()) {
+            val first = awaitCar() ?: return
+            // What the car gives is found out once; a car that went silent meanwhile is asked
+            // again from the start the next time it talks.
+            val info = info ?: discover(first)?.also { info = it }
+            if (info != null) {
+                events.onReady(info)
+                poll(info)
+            }
+            values.clear()
+            misses.clear()
+            events.onValues(emptyMap())
+        }
+    }
+
+    /** Knocks until the car answers. Null when the session was stopped meanwhile. */
+    private fun awaitCar(): List<EcuReply>? {
+        var wait = FIRST_RETRY
+        while (running()) {
+            // Set up anew before every attempt: an adapter whose supply dipped, as it does
+            // when the engine is cranked, has forgotten everything it was told.
+            elm.reset()
+            val answer = elm.connect()
+            if (answer is Answer.Replies) return answer.replies
+            if (elm.protocol != 0 && elm.idDigits == 0) {
+                events.onUnsupported(elm.protocol)
+            } else {
+                events.onWaitingForCar()
+            }
+            // A sleeping car is not to be kept awake by knocking too often.
+            pause(wait)
+            wait = (wait * 3 / 2).coerceAtMost(LAST_RETRY)
+        }
+        return null
+    }
+
+    /** Finds out what the car gives. Null when the car went silent before that was done. */
+    private fun discover(first: List<EcuReply>): CarInfo? {
+        busLost = false
+        val report = StringBuilder()
+        report.appendLine("Adapter: ${elm.version}")
+        report.appendLine("Protocol: ${elm.protocol}")
+        report.appendLine("Control units: " + first.joinToString(" ") { "%X".format(it.ecu) })
+
+        // The engine is the unit with the lowest address, 7E8 on every car that follows the norm.
+        val supporters = first.filter { it.data.size >= 6 && it.data[0].u() == 0x41 && it.data[1].u() == 0x00 }
+        engineRx = (supporters.ifEmpty { first }).minOf { it.ecu }
+        val supported = supportedPids(supporters.firstOrNull { it.ecu == engineRx }?.data)
+        report.appendLine("Standard values: " + supported.joinToString(" ") { "%02X".format(it) })
+
+        // Talking to the engine alone is quicker, and the only way to ask for the values of
+        // the manufacturer. Not every engine answers the standard values that way, though.
+        engine = null
+        if (elm.idDigits == 3 && engineRx in 0x7E8..0x7EF) {
+            val candidate = Ecu(engineRx - 8, engineRx)
+            if (answersDirectly(candidate)) engine = candidate
+        }
+        report.appendLine(
+            "Engine: %X, addressed %s, answer count %s".format(
+                engineRx,
+                if (engine != null) "directly" else "by broadcast",
+                if (elm.countDigit) "on" else "off",
+            ),
+        )
+        report.appendLine()
+
+        val chosen = LinkedHashMap<Signal, Source>()
+        for ((signal, sources) in CATALOG) {
+            for (source in sources) {
+                val usable = when (source) {
+                    is Query -> if (source.standard) source.id in supported else probe(signal, source, report)
+                    is AdapterVoltage -> elm.voltage() != null
+                    is Derived -> source.needs in chosen
+                }
+                if (usable && signal !in chosen) chosen[signal] = source
+            }
+        }
+        if (busLost) return null
+
+        report.appendLine()
+        report.appendLine("Used: " + chosen.entries.joinToString(", ") { (signal, source) -> "$signal=${describe(source)}" })
+        return CarInfo(elm.version, elm.protocol, chosen, report.toString())
+    }
+
+    /**
+     * Whether the engine answers a standard request sent to it alone. A clone that chokes on
+     * the count of expected answers without saying so would look like an engine that does not;
+     * so the question is asked again without the count before giving up.
+     */
+    private fun answersDirectly(candidate: Ecu): Boolean {
+        fun ask(): Boolean {
+            val answer = elm.request(candidate, "0100")
+            if (answer is Answer.NoBus) busLost = true
+            return answer is Answer.Replies &&
+                answer.replies.any { it.ecu == engineRx && it.data.getOrNull(0)?.u() == 0x41 }
+        }
+        if (ask()) return true
+        if (!elm.countDigit) return false
+        elm.countDigit = false
+        if (ask()) return true
+        elm.countDigit = true
+        return false
+    }
+
+    /** Asks for a manufacturer value once, and notes down what came back. */
+    private fun probe(signal: Signal, query: Query, report: StringBuilder): Boolean {
+        val ecu = ecuOf(query)
+        val line = StringBuilder("%-12s %s @%s  ".format(signal, query.title, ecu ?: "-"))
+        var usable = false
+        if (ecu == null) {
+            line.append("cannot be addressed")
+        } else {
+            when (val answer = elm.request(ecu, query.hex)) {
+                is Answer.Replies -> {
+                    line.append(answer.replies.joinToString("; ") { it.data.toHex() })
+                    val value = valueIn(answer, query)
+                    if (value != null) {
+                        usable = value in signal.valid
+                        line.append("  = %.2f %s".format(Locale.ROOT, value, signal.unit))
+                        if (!usable) line.append(" (not believable)")
+                    }
+                }
+                is Answer.NoBus -> {
+                    busLost = true
+                    line.append(answer.reason)
+                }
+                Answer.Refused -> line.append("refused by the adapter")
+                Answer.Silence -> line.append("no answer")
+            }
+        }
+        report.appendLine(line)
+        return usable
+    }
+
+    /** Reads the values round after round. Returns when the car stops answering. */
+    private fun poll(info: CarInfo) {
+        val queries = info.signals.filterValues { it !is Derived }.keys.toList()
+        if (queries.isEmpty()) {
+            pause(LAST_RETRY)
+            return
+        }
+        var turn = 0
+        var silentRounds = 0
+        while (running()) {
+            val quick = quickOf(info, focus)
+            // One of the others per round, so that the quick ones stay quick.
+            val rest = queries.filter { it !in quick }
+            val round = if (rest.isEmpty()) quick else quick + rest[turn++ % rest.size]
+
+            var asked = 0
+            var answered = 0
+            for (signal in round) {
+                val source = info.signals.getValue(signal)
+                val read = read(signal, source) ?: return
+                // The adapter tells the voltage whether the car is there or not.
+                if (source !is AdapterVoltage) {
+                    asked++
+                    if (read) answered++
+                }
+            }
+
+            for ((signal, source) in info.signals) {
+                if (source is Derived) {
+                    val value = source.compute(values)
+                    if (value != null) values[signal] = value else values.remove(signal)
+                }
+            }
+            events.onValues(EnumMap(values).ifEmpty { emptyMap() })
+
+            if (asked > 0) silentRounds = if (answered == 0) silentRounds + 1 else 0
+            if (silentRounds >= SILENT_ROUNDS) return
+        }
+    }
+
+    /** True when the value was read, false when not, null when the bus is gone. */
+    private fun read(signal: Signal, source: Source): Boolean? {
+        val value: Float? = when (source) {
+            is Query -> when (val answer = elm.request(ecuOf(source), source.hex)) {
+                is Answer.Replies -> valueIn(answer, source)
+                is Answer.NoBus -> return null
+                else -> null
+            }
+            is AdapterVoltage -> elm.voltage()
+            is Derived -> return true
+        }
+        if (value != null) {
+            values[signal] = value
+            misses.remove(signal)
+            return true
+        }
+        // A value that stopped coming is taken off the screen instead of standing still there.
+        val missed = (misses[signal] ?: 0) + 1
+        misses[signal] = missed
+        if (missed >= STALE_AFTER) values.remove(signal)
+        return false
+    }
+
+    /**
+     * The value among the answers to [query]: that of the unit that was asked if it gave one,
+     * else that of any other. Answers to something else, such as a unit asking for patience,
+     * are passed over.
+     */
+    private fun valueIn(answer: Answer.Replies, query: Query): Float? {
+        val rx = rxOf(query)
+        return answer.replies.sortedBy { it.ecu != rx }.firstNotNullOfOrNull { query.read(it.data) }
+    }
+
+    private fun quickOf(info: CarInfo, focus: Set<Signal>): List<Signal> {
+        val result = LinkedHashSet<Signal>()
+        for (signal in focus) {
+            val source = info.signals[signal] ?: continue
+            val read = if (source is Derived) source.needs else signal
+            if (read.quick && info.signals[read] !is Derived) result += read
+        }
+        return result.toList()
+    }
+
+    /** Whom to ask: one unit, or everybody (null) for the engine that only answers broadcasts. */
+    private fun ecuOf(query: Query): Ecu? = when (query.target) {
+        Target.ENGINE -> engine
+        Target.CLUSTER -> CLUSTER.takeIf { elm.idDigits == 3 }
+    }
+
+    private fun rxOf(query: Query): Int = when (query.target) {
+        Target.ENGINE -> engineRx
+        Target.CLUSTER -> CLUSTER.rx
+    }
+
+    /**
+     * Each of the requests 00, 20, 40... is answered by four bytes of flags, one for each of
+     * the 32 values that follow; the last flag tells whether the next block is worth asking.
+     */
+    private fun supportedPids(first: ByteArray?): Set<Int> {
+        val supported = LinkedHashSet<Int>()
+        var block = first
+        var base = 0x00
+        while (block != null && block.size >= 6) {
+            for (bit in 0 until 32) {
+                if (block[2 + bit / 8].u() and (0x80 shr (bit % 8)) != 0) supported += base + bit + 1
+            }
+            base += 0x20
+            if (base !in supported || base > 0xC0) break
+            val answer = elm.request(null, "01%02X".format(base))
+            if (answer is Answer.NoBus) busLost = true
+            block = (answer as? Answer.Replies)?.replies
+                ?.firstOrNull { it.ecu == engineRx && it.data.size >= 6 && it.data[0].u() == 0x41 && it.data[1].u() == base }
+                ?.data
+        }
+        return supported
+    }
+
+    private fun describe(source: Source): String = when (source) {
+        is Query -> source.title
+        is AdapterVoltage -> "adapter"
+        is Derived -> "computed"
+    }
+
+    private fun Byte.u(): Int = toInt() and 0xFF
+
+    companion object {
+        /** The instrument cluster of Volkswagen group cars. */
+        val CLUSTER = Ecu(0x714, 0x77E)
+
+        private const val FIRST_RETRY = 2_000L
+        private const val LAST_RETRY = 15_000L
+        private const val SILENT_ROUNDS = 4
+        private const val STALE_AFTER = 3
+    }
+}

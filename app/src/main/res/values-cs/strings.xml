@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="signal_boost">Tlak turba</string>
+    <string name="signal_oil_temp">Teplota oleje</string>
+    <string name="signal_oil_pressure">Tlak oleje</string>
+    <string name="signal_coolant">Chlazení</string>
+    <string name="signal_intake_temp">Nasávaný vzduch</string>
+    <string name="signal_exhaust_temp">Výfukové plyny</string>
+    <string name="signal_voltage">Baterie</string>
+    <string name="signal_rpm">Otáčky</string>
+    <string name="signal_torque">Moment</string>
+    <string name="signal_load">Zatížení</string>
+    <string name="signal_throttle">Škrticí klapka</string>
+    <string name="signal_timing">Předstih</string>
+    <string name="signal_fuel_rail">Tlak paliva</string>
+    <string name="signal_maf">Průtok vzduchu</string>
+    <string name="signal_speed">Rychlost</string>
+    <string name="signal_map">Tlak v sání</string>
+    <string name="signal_baro">Tlak vzduchu</string>
+    <string name="signal_ambient">Venku</string>
+    <string name="signal_fuel_level">Palivo</string>
+
+    <string name="car_connecting">Připojuji se k adaptéru…</string>
+    <string name="car_no_adapter">Vyber adaptér ve FlamyCar v telefonu</string>
+    <string name="car_no_permission">Povol Bluetooth ve FlamyCar v telefonu</string>
+    <string name="car_bluetooth_off">Bluetooth je vypnutý</string>
+    <string name="car_waiting">Čekám na zapalování</string>
+    <string name="car_unsupported">Tohle auto nemluví po CAN</string>
+    <string name="car_no_values">Auto neposílá žádné hodnoty</string>
+
+    <string name="preview_hint">Takhle to vypadá na displeji auta. Ťuknutím na budíky přepneš stránku.</string>
+
+    <string name="status_connecting">Připojuji se k %1$s…</string>
+    <string name="status_no_adapter">Začni výběrem adaptéru</string>
+    <string name="status_no_permission">Aplikace potřebuje tvoje svolení používat zařízení Bluetooth</string>
+    <string name="status_waiting">Adaptér je připojený, auto neodpovídá. Zapni zapalování.</string>
+    <string name="status_unsupported">Auto používá starší protokol než CAN, který tahle aplikace neumí.</string>
+    <string name="status_live">Připojeno · %1$s</string>
+    <string name="permission_allow">Povolit</string>
+
+    <string name="adapter_title">Adaptér</string>
+    <string name="adapter_none">Není vybraný</string>
+    <string name="adapter_choose">Vybrat</string>
+    <string name="adapter_dialog_title">Spárovaná zařízení Bluetooth</string>
+    <string name="adapter_dialog_empty">Žádná spárovaná zařízení. Nejdřív adaptér spáruj v nastavení Bluetooth v telefonu; PIN bývá 1234 nebo 0000.</string>
+    <string name="adapter_dialog_off">Bluetooth je vypnutý, nebo ho aplikace nesmí používat.</string>
+    <string name="bluetooth_settings">Nastavení Bluetooth</string>
+    <string name="cancel">Zrušit</string>
+
+    <string name="demo_title">Demo režim</string>
+    <string name="demo_text">Simulované auto místo adaptéru, na vyzkoušení budíků bez něj.</string>
+
+    <string name="values_title">Hodnoty tohoto auta</string>
+    <string name="values_unverified">Hodnoty s číslem vedle sebe se čtou identifikátory specifickými pro koncern Volkswagen. Na tomhle motoru nejsou ověřené: než jim začneš věřit, porovnej je s tím, co znáš.</string>
+
+    <string name="auto_title">Na displeji auta</string>
+    <string name="auto_text">Android Auto ukazuje aplikace tohoto druhu jen tehdy, když je nainstaloval Google Play. APK nainstalované ručně funguje v telefonu, ale v autě zůstane skryté.\n\nSpolehlivá cesta: nahraj APK do Interního sdílení aplikací ve své Google Play Console a nainstaluj ho z odkazu, který tam dostaneš.\n\nRychlá cesta, kterou přijmou jen některé telefony: instalace z počítače příkazem\nadb install -i com.android.vending -r FlamyCar.apk\n\nV obou případech ještě otevři Nastavení, Android Auto, desetkrát ťukni na Verzi a v nabídce se třemi tečkami zapni v Nastavení pro vývojáře Neznámé zdroje. Pak telefon připoj k autu znovu.</string>
+
+    <string name="report_title">Když něco nefunguje</string>
+    <string name="report_text">Zkopíruj nebo nasdílej záznam toho, co si aplikace s adaptérem řekly. Je z něj vidět, co auto umí a kde se to zadrhlo.</string>
+    <string name="report_copy">Kopírovat</string>
+    <string name="report_share">Sdílet</string>
+</resources>

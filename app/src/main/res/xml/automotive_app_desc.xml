@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tells Android Auto that this app has a screen for the display of the car, built with the
+     Android for Cars library. -->
+<automotiveApp>
+    <uses name="template" />
+</automotiveApp>
