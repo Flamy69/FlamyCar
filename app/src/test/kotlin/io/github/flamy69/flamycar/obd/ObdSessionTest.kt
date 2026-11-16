@@ -102,19 +102,87 @@ class ObdSessionTest {
     }
 
     @Test
-    fun `the instrument cluster is heard only through a filter of its own`() {
+    fun `answers too long for one frame are waited for to their end`() {
         val bench = Bench()
 
         bench.session.run()
 
-        assertTrue(bench.info!!.report.lines().any { it.contains("22 202F @714") && it.contains("62 20 2F") })
-        val log = bench.car.log
-        val header = log.indexOf("ATSH714")
-        val filter = log.indexOf("ATCRA77E")
-        val asked = log.withIndex().first { it.index > header && it.value.startsWith("22202F") }.index
-        assertTrue(header in 0 until asked && filter in 0 until asked)
-        // And the filter is taken away again before the engine is asked the next thing.
-        assertTrue(log.indexOf("ATAR") > asked)
+        // The charge pressure sits in the third pair of bytes of a ten byte answer.
+        val charge = bench.latest(Signal.CHARGE)!!
+        val target = bench.latest(Signal.CHARGE_TARGET)!!
+        assertEquals(0.98f, charge, 0.02f)
+        assertEquals(charge + 0.05f, target, 0.01f)
+        assertNotNull(bench.latest(Signal.FUEL_RAIL))
+        // Asked without the count of answers, which would cut them off after the first frame.
+        assertTrue("0170" in bench.car.log)
+        assertFalse("01701" in bench.car.log)
+    }
+
+    @Test
+    fun `the torque is put together from its share and the reference`() {
+        val bench = Bench()
+
+        bench.session.run()
+
+        val torque = bench.latest(Signal.TORQUE)!!
+        assertEquals(250f * bench.latest(Signal.TORQUE_PERCENT)!! / 100f, torque, 0.5f)
+        assertTrue(torque > 0f)
+    }
+
+    @Test
+    fun `the pedal at rest reads zero`() {
+        val bench = Bench()
+
+        bench.session.run()
+
+        // The simulated sensor rests at 15 % of its travel, as real ones do.
+        assertEquals(0f, bench.seen.first { Signal.PEDAL in it }.getValue(Signal.PEDAL), 1.5f)
+    }
+
+    @Test
+    fun `long requests go without the count of answers`() {
+        val bench = Bench()
+
+        bench.session.run()
+
+        assertTrue(bench.info!!.report.contains("Long requests: pass as they are"))
+        assertTrue(bench.info!!.longRequests)
+        assertTrue("2211BE" in bench.car.log)
+        assertFalse(bench.car.log.any { it.startsWith("22") && it.length % 2 == 1 })
+    }
+
+    @Test
+    fun `a clone that loses the end of long requests is given whole frames instead`() {
+        val bench = Bench { longFault = SimulatedCar.LongFault.PLAIN }
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00)"))
+        assertTrue(info.longRequests)
+        assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
+        assertNotNull(bench.latest(Signal.OIL_TEMP))
+        assertNotNull(bench.latest(Signal.OIL_PRESSURE))
+        // The standard values go on as before, in between.
+        assertNotNull(bench.latest(Signal.RPM))
+        assertTrue("032211BE00000000" in bench.car.log)
+        assertTrue("ATCAF1" in bench.car.log)
+    }
+
+    @Test
+    fun `a clone that cannot send long requests at all is told apart from a car without the values`() {
+        val bench = Bench { longFault = SimulatedCar.LongFault.ALWAYS }
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertTrue(info.report, info.report.contains("Long requests: GARBLED by the adapter"))
+        assertFalse(info.longRequests)
+        assertFalse(Signal.OIL_TEMP in info.signals)
+        assertTrue(info.report.lines().any { it.contains("22 11BE") && it.contains("cannot be asked with this adapter") })
+        // The standard values are not affected.
+        assertNotNull(bench.latest(Signal.BOOST))
+        assertNotNull(bench.latest(Signal.PEDAL))
     }
 
     @Test
@@ -173,7 +241,7 @@ class ObdSessionTest {
         assertEquals(2, survey.readings)
         assertTrue(progress > 50)
         val lines = survey.text().lines()
-        assertTrue(lines[0], lines[0].contains("4 identifiers answered"))
+        assertTrue(lines[0], lines[0].contains("6 identifiers answered"))
         assertTrue(lines[1], lines[1].startsWith("#1: ") && lines[1].contains("RPM="))
         // Oil temperature, 11BE: two bytes at each of the two readings.
         val oil = lines.single { it.startsWith("11BE") }.split(" | ")
@@ -239,7 +307,8 @@ class ObdSessionTest {
 
         val report = bench.info!!.report
         assertTrue(report, report.contains("Control units: 7E8 7E9"))
-        assertTrue(report, report.contains("Standard values: 04 05 0B 0C 0D 0E 0F 10 11 20 23 2F 33 40 42 46 49 5A"))
+        val standard = (SimulatedCar.PIDS + setOf(0x20, 0x40, 0x60)).sorted().joinToString(" ") { "%02X".format(it) }
+        assertTrue(report, report.contains("Standard values: $standard"))
         assertTrue(report, report.contains("Engine: 7E8, addressed directly"))
         assertTrue(report, report.contains("OIL_PRESSURE"))
     }

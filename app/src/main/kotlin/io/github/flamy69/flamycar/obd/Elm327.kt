@@ -10,6 +10,13 @@ data class Ecu(val tx: Int, val rx: Int) {
     override fun toString(): String = "%03X".format(tx)
 }
 
+/**
+ * How a request of more than two bytes is handed to the adapter. Some clones lose everything
+ * after the second byte of a request given as it is; they may still pass on a whole CAN frame
+ * that was put together for them.
+ */
+enum class LongRequests { PLAIN, RAW }
+
 /** What came back for one request. */
 sealed interface Answer {
     /** At least one control unit answered. */
@@ -62,6 +69,12 @@ class Elm327(
      */
     var countDigit = true
 
+    /** See [LongRequests]. Found out by whoever knows a long request with a known answer. */
+    var longRequests = LongRequests.PLAIN
+
+    // Whether the adapter puts requests into CAN frames itself, as it does unless told not to.
+    private var formatting = true
+
     /** Puts the adapter into a known state. */
     fun reset() {
         var answered = false
@@ -82,6 +95,7 @@ class Elm327(
         if (!answered) throw ElmException("The adapter does not answer the reset")
         currentTx = null
         currentFilter = null
+        formatting = true
         protocol = 0
 
         require("ATE0") // no echo of the commands
@@ -114,9 +128,10 @@ class Elm327(
 
     /**
      * Sends a request, given as hex digits, to one control unit, or to all of them when [ecu]
-     * is null. Addressing a single unit is possible on 11-bit CAN only.
+     * is null. Addressing a single unit is possible on 11-bit CAN only. [whole] asks for an
+     * answer that takes several frames to be waited for to its end.
      */
-    fun request(ecu: Ecu?, hex: String): Answer {
+    fun request(ecu: Ecu?, hex: String, whole: Boolean = false): Answer {
         if (idDigits == 0) return Answer.Silence
         if (ecu != null) {
             if (idDigits != 3 || !address(ecu)) return Answer.Refused
@@ -124,11 +139,23 @@ class Elm327(
             if (!address(BROADCAST)) return Answer.Refused
         }
 
-        val single = ecu != null && countDigit
-        var lines = exchange(if (single) hex + "1" else hex, REQUEST_TIMEOUT)
+        // Long requests go without the count of answers: clones that know the count for the
+        // standard two bytes lose the rest of a longer request over it, and a long answer in
+        // several frames would be cut off after the first.
+        val long = hex.length > 4
+        val raw = long && longRequests == LongRequests.RAW
+        if (raw == formatting) {
+            if (!ok(exchange(if (raw) "ATCAF0" else "ATCAF1", AT_TIMEOUT))) return Answer.Refused
+            formatting = !raw
+        }
+        // A frame put together by hand: the number of bytes, the bytes, and padding up to eight.
+        val text = if (raw) "%02X".format(hex.length / 2) + hex.padEnd(14, '0') else hex
+
+        val single = !long && !whole && ecu != null && countDigit
+        var lines = exchange(if (single) text + "1" else text, REQUEST_TIMEOUT)
         if (single && lines.any { it == "?" }) {
             countDigit = false
-            lines = exchange(hex, REQUEST_TIMEOUT)
+            lines = exchange(text, REQUEST_TIMEOUT)
         }
 
         val replies = CanFrames.assemble(lines, idDigits)

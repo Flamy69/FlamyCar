@@ -54,7 +54,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.flamy69.flamycar.Dashboard
 import io.github.flamy69.flamycar.DashboardPainter
 import io.github.flamy69.flamycar.ObdManager
 import io.github.flamy69.flamycar.Phase
@@ -126,8 +125,10 @@ private fun Preview(obd: ObdManager, watcher: Any, status: Status, readings: Rea
     var page by rememberSaveable { mutableIntStateOf(0) }
     val live = status.phase == Phase.LIVE
 
-    LaunchedEffect(page, status.car) {
-        status.car?.let { obd.show(watcher, Dashboard.page(page, it.signals.keys).signals) }
+    // What the page shows is known once it was drawn; it changes with the page and the car.
+    LaunchedEffect(page, status.car, live) {
+        withFrameNanos { }
+        obd.show(watcher, painter.visible)
     }
     // Needles glide between the values, so the picture is drawn anew for every frame of the
     // screen while there are values to show.
@@ -141,7 +142,7 @@ private fun Preview(obd: ObdManager, watcher: Any, status: Status, readings: Rea
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .clip(RoundedCornerShape(16.dp))
-                .clickable { page = (page + 1) % Dashboard.PAGES },
+                .clickable { page = (page + 1) % painter.pages },
         ) {
             // Reading the frame time here is what makes this block run again for the next one.
             frame.hashCode()
@@ -237,6 +238,13 @@ private fun ValuesCard(car: CarInfo, readings: Readings) {
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
+            }
+            if (!car.longRequests) {
+                Text(
+                    text = stringResource(R.string.values_adapter_limited),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
             if (signals.any { (_, source) -> source is Query && !source.standard }) {
                 Text(

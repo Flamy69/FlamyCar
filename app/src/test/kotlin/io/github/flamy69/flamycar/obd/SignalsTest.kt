@@ -40,6 +40,29 @@ class SignalsTest {
     }
 
     @Test
+    fun `values inside longer answers are found at their place`() {
+        // Boost control: flags, 1.95 bar asked, 1.91 bar there, nothing for a second turbo.
+        val answer = bytes(0x41, 0x70, 0x03, 0x18, 0x60, 0x17, 0xE0, 0, 0, 0, 0, 0)
+        assertEquals(1.91f, query(Signal.CHARGE, 0x70).read(answer)!!, 0.001f)
+        assertEquals(1.95f, query(Signal.CHARGE_TARGET, 0x70).read(answer)!!, 0.001f)
+        // Fuel pressure control: flags, 220 bar asked, 212 bar there.
+        val fuel = bytes(0x41, 0x6D, 0x07, 0x08, 0x98, 0x08, 0x48, 85, 0, 0, 0, 0, 0)
+        assertEquals(212f, query(Signal.FUEL_RAIL, 0x6D).read(fuel)!!, 0.001f)
+    }
+
+    @Test
+    fun `more standard values follow the norm`() {
+        assertEquals(615f, query(Signal.CATALYST_TEMP, 0x3C).read(bytes(0x41, 0x3C, 0x19, 0x96))!!, 0.01f)
+        assertEquals(1f, query(Signal.LAMBDA, 0x34).read(bytes(0x41, 0x34, 0x80, 0x00, 0x80, 0x00))!!, 0.001f)
+        assertEquals(-3.125f, query(Signal.FUEL_TRIM_LONG, 0x07).read(bytes(0x41, 0x07, 124))!!, 0.001f)
+        assertEquals(42f, query(Signal.TORQUE_PERCENT, 0x62).read(bytes(0x41, 0x62, 167))!!, 0.001f)
+        assertEquals(23f, query(Signal.RUNTIME, 0x1F).read(bytes(0x41, 0x1F, 0x05, 0x64))!!, 0.001f)
+        // The pedal sensor: 14.5 % at rest is none, about 80 % is all of it.
+        assertEquals(0f, query(Signal.PEDAL, 0x49).read(bytes(0x41, 0x49, 0x25))!!, 0.1f)
+        assertEquals(100f, query(Signal.PEDAL, 0x49).read(bytes(0x41, 0x49, 0xCC))!!, 0.1f)
+    }
+
+    @Test
     fun `an answer to something else is not read`() {
         val oil = query(Signal.OIL_TEMP, 0x11BE)
 

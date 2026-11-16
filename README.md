@@ -9,19 +9,25 @@ It needs two things:
 
 - an **ELM327 OBD-II adapter** with classic Bluetooth in the diagnostic socket of the car, paired
   with the phone
-- a car with **Android Auto**; without one the app shows the same gauges on the phone alone
+- a car with **Android Auto**; without one the app shows the same values on the phone alone
 
 No accounts, no ads, no tracking. The app does not even have the permission to use the internet.
 
 ## Features
 
-- Two pages of gauges; the button on the display, or a touch where the car passes touches on,
-  turns the page
-- Boost is the big gauge: manifold pressure minus barometric pressure (the pressure at sea level
-  where the car has no barometer), with a marker of the recent peak
-- Oil and coolant are shown blue while cold and red when too hot
+- Data, not pictures: bars at the top for what moves with the feet (boost, accelerator, brake)
+  and a table with everything else, as many rows and columns as stay readable on the display.
+  What does not fit goes to a further page; the button on the display, or a touch where the
+  car passes touches on, turns the page.
+- Boost is manifold pressure minus barometric pressure (the pressure at sea level where the car
+  has no barometer), with a marker of the recent peak. The charge pressure before the throttle,
+  and what the engine asked for, are in the table.
+- Oil and coolant are written blue while cold and red when too hot
 - Only the values the car really gives are shown; the app finds out which once after connecting
-- Demo mode: a simulated car instead of the adapter, to try the gauges without one
+- Cheap ELM327 clones lose the end of requests longer than two bytes, which is what the values
+  of the manufacturer take. The app notices, tries sending them as ready-made CAN frames
+  instead, and says so plainly when the adapter cannot do that either.
+- Demo mode: a simulated car instead of the adapter, to try the display without one
 - *Survey of the engine*: asks the engine control unit for some 850 values known from Volkswagen
   group cars and notes down which it answers, to find the ones the app does not read yet
 - *When something does not work*: a record of what the app and the adapter said to each other,

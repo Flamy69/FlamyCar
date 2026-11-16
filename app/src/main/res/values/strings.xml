@@ -7,6 +7,17 @@
     <string name="signal_oil_temp">Oil temperature</string>
     <string name="signal_oil_pressure">Oil pressure</string>
     <string name="signal_pedal">Accelerator</string>
+    <string name="signal_brake">Brake</string>
+    <string name="signal_catalyst_temp">Catalyst</string>
+    <string name="signal_charge">Charge pressure</string>
+    <string name="signal_charge_target">Charge pressure asked</string>
+    <string name="signal_lambda">Lambda</string>
+    <string name="signal_lambda_target">Lambda asked</string>
+    <string name="signal_fuel_trim_short">Fuel trim short</string>
+    <string name="signal_fuel_trim_long">Fuel trim long</string>
+    <string name="signal_runtime">Running for</string>
+    <string name="signal_torque_percent">Torque share</string>
+    <string name="signal_torque_reference">Reference torque</string>
     <string name="signal_coolant">Coolant</string>
     <string name="signal_intake_temp">Intake air</string>
     <string name="signal_exhaust_temp">Exhaust gas</string>
@@ -34,7 +45,7 @@
     <string name="car_no_values">The car gives no values</string>
     <string name="demo_badge" translatable="false">DEMO</string>
 
-    <string name="preview_hint">This is what the display of the car shows. Tap the gauges for the next page.</string>
+    <string name="preview_hint">This is what the display of the car shows. Tap it for the next page, when there is one.</string>
 
     <string name="status_connecting">Connecting to %1$s…</string>
     <string name="status_no_adapter">Choose the adapter to begin</string>
@@ -57,6 +68,7 @@
     <string name="demo_text">A simulated car instead of the adapter, to try the gauges without one.</string>
 
     <string name="values_title">Values of this car</string>
+    <string name="values_adapter_limited">This adapter garbles the longer requests that values such as the oil temperature and pressure take, so they cannot be read with it. The standard values are not affected. A better adapter would be needed for the rest.</string>
     <string name="values_unverified">Values with a number next to them are read by identifiers specific to the Volkswagen group. They have not been checked on this engine: compare them with what you know before trusting them.</string>
 
     <string name="auto_title">On the display of the car</string>

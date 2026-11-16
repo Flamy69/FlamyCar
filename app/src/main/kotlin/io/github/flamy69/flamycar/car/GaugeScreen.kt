@@ -18,14 +18,13 @@ import androidx.car.app.navigation.model.NavigationTemplate
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import io.github.flamy69.flamycar.Dashboard
 import io.github.flamy69.flamycar.DashboardPainter
 import io.github.flamy69.flamycar.FlamyCarApp
 import io.github.flamy69.flamycar.Phase
 import io.github.flamy69.flamycar.R
 
 /**
- * The gauges on the display of the car.
+ * The values on the display of the car.
  *
  * Android Auto lets apps draw freely only in the place where a navigation app draws its map,
  * so that is what this screen is to Android Auto: a "map" that happens to consist of gauges,
@@ -98,7 +97,7 @@ class GaugeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycle
     }
 
     private fun turnPage() {
-        page = (page + 1) % Dashboard.PAGES
+        page = (page + 1) % painter.pages
     }
 
     private val frame = object : Runnable {
@@ -113,8 +112,6 @@ class GaugeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycle
     private fun draw(): Boolean {
         val status = obd.status.value
         val readings = obd.readings.value
-        status.car?.let { obd.show(this, Dashboard.page(page, it.signals.keys).signals) }
-
         synchronized(lock) {
             val surface = surface?.takeIf { it.isValid } ?: return false
             val area = if (!stable.isEmpty) stable else if (!visible.isEmpty) visible else whole
@@ -129,6 +126,7 @@ class GaugeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycle
                 // The surface went away between the check and the drawing; the next one will do.
             }
         }
+        obd.show(this, painter.visible)
         return status.phase == Phase.LIVE
     }
 

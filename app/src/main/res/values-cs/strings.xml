@@ -4,7 +4,18 @@
     <string name="signal_oil_temp">Teplota oleje</string>
     <string name="signal_oil_pressure">Tlak oleje</string>
     <string name="signal_pedal">Plyn</string>
-    <string name="signal_coolant">Chlazení</string>
+    <string name="signal_brake">Brzda</string>
+    <string name="signal_catalyst_temp">Katalyzátor</string>
+    <string name="signal_charge">Plnicí tlak</string>
+    <string name="signal_charge_target">Plnicí tlak pož.</string>
+    <string name="signal_lambda">Lambda</string>
+    <string name="signal_lambda_target">Lambda pož.</string>
+    <string name="signal_fuel_trim_short">Korekce paliva kr.</string>
+    <string name="signal_fuel_trim_long">Korekce paliva dl.</string>
+    <string name="signal_runtime">Doba chodu</string>
+    <string name="signal_torque_percent">Podíl momentu</string>
+    <string name="signal_torque_reference">Referenční moment</string>
+    <string name="signal_coolant">Chladicí kapalina</string>
     <string name="signal_intake_temp">Nasávaný vzduch</string>
     <string name="signal_exhaust_temp">Výfukové plyny</string>
     <string name="signal_voltage">Baterie</string>
@@ -29,7 +40,7 @@
     <string name="car_unsupported">Tohle auto nemluví po CAN</string>
     <string name="car_no_values">Auto neposílá žádné hodnoty</string>
 
-    <string name="preview_hint">Takhle to vypadá na displeji auta. Ťuknutím na budíky přepneš stránku.</string>
+    <string name="preview_hint">Takhle to vypadá na displeji auta. Ťuknutím přepneš na další stránku, pokud nějaká je.</string>
 
     <string name="status_connecting">Připojuji se k %1$s…</string>
     <string name="status_no_adapter">Začni výběrem adaptéru</string>
@@ -52,6 +63,7 @@
     <string name="demo_text">Simulované auto místo adaptéru, na vyzkoušení budíků bez něj.</string>
 
     <string name="values_title">Hodnoty tohoto auta</string>
+    <string name="values_adapter_limited">Tenhle adaptér komolí delší dotazy, které jsou potřeba pro hodnoty jako teplota a tlak oleje, takže je s ním přečíst nejde. Standardních hodnot se to netýká. Na zbytek by byl potřeba lepší adaptér.</string>
     <string name="values_unverified">Hodnoty s číslem vedle sebe se čtou identifikátory specifickými pro koncern Volkswagen. Na tomhle motoru nejsou ověřené: než jim začneš věřit, porovnej je s tím, co znáš.</string>
 
     <string name="auto_title">Na displeji auta</string>

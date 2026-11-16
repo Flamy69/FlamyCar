@@ -4,6 +4,7 @@ import java.io.IOException
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.math.exp
+import kotlin.math.max
 import kotlin.math.sin
 
 /**
@@ -29,6 +30,14 @@ class SimulatedCar(
     /** Whether the adapter knows the trick of being told how many answers to wait for. */
     var knowsCountDigit = true
 
+    /**
+     * The fault of many clones: of a request longer than two bytes, everything after the second
+     * byte arrives as zeros. [LongFault.PLAIN] clones still pass on a frame made by hand.
+     */
+    enum class LongFault { NONE, PLAIN, ALWAYS }
+
+    var longFault = LongFault.NONE
+
     /** The protocol the adapter reports; 6 is CAN with 11-bit identifiers at 500 kbaud. */
     var protocol = 6
 
@@ -45,6 +54,7 @@ class SimulatedCar(
     private var echo = true
     private var spaces = true
     private var headers = false
+    private var formatting = true
     private var tx = 0x7DF
     private var filter: Int? = null
     private var found = false
@@ -93,13 +103,14 @@ class SimulatedCar(
 
     private fun adapter(command: String): String = when {
         command == "Z" -> {
-            echo = true; spaces = true; headers = false; tx = 0x7DF; filter = null; found = false
+            echo = true; spaces = true; headers = false; formatting = true; tx = 0x7DF; filter = null; found = false
             "\rELM327 v1.5"
         }
         command == "I" -> "ELM327 v1.5"
         command == "E0" || command == "E1" -> ok { echo = command == "E1" }
         command == "S0" || command == "S1" -> ok { spaces = command == "S1" }
         command == "H0" || command == "H1" -> ok { headers = command == "H1" }
+        command == "CAF0" || command == "CAF1" -> ok { formatting = command == "CAF1" }
         command == "L0" || command == "SP0" || command == "AT1" -> "OK"
         command == "AR" -> ok { filter = null }
         command == "DPN" -> if (found) "A%X".format(protocol) else "A0"
@@ -117,8 +128,12 @@ class SimulatedCar(
     private fun car(command: String): String {
         if (command.isEmpty() || !command.all { it in '0'..'9' || it in 'A'..'F' }) return "?"
         var hex = command
+        var count = Int.MAX_VALUE
         if (hex.length % 2 == 1) {
             if (!knowsCountDigit) return "?"
+            // Told how many answers to wait for, the adapter stops listening after that many
+            // frames, in the middle of a long answer too.
+            count = hex.last().digitToInt(16)
             hex = hex.dropLast(1)
         }
         if (latencyMs > 0) Thread.sleep(latencyMs)
@@ -128,12 +143,18 @@ class SimulatedCar(
         if (protocol != 6) return prefix + "NO DATA"
 
         step()
-        val request = ByteArray(hex.length / 2) { hex.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+        var request = ByteArray(hex.length / 2) { hex.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
+        // A frame made by hand begins with the number of bytes that count.
+        if (!formatting) request = request.copyOfRange(1, 1 + request[0].toInt().coerceIn(0, request.size - 1))
+        if (request.isEmpty()) return prefix + "NO DATA"
+        if (longFault == LongFault.ALWAYS || (longFault == LongFault.PLAIN && formatting)) {
+            for (i in 2 until request.size) request[i] = 0
+        }
         val frames = ArrayList<String>()
         fun reply(from: Int, data: ByteArray?) {
             // Units outside the range of the engine and gearbox are heard only when let through.
             val heard = if (from in 0x7E8..0x7EF) filter == null || filter == from else filter == from
-            if (data != null && heard) frames += frame(from, data)
+            if (data != null && heard) frames += frames(from, data)
         }
         when (tx) {
             0x7DF -> {
@@ -144,18 +165,28 @@ class SimulatedCar(
             0x7E1 -> reply(0x7E9, gearbox(request))
             0x714 -> reply(0x77E, cluster(request))
         }
-        return prefix + if (frames.isEmpty()) "NO DATA" else frames.joinToString("\r")
+        return prefix + if (frames.isEmpty()) "NO DATA" else frames.take(count).joinToString("\r")
     }
 
-    /** A single CAN frame the way the adapter prints it, padded to eight bytes like cars do. */
-    private fun frame(from: Int, data: ByteArray): String {
-        val bytes = ArrayList<Int>()
-        bytes += data.size
-        data.forEach { bytes += it.toInt() and 0xFF }
-        while (bytes.size < 8) bytes += 0xAA
+    /**
+     * An answer as the CAN frames the adapter prints: one frame for up to seven bytes, else a
+     * first frame announcing the length and frames continuing it; padded to eight bytes like
+     * cars do.
+     */
+    private fun frames(from: Int, data: ByteArray): List<String> {
+        val bytes = data.map { it.toInt() and 0xFF }
+        val payloads = ArrayList<List<Int>>()
+        if (bytes.size <= 7) {
+            payloads += listOf(bytes.size) + bytes
+        } else {
+            payloads += listOf(0x10 or (bytes.size shr 8), bytes.size and 0xFF) + bytes.take(6)
+            bytes.drop(6).chunked(7).forEachIndexed { index, chunk -> payloads += listOf(0x20 or ((index + 1) and 0x0F)) + chunk }
+        }
         val separator = if (spaces) " " else ""
-        val body = bytes.joinToString(separator) { "%02X".format(it) }
-        return if (headers) "%03X".format(from) + separator + body else body
+        return payloads.map { payload ->
+            val body = (payload + List(8 - payload.size) { 0xAA }).joinToString(separator) { "%02X".format(it) }
+            if (headers) "%03X".format(from) + separator + body else body
+        }
     }
 
     private fun engine(request: ByteArray): ByteArray? {
@@ -187,33 +218,43 @@ class SimulatedCar(
 
     private fun standard(pid: Int): ByteArray? {
         if (pid % 0x20 == 0) {
-            if (pid > 0x40) return null
+            if (pid > 0x60) return null
             var flags = 0L
             for (bit in 0 until 32) {
                 val other = pid + bit + 1
-                if (other in PIDS || (other % 0x20 == 0 && other <= 0x40)) flags = flags or (0x80000000L shr bit)
+                if (other in PIDS || (other % 0x20 == 0 && other <= 0x60)) flags = flags or (0x80000000L shr bit)
             }
             return word(flags shr 16) + word(flags and 0xFFFF)
         }
         if (pid !in PIDS) return null
         val load = (manifold / 2.2f).coerceIn(0.12f, 1f)
+        val charge = max(manifold, 0.98f)
         return when (pid) {
             0x04 -> byte(load * 255)
             0x05 -> byte(coolant + 40)
+            0x06 -> byte(128f + 2.5f)
+            0x07 -> byte(128f - 4f)
             0x0B -> byte(manifold * 100)
             0x0C -> word(rpm * 4)
             0x0D -> byte(rpm / 45)
             0x0E -> byte((18 - load * 14 + 64) * 2)
             0x0F -> byte(30 + manifold * 8 + 40)
-            0x10 -> word(rpm * manifold * 100 / 115)
             0x11 -> byte((0.12f + throttle * 0.88f) * 255)
-            0x23 -> word((60 + load * 240) * 10)
+            0x1F -> word((clock() - started) / 1000f)
             0x2F -> byte(0.62f * 255)
             0x33 -> byte(98f)
+            0x34 -> word(32768f * (1f - 0.12f * throttle)) + word(0x8000L)
+            0x3C -> word((480 + load * 320 + 40) * 10)
             0x42 -> word(voltage() * 1000)
+            0x44 -> word(32768f * (1f - 0.12f * throttle))
             0x46 -> byte(21f + 40)
             0x49 -> byte((0.15f + throttle * 0.65f) * 255)
-            0x5A -> byte(throttle * 255)
+            0x62 -> byte(load * 80 + 125)
+            0x63 -> word(250f)
+            // Fuel pressure control: what is there, the wish, the fact, the temperature.
+            0x6D -> byteArrayOf(0x07) + word((70 + load * 250) * 10) + word((60 + load * 240) * 10) + byte(45f + 40) + ByteArray(5)
+            // Boost control: what is there, the wish, the fact, and nothing for a second turbo.
+            0x70 -> byteArrayOf(0x03) + word((charge + 0.05f) * 3200) + word(charge * 3200) + ByteArray(5)
             else -> null
         }
     }
@@ -221,6 +262,9 @@ class SimulatedCar(
     private fun manufacturer(did: Int): ByteArray? {
         val load = (manifold / 2.2f).coerceIn(0f, 1f)
         return when (did) {
+            0xF400 -> byteArrayOf(0xBE.toByte(), 0x3E, 0xA8.toByte(), 0x13)
+            0xF40C -> word(rpm * 4)
+            0x105D -> word(if (throttle == 0f && rpm > 1500) 35f / 0.012207f else 0f)
             0x11BE -> word((oil + 273.1f) * 10)
             0x177D -> word((120 + rpm / 6000 * 330) * 10)
             0x139C -> word((380 + load * 480 + 273.1f) * 10)
@@ -271,6 +315,9 @@ class SimulatedCar(
 
     companion object {
         /** The standard values this engine gives. */
-        val PIDS = setOf(0x04, 0x05, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x23, 0x2F, 0x33, 0x42, 0x46, 0x49, 0x5A)
+        val PIDS = setOf(
+            0x04, 0x05, 0x06, 0x07, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x1F, 0x2F, 0x33, 0x34, 0x3C,
+            0x42, 0x44, 0x46, 0x49, 0x62, 0x63, 0x6D, 0x70,
+        )
     }
 }

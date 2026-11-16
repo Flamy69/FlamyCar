@@ -2,6 +2,7 @@ package io.github.flamy69.flamycar.obd
 
 import java.util.EnumMap
 import java.util.Locale
+import kotlin.math.min
 
 /** What the session found out about the car after connecting. */
 class CarInfo(
@@ -11,6 +12,11 @@ class CarInfo(
     val signals: Map<Signal, Source>,
     /** Everything that was asked and answered while finding out, for troubleshooting. */
     val report: String,
+    /**
+     * False when the adapter garbles requests longer than two bytes, which is what the values
+     * of the manufacturer take: the car may well have them, but this adapter cannot ask.
+     */
+    val longRequests: Boolean = true,
 )
 
 /**
@@ -63,6 +69,9 @@ class ObdSession(
 
     // Set when the car went silent in the middle of being asked what it gives.
     private var busLost = false
+
+    // False when the adapter was caught garbling requests longer than two bytes.
+    private var longRequestsWork = true
 
     private val values = EnumMap<Signal, Float>(Signal::class.java)
     private val misses = EnumMap<Signal, Int>(Signal::class.java)
@@ -132,6 +141,7 @@ class ObdSession(
                 if (elm.countDigit) "on" else "off",
             ),
         )
+        calibrate(report)
         report.appendLine()
 
         val chosen = LinkedHashMap<Signal, Source>()
@@ -149,7 +159,46 @@ class ObdSession(
 
         report.appendLine()
         report.appendLine("Used: " + chosen.entries.joinToString(", ") { (signal, source) -> "$signal=${describe(source)}" })
-        return CarInfo(elm.version, elm.protocol, chosen, report.toString())
+        return CarInfo(elm.version, elm.protocol, chosen, report.toString(), longRequestsWork)
+    }
+
+    /**
+     * Finds out how this adapter gets a request of three bytes to the engine in one piece.
+     * The engine speed is asked for by the identifier under which engines keep it besides the
+     * standard value; the answer repeats the identifier it was given, which tells what arrived.
+     */
+    private fun calibrate(report: StringBuilder) {
+        longRequestsWork = true
+        elm.longRequests = LongRequests.PLAIN
+        val ecu = engine
+        if (ecu == null) {
+            report.appendLine("Long requests: not checked")
+            return
+        }
+        fun heard(): String? = when (val answer = elm.request(ecu, CHECK)) {
+            is Answer.Replies -> answer.replies.sortedBy { it.ecu != engineRx }.first().data.take(3).toByteArray().toHex()
+            is Answer.NoBus -> null.also { busLost = true }
+            else -> null
+        }
+        val plain = heard()
+        if (plain == CHECK_ANSWER) {
+            report.appendLine("Long requests: pass as they are")
+            return
+        }
+        elm.longRequests = LongRequests.RAW
+        val raw = heard()
+        if (raw == CHECK_ANSWER) {
+            report.appendLine("Long requests: pass as hand-made frames (as they are: ${plain ?: "no answer"})")
+            return
+        }
+        elm.longRequests = LongRequests.PLAIN
+        if (plain == null && raw == null) {
+            // An engine that does not keep its speed there: nothing learned either way.
+            report.appendLine("Long requests: not checked, no answer to the test")
+        } else {
+            longRequestsWork = false
+            report.appendLine("Long requests: GARBLED by the adapter (as they are: $plain, hand-made: $raw)")
+        }
     }
 
     /**
@@ -179,10 +228,12 @@ class ObdSession(
         var usable = false
         if (query.target == Target.CLUSTER && ecu == null) {
             line.append("cannot be addressed")
+        } else if (!longRequestsWork) {
+            line.append("cannot be asked with this adapter")
         } else {
             // An engine that cannot be addressed alone is asked by broadcast: slower, but
             // control units answer the questions they know that way too.
-            when (val answer = elm.request(ecu, query.hex)) {
+            when (val answer = elm.request(ecu, query.hex, query.multi)) {
                 is Answer.Replies -> {
                     line.append(answer.replies.joinToString("; ") { it.data.toHex() })
                     val value = valueIn(answer, query)
@@ -219,9 +270,9 @@ class ObdSession(
                 if (!takeSurvey()) return
             }
             val quick = quickOf(info, focus)
-            // One of the others per round, so that the quick ones stay quick.
+            // A few of the others per round, so that the quick ones stay quick.
             val rest = queries.filter { it !in quick }
-            val round = if (rest.isEmpty()) quick else quick + rest[turn++ % rest.size]
+            val round = quick + List(min(OTHERS_PER_ROUND, rest.size)) { rest[turn++ % rest.size] }
 
             var asked = 0
             var answered = 0
@@ -253,18 +304,20 @@ class ObdSession(
      * notes down which answered. False when the car went silent meanwhile.
      */
     private fun takeSurvey(): Boolean {
+        if (!longRequestsWork) {
+            events.onSurveyDone(survey, "this adapter garbles the requests it takes")
+            return true
+        }
         val targets = survey.targets()
         val condition = listOf(Signal.RPM, Signal.COOLANT, Signal.MAP, Signal.SPEED, Signal.PEDAL, Signal.VOLTAGE)
             .mapNotNull { signal -> values[signal]?.let { "$signal=" + "%.2f".format(Locale.ROOT, it) } }
             .joinToString(" ")
         val found = LinkedHashMap<Int, ByteArray>()
-        var silent = 0
         for ((index, did) in targets.withIndex()) {
             if (!running()) return true
             if (index % 10 == 0) events.onSurveyProgress(index, targets.size)
-            when (val answer = elm.request(engine, "22%04X".format(did))) {
+            when (val answer = elm.request(engine, "22%04X".format(did), whole = true)) {
                 is Answer.Replies -> {
-                    silent = 0
                     val reply = answer.replies.sortedBy { it.ecu != engineRx }.firstOrNull {
                         it.data.size > 3 && it.data[0].u() == 0x62 && it.data[1].u() == did shr 8 && it.data[2].u() == did and 0xFF
                     }
@@ -274,12 +327,8 @@ class ObdSession(
                     events.onSurveyDone(survey, answer.reason)
                     return false
                 }
-                else -> if (++silent >= SURVEY_SILENCE && found.isEmpty()) {
-                    // Nothing at all from the start: this adapter or this engine does not do
-                    // such questions, and asking the other eight hundred will not change it.
-                    events.onSurveyDone(survey, "no answer to the first $silent questions")
-                    return true
-                }
+                // Engines keep quiet about identifiers they do not know.
+                else -> Unit
             }
         }
         survey.add(condition.ifEmpty { "no values" }, found)
@@ -290,7 +339,7 @@ class ObdSession(
     /** True when the value was read, false when not, null when the bus is gone. */
     private fun read(signal: Signal, source: Source): Boolean? {
         val value: Float? = when (source) {
-            is Query -> when (val answer = elm.request(ecuOf(source), source.hex)) {
+            is Query -> when (val answer = elm.request(ecuOf(source), source.hex, source.multi)) {
                 is Answer.Replies -> valueIn(answer, source)
                 is Answer.NoBus -> return null
                 else -> null
@@ -380,6 +429,11 @@ class ObdSession(
         private const val LAST_RETRY = 15_000L
         private const val SILENT_ROUNDS = 4
         private const val STALE_AFTER = 3
-        private const val SURVEY_SILENCE = 40
+        private const val OTHERS_PER_ROUND = 2
+
+        // The engine speed as kept among the identifiers of the manufacturer, and how the
+        // answer to it begins.
+        private const val CHECK = "22F40C"
+        private const val CHECK_ANSWER = "62 F4 0C"
     }
 }

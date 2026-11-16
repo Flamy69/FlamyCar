@@ -2,40 +2,22 @@ package io.github.flamy69.flamycar
 
 import io.github.flamy69.flamycar.obd.Signal
 
-/** One screenful of gauges: an optional big one and a handful of small ones. */
-class Page(val hero: Signal?, val tiles: List<Signal>) {
-    val signals: Set<Signal> get() = (listOfNotNull(hero) + tiles).toSet()
-}
+/**
+ * What goes on the display, out of the values a particular car gives: a few bars at the top,
+ * for what is read at a glance, and everything else as rows of a table.
+ */
+class Board(val bars: List<Signal>, val rows: List<Signal>)
 
-/** Decides which gauges go on which page, out of the values a particular car gives. */
 object Dashboard {
-    const val PAGES = 2
+    // What moves with the feet: worth a bar, because a bar is read without reading.
+    private val BARS = listOf(Signal.BOOST, Signal.PEDAL, Signal.BRAKE)
 
-    private const val TILES_BESIDE_HERO = 4
-    private const val TILES_ALONE = 6
+    // The ignition advance tells little while driving, and the two halves of the torque are
+    // only there to be multiplied.
+    private val HIDDEN = setOf(Signal.TIMING, Signal.TORQUE_PERCENT, Signal.TORQUE_REFERENCE)
 
-    // What a turbocharged engine is watched for, the most wanted first.
-    private val FIRST = listOf(
-        Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.PEDAL, Signal.COOLANT,
-        Signal.INTAKE_TEMP, Signal.VOLTAGE, Signal.EXHAUST_TEMP,
+    fun board(available: Set<Signal>): Board = Board(
+        bars = BARS.filter { it in available },
+        rows = Signal.entries.filter { it in available && it !in BARS && it !in HIDDEN },
     )
-
-    private val SECOND = listOf(
-        Signal.RPM, Signal.TORQUE, Signal.LOAD, Signal.EXHAUST_TEMP,
-        Signal.FUEL_RAIL, Signal.THROTTLE, Signal.MAF, Signal.INTAKE_TEMP, Signal.VOLTAGE,
-        Signal.SPEED, Signal.AMBIENT, Signal.FUEL_LEVEL,
-    )
-
-    fun page(index: Int, available: Set<Signal>): Page {
-        val hero = Signal.BOOST.takeIf { it in available }
-        val first = Page(
-            hero = hero,
-            tiles = FIRST.filter { it in available }.take(if (hero != null) TILES_BESIDE_HERO else TILES_ALONE),
-        )
-        if (Math.floorMod(index, PAGES) == 0) return first
-        return Page(
-            hero = null,
-            tiles = SECOND.filter { it in available && it !in first.signals }.take(TILES_ALONE),
-        )
-    }
 }
