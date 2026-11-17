@@ -31,6 +31,10 @@ class ObdSession(
     private val pause: (Long) -> Unit = { Thread.sleep(it) },
     /** What a look around the engine control unit has found so far. */
     val survey: Survey = Survey(),
+    /** The ways of sending long requests over which this adapter stopped talking before. */
+    private val avoid: Set<LongRequests> = emptySet(),
+    /** Is told when the adapter stopped talking over a way of sending long requests. */
+    private val hung: (LongRequests) -> Unit = {},
 ) {
     interface Events {
         /** The adapter answers, but the car does not: the ignition is off. */
@@ -175,29 +179,51 @@ class ObdSession(
             report.appendLine("Long requests: not checked")
             return
         }
-        fun heard(): String? = when (val answer = elm.request(ecu, CHECK)) {
-            is Answer.Replies -> answer.replies.sortedBy { it.ecu != engineRx }.first().data.take(3).toByteArray().toHex()
-            is Answer.NoBus -> null.also { busLost = true }
-            else -> null
-        }
-        val plain = heard()
-        if (plain == CHECK_ANSWER) {
-            report.appendLine("Long requests: pass as they are")
-            return
-        }
-        elm.longRequests = LongRequests.RAW
-        val raw = heard()
-        if (raw == CHECK_ANSWER) {
-            report.appendLine("Long requests: pass as hand-made frames (as they are: ${plain ?: "no answer"})")
-            return
+        // What came of each way that did not work.
+        val failed = LinkedHashMap<LongRequests, String>()
+        fun others() = failed.entries.joinToString(", ") { "${it.key.title}: ${it.value}" }
+        for (way in LongRequests.entries) {
+            if (way in avoid) {
+                failed[way] = "left out, the adapter hung on it before"
+                continue
+            }
+            elm.longRequests = way
+            val answer = try {
+                elm.request(ecu, CHECK)
+            } catch (_: ElmException) {
+                // Some clones stop talking altogether over a frame made by hand. That is
+                // remembered, so that it happens once, and the adapter is set up anew.
+                failed[way] = "the adapter hung"
+                hung(way)
+                elm.longRequests = LongRequests.PLAIN
+                elm.reset()
+                if (elm.connect() !is Answer.Replies) {
+                    busLost = true
+                    break
+                }
+                continue
+            }
+            val heard = when (answer) {
+                is Answer.Replies -> answer.replies.sortedBy { it.ecu != engineRx }.first().data.take(3).toByteArray().toHex()
+                is Answer.NoBus -> answer.reason.also { busLost = true }
+                Answer.Refused -> "refused"
+                Answer.Silence -> SILENT
+            }
+            if (heard == CHECK_ANSWER) {
+                report.appendLine("Long requests: pass ${way.title}" + if (failed.isEmpty()) "" else " (${others()})")
+                return
+            }
+            failed[way] = heard
+            if (busLost) break
         }
         elm.longRequests = LongRequests.PLAIN
-        if (plain == null && raw == null) {
-            // An engine that does not keep its speed there: nothing learned either way.
-            report.appendLine("Long requests: not checked, no answer to the test")
+        // An engine that keeps quiet, or says that it does not keep its speed there, got the
+        // question as it was asked: nothing learned either way.
+        if (failed.values.all { it == SILENT || it.startsWith("7F 22") }) {
+            report.appendLine("Long requests: not checked, no answer to the test (${others()})")
         } else {
             longRequestsWork = false
-            report.appendLine("Long requests: GARBLED by the adapter (as they are: $plain, hand-made: $raw)")
+            report.appendLine("Long requests: GARBLED by the adapter (${others()})")
         }
     }
 
@@ -221,6 +247,17 @@ class ObdSession(
         return false
     }
 
+    /**
+     * A request once the reading has begun. An adapter that stops talking over a long one ends
+     * the session; the way it was sent is left out the next time.
+     */
+    private fun ask(ecu: Ecu?, hex: String, whole: Boolean = false): Answer = try {
+        elm.request(ecu, hex, whole)
+    } catch (e: ElmException) {
+        if (hex.length > 4 && elm.longRequests != LongRequests.PLAIN) hung(elm.longRequests)
+        throw e
+    }
+
     /** Asks for a manufacturer value once, and notes down what came back. */
     private fun probe(signal: Signal, query: Query, report: StringBuilder): Boolean {
         val ecu = ecuOf(query)
@@ -233,7 +270,7 @@ class ObdSession(
         } else {
             // An engine that cannot be addressed alone is asked by broadcast: slower, but
             // control units answer the questions they know that way too.
-            when (val answer = elm.request(ecu, query.hex, query.multi)) {
+            when (val answer = ask(ecu, query.hex, query.multi)) {
                 is Answer.Replies -> {
                     line.append(answer.replies.joinToString("; ") { it.data.toHex() })
                     val value = valueIn(answer, query)
@@ -316,7 +353,7 @@ class ObdSession(
         for ((index, did) in targets.withIndex()) {
             if (!running()) return true
             if (index % 10 == 0) events.onSurveyProgress(index, targets.size)
-            when (val answer = elm.request(engine, "22%04X".format(did), whole = true)) {
+            when (val answer = ask(engine, "22%04X".format(did), whole = true)) {
                 is Answer.Replies -> {
                     val reply = answer.replies.sortedBy { it.ecu != engineRx }.firstOrNull {
                         it.data.size > 3 && it.data[0].u() == 0x62 && it.data[1].u() == did shr 8 && it.data[2].u() == did and 0xFF
@@ -339,7 +376,7 @@ class ObdSession(
     /** True when the value was read, false when not, null when the bus is gone. */
     private fun read(signal: Signal, source: Source): Boolean? {
         val value: Float? = when (source) {
-            is Query -> when (val answer = elm.request(ecuOf(source), source.hex, source.multi)) {
+            is Query -> when (val answer = ask(ecuOf(source), source.hex, source.multi)) {
                 is Answer.Replies -> valueIn(answer, source)
                 is Answer.NoBus -> return null
                 else -> null
@@ -435,5 +472,6 @@ class ObdSession(
         // answer to it begins.
         private const val CHECK = "22F40C"
         private const val CHECK_ANSWER = "62 F4 0C"
+        private const val SILENT = "no answer"
     }
 }

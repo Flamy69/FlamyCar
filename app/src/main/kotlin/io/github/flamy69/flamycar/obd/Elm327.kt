@@ -13,9 +13,14 @@ data class Ecu(val tx: Int, val rx: Int) {
 /**
  * How a request of more than two bytes is handed to the adapter. Some clones lose everything
  * after the second byte of a request given as it is; they may still pass on a whole CAN frame
- * that was put together for them.
+ * that was put together for them: [SHORT] with only the bytes that count, [RAW] filled up to
+ * the eight bytes that cars expect. In the order in which they are worth trying.
  */
-enum class LongRequests { PLAIN, RAW }
+enum class LongRequests(val title: String) {
+    PLAIN("as they are"),
+    SHORT("as short hand-made frames"),
+    RAW("as hand-made frames"),
+}
 
 /** What came back for one request. */
 sealed interface Answer {
@@ -143,13 +148,17 @@ class Elm327(
         // standard two bytes lose the rest of a longer request over it, and a long answer in
         // several frames would be cut off after the first.
         val long = hex.length > 4
-        val raw = long && longRequests == LongRequests.RAW
+        val raw = long && longRequests != LongRequests.PLAIN
         if (raw == formatting) {
             if (!ok(exchange(if (raw) "ATCAF0" else "ATCAF1", AT_TIMEOUT))) return Answer.Refused
             formatting = !raw
         }
         // A frame put together by hand: the number of bytes, the bytes, and padding up to eight.
-        val text = if (raw) "%02X".format(hex.length / 2) + hex.padEnd(14, '0') else hex
+        val text = when {
+            !raw -> hex
+            longRequests == LongRequests.RAW -> "%02X".format(hex.length / 2) + hex.padEnd(14, '0')
+            else -> "%02X".format(hex.length / 2) + hex
+        }
 
         val single = !long && !whole && ecu != null && countDigit
         var lines = exchange(if (single) text + "1" else text, REQUEST_TIMEOUT)

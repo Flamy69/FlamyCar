@@ -14,6 +14,7 @@ class ObdSessionTest {
      */
     private class Bench(
         private val stopAfter: Int = 40,
+        avoid: Set<LongRequests> = emptySet(),
         configure: SimulatedCar.() -> Unit = {},
     ) : ObdSession.Events {
         var now = 0L
@@ -23,6 +24,7 @@ class ObdSessionTest {
         var unsupported: Int? = null
         var info: CarInfo? = null
         val seen = ArrayList<Map<Signal, Float>>()
+        val hung = ArrayList<LongRequests>()
 
         /** Called after every round, for flipping switches in the car while it is running. */
         var afterRound: () -> Unit = {}
@@ -36,6 +38,8 @@ class ObdSessionTest {
                 rounds++
                 afterRound()
             },
+            avoid = avoid,
+            hung = { hung += it },
         )
 
         override fun onWaitingForCar() {
@@ -158,7 +162,7 @@ class ObdSessionTest {
         bench.session.run()
 
         val info = bench.info!!
-        assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00)"))
+        assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00, as short hand-made frames: no answer)"))
         assertTrue(info.longRequests)
         assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
         assertNotNull(bench.latest(Signal.OIL_TEMP))
@@ -167,6 +171,56 @@ class ObdSessionTest {
         assertNotNull(bench.latest(Signal.RPM))
         assertTrue("032211BE00000000" in bench.car.log)
         assertTrue("ATCAF1" in bench.car.log)
+    }
+
+    @Test
+    fun `short frames are used where the engine listens to them`() {
+        val bench = Bench {
+            longFault = SimulatedCar.LongFault.PLAIN
+            hearsShortFrames = true
+            hangsOnWholeFrames = true
+        }
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertTrue(info.report, info.report.contains("Long requests: pass as short hand-made frames"))
+        assertNotNull(bench.latest(Signal.OIL_TEMP))
+        assertTrue("032211BE" in bench.car.log)
+        assertTrue(bench.hung.isEmpty())
+    }
+
+    @Test
+    fun `an adapter left speechless by a whole frame is set up anew and read without them`() {
+        val bench = Bench {
+            longFault = SimulatedCar.LongFault.ALWAYS
+            hangsOnWholeFrames = true
+        }
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertEquals(listOf(LongRequests.RAW), bench.hung)
+        assertTrue(info.report, info.report.contains("GARBLED by the adapter"))
+        assertTrue(info.report, info.report.contains("as hand-made frames: the adapter hung"))
+        assertFalse(info.longRequests)
+        // The standard values are read all the same.
+        assertNotNull(bench.latest(Signal.BOOST))
+        assertNotNull(bench.latest(Signal.COOLANT))
+    }
+
+    @Test
+    fun `what left the adapter speechless once is not tried again`() {
+        val bench = Bench(avoid = setOf(LongRequests.RAW)) {
+            longFault = SimulatedCar.LongFault.ALWAYS
+            hangsOnWholeFrames = true
+        }
+
+        bench.session.run()
+
+        assertFalse("0322F40C00000000" in bench.car.log)
+        assertTrue(bench.info!!.report, bench.info!!.report.contains("as hand-made frames: left out"))
+        assertNotNull(bench.latest(Signal.BOOST))
     }
 
     @Test

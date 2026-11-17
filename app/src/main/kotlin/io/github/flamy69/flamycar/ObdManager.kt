@@ -10,6 +10,7 @@ import io.github.flamy69.flamycar.obd.BluetoothLink
 import io.github.flamy69.flamycar.obd.CarInfo
 import io.github.flamy69.flamycar.obd.Elm327
 import io.github.flamy69.flamycar.obd.ElmTransport
+import io.github.flamy69.flamycar.obd.LongRequests
 import io.github.flamy69.flamycar.obd.ObdSession
 import io.github.flamy69.flamycar.obd.Signal
 import io.github.flamy69.flamycar.obd.SimulatedCar
@@ -282,6 +283,8 @@ class ObdManager(private val context: Context) : ObdSession.Events {
                     running = { current(mine) },
                     pause = { rest(it, mine) },
                     survey = survey,
+                    avoid = hung(),
+                    hung = ::rememberHung,
                 )
                 synchronized(lock) {
                     open = io
@@ -316,6 +319,21 @@ class ObdManager(private val context: Context) : ObdSession.Events {
                 _readings.value = Readings()
             }
         }
+    }
+
+    // The ways of sending long requests over which the chosen adapter stopped talking. Kept for
+    // good: finding out again costs a reset of the adapter each time, or the connection.
+    private fun hungKey(): String? =
+        if (_status.value.demo) null else preferences.getString(KEY_ADDRESS, null)?.let { KEY_HUNG + it }
+
+    private fun hung(): Set<LongRequests> {
+        val names = hungKey()?.let { preferences.getStringSet(it, null) }.orEmpty()
+        return LongRequests.entries.filter { it.name in names }.toSet()
+    }
+
+    private fun rememberHung(way: LongRequests) {
+        val key = hungKey() ?: return
+        preferences.edit { putStringSet(key, hung().map { it.name }.toSet() + way.name) }
     }
 
     /** The line to the adapter, or null when there is nothing to connect to at the moment. */
@@ -393,6 +411,7 @@ class ObdManager(private val context: Context) : ObdSession.Events {
         const val KEY_ADDRESS = "address"
         const val KEY_NAME = "name"
         const val KEY_DEMO = "demo"
+        const val KEY_HUNG = "hung:"
 
         const val LINGER = 4_000L
         const val RECHECK = 5_000L

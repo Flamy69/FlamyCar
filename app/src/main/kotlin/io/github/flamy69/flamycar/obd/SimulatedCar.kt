@@ -38,6 +38,12 @@ class SimulatedCar(
 
     var longFault = LongFault.NONE
 
+    /** The fault of other clones: a frame made by hand in its full length leaves them speechless. */
+    var hangsOnWholeFrames = false
+
+    /** Whether the engine listens to frames shorter than eight bytes. Many do not. */
+    var hearsShortFrames = false
+
     /** The protocol the adapter reports; 6 is CAN with 11-bit identifiers at 500 kbaud. */
     var protocol = 6
 
@@ -93,6 +99,7 @@ class SimulatedCar(
     private fun answer(raw: String) {
         val command = raw.filterNot { it.isWhitespace() }.uppercase()
         log += command
+        if (hangsOnWholeFrames && !formatting && !command.startsWith("AT") && command.length == 16) return
         val reply = if (command.startsWith("AT")) adapter(command.drop(2)) else car(command)
         val text = buildString {
             if (echo) append(raw).append('\r')
@@ -145,7 +152,10 @@ class SimulatedCar(
         step()
         var request = ByteArray(hex.length / 2) { hex.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
         // A frame made by hand begins with the number of bytes that count.
-        if (!formatting) request = request.copyOfRange(1, 1 + request[0].toInt().coerceIn(0, request.size - 1))
+        if (!formatting) {
+            if (request.size < 8 && !hearsShortFrames) return prefix + "NO DATA"
+            request = request.copyOfRange(1, 1 + request[0].toInt().coerceIn(0, request.size - 1))
+        }
         if (request.isEmpty()) return prefix + "NO DATA"
         if (longFault == LongFault.ALWAYS || (longFault == LongFault.PLAIN && formatting)) {
             for (i in 2 until request.size) request[i] = 0
