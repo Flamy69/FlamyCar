@@ -152,7 +152,12 @@ class ObdSession(
         for ((signal, sources) in CATALOG) {
             for (source in sources) {
                 val usable = when (source) {
-                    is Query -> if (source.standard) source.id in supported else probe(signal, source, report)
+                    is Query -> when {
+                        !source.standard -> probe(signal, source, report)
+                        // The long standard answers say of themselves what they hold.
+                        source.multi -> source.id in supported && probe(signal, source, report)
+                        else -> source.id in supported
+                    }
                     is AdapterVoltage -> elm.voltage() != null
                     is Derived -> source.needs in chosen
                 }
@@ -265,7 +270,7 @@ class ObdSession(
         var usable = false
         if (query.target == Target.CLUSTER && ecu == null) {
             line.append("cannot be addressed")
-        } else if (!longRequestsWork) {
+        } else if (!query.standard && !longRequestsWork) {
             line.append("cannot be asked with this adapter")
         } else {
             // An engine that cannot be addressed alone is asked by broadcast: slower, but
@@ -278,6 +283,8 @@ class ObdSession(
                         usable = value in signal.valid
                         line.append("  = %.2f %s".format(Locale.ROOT, value, signal.unit))
                         if (!usable) line.append(" (not believable)")
+                    } else if (query.standard) {
+                        line.append("  not in the answer")
                     }
                 }
                 is Answer.NoBus -> {

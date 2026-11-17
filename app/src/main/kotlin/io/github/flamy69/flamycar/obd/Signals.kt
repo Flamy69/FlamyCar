@@ -67,8 +67,9 @@ sealed interface Source
 /**
  * A request to a control unit: a standard OBD value ([service] 0x01, every car has the same
  * ones) or a value of the manufacturer read by its identifier ([service] 0x22). [bytes] is how
- * long the answer has to be for [decode] to make sense of it. An answer that does not fit into
- * one frame is [multi], which the adapter has to be asked for differently.
+ * long the answer has to be for [decode] to make sense of it; [decode] gives NaN when the
+ * answer says of itself that it does not hold the value. An answer that does not fit into one
+ * frame is [multi], which the adapter has to be asked for differently.
  */
 class Query(
     val target: Target,
@@ -93,7 +94,7 @@ class Query(
         if (reply[0].u() != service + 0x40) return null
         val id = if (standard) reply[1].u() else (reply[1].u() shl 8) or reply[2].u()
         if (id != this.id) return null
-        return decode(reply.copyOfRange(echo, reply.size))
+        return decode(reply.copyOfRange(echo, reply.size)).takeUnless { it.isNaN() }
     }
 }
 
@@ -107,6 +108,12 @@ private fun Byte.u(): Int = toInt() and 0xFF
 private fun ByteArray.u8(at: Int = 0): Float = this[at].u().toFloat()
 private fun ByteArray.u16(at: Int = 0): Float = ((this[at].u() shl 8) or this[at + 1].u()).toFloat()
 private fun ByteArray.s16(): Float = ((this[0].toInt() shl 8) or this[1].u()).toFloat()
+
+/**
+ * The answers about a whole control loop begin with a byte of flags telling which of the
+ * values that follow are there; the others are zeros that mean nothing.
+ */
+private fun ByteArray.flagged(bit: Int, value: () -> Float): Float = if (this[0].u() and (1 shl bit) != 0) value() else Float.NaN
 
 private fun standard(pid: Int, bytes: Int, multi: Boolean = false, decode: (ByteArray) -> Float) =
     Query(Target.ENGINE, 0x01, pid, bytes, multi, decode)
@@ -206,13 +213,13 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     // The pressure the turbo makes, measured before the throttle, and what the engine asked
     // for: an answer of ten bytes, of which the second pair is the wish and the third the
     // fact, both in steps of 1/32 kPa.
-    Signal.CHARGE to listOf(standard(0x70, 5, multi = true) { it.u16(3) / 3200f }),
-    Signal.CHARGE_TARGET to listOf(standard(0x70, 5, multi = true) { it.u16(1) / 3200f }),
+    Signal.CHARGE to listOf(standard(0x70, 5, multi = true) { it.flagged(1) { it.u16(3) / 3200f } }),
+    Signal.CHARGE_TARGET to listOf(standard(0x70, 5, multi = true) { it.flagged(0) { it.u16(1) / 3200f } }),
     Signal.FUEL_RAIL to listOf(
         // Direct injection: the standard value counts in steps of 10 kPa.
         standard(0x23, 2) { it.u16() / 10f },
         // The same inside the answer about the whole fuel pressure control.
-        standard(0x6D, 5, multi = true) { it.u16(3) / 10f },
+        standard(0x6D, 5, multi = true) { it.flagged(1) { it.u16(3) / 10f } },
     ),
     Signal.LAMBDA to listOf(standard(0x34, 2) { it.u16() / 32768f }),
     Signal.LAMBDA_TARGET to listOf(standard(0x44, 2) { it.u16() / 32768f }),

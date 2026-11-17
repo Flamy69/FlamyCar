@@ -51,6 +51,16 @@ class SignalsTest {
     }
 
     @Test
+    fun `what a longer answer says it does not hold is not read`() {
+        // As this engine answers: only the pressure that is there, 0.97 bar; no wish.
+        val answer = bytes(0x41, 0x70, 0x02, 0x00, 0x00, 0x0C, 0x19, 0, 0, 0, 0, 0)
+        assertEquals(0.968f, query(Signal.CHARGE, 0x70).read(answer)!!, 0.001f)
+        assertNull(query(Signal.CHARGE_TARGET, 0x70).read(answer))
+        val fuel = bytes(0x41, 0x6D, 0x02, 0x00, 0x00, 0x06, 0x19, 0x90, 0, 0, 0, 0, 0)
+        assertEquals(156.1f, query(Signal.FUEL_RAIL, 0x6D).read(fuel)!!, 0.01f)
+    }
+
+    @Test
     fun `more standard values follow the norm`() {
         assertEquals(615f, query(Signal.CATALYST_TEMP, 0x3C).read(bytes(0x41, 0x3C, 0x19, 0x96))!!, 0.01f)
         assertEquals(1f, query(Signal.LAMBDA, 0x34).read(bytes(0x41, 0x34, 0x80, 0x00, 0x80, 0x00))!!, 0.001f)
