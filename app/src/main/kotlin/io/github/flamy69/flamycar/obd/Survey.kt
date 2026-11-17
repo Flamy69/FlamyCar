@@ -3,13 +3,17 @@ package io.github.flamy69.flamycar.obd
 import java.util.Locale
 
 /**
- * A look around the engine control unit: which of the identifiers known from Volkswagen group
- * cars this one answers, and with what. The catalog of values holds a few identifiers for
- * each value that somebody found on some engine; which of them a particular engine knows, and
+ * A look around the control units of the car: which of the identifiers known from Volkswagen
+ * group cars this one answers, and with what. The catalog of values holds a few identifiers
+ * for each value that somebody found on some car; which of them a particular car knows, and
  * whether it knows others that nobody tried, only shows when it is asked.
  *
- * The first reading asks for every identifier in [CANDIDATES]. Every further reading asks only
- * for those that answered, and puts its answers next to the earlier ones. Readings taken in
+ * An identifier of the engine is kept as its number; one of another control unit has the
+ * address of that unit in front of it ([key]).
+ *
+ * The first reading asks the engine for every identifier in [CANDIDATES], and the other units
+ * for what is known of them. Every further reading asks only for those that answered, and
+ * puts its answers next to the earlier ones. Readings taken in
  * different conditions (idling, revving, cold, warm) are what tells an oil pressure from a
  * temperature: one follows the engine speed, the other does not.
  */
@@ -23,6 +27,9 @@ class Survey {
     /** What an adapter that garbles long requests did with a number of them. */
     val notes = ArrayList<String>()
 
+    /** The other control units that were looked for, by address, and whether they are there. */
+    val units = LinkedHashMap<Int, Boolean>()
+
     // Whether the whole list has been asked for, which takes an adapter that can.
     private var complete = false
 
@@ -34,7 +41,7 @@ class Survey {
      */
     fun targets(limited: Boolean = false): List<Int> = when {
         limited -> if (conditions.isEmpty()) REACHABLE else answers.keys.toList()
-        !complete -> ((CANDIDATES + EXTRA).toList() + answers.keys).distinct()
+        !complete -> ((CANDIDATES + EXTRA).toList() + Meanings.others().filter { unit(it shr 16) != null } + answers.keys).distinct()
         else -> answers.keys.toList()
     }
 
@@ -57,14 +64,19 @@ class Survey {
     fun summary(): String = answers.entries.joinToString("\n") { (did, column) ->
         val answer = column.lastOrNull { it != null }
         val meaning = answer?.let { Meanings.describe(did, it) }.orEmpty()
-        String.format(Locale.ROOT, "%04X  ", did) + meaning.ifEmpty { answer?.toHex() ?: "-" }
+        name(did) + "  " + meaning.ifEmpty { answer?.toHex() ?: "-" }
     }
 
     fun text(): String = buildString {
-        appendLine("Survey of the engine control unit: ${answers.size} identifiers answered")
+        appendLine("Survey of the control units: ${answers.size} identifiers answered")
         conditions.forEachIndexed { index, condition -> appendLine("#${index + 1}: $condition") }
+        if (units.isNotEmpty()) {
+            appendLine("Other control units: " + units.entries.joinToString(", ") { (tx, there) ->
+                String.format(Locale.ROOT, "%03X %s %s", tx, UNITS[tx]?.second.orEmpty(), if (there) "answers" else "is not there")
+            })
+        }
         for ((did, column) in answers) {
-            append(String.format(Locale.ROOT, "%04X", did))
+            append(name(did))
             for (answer in column) append(" | ").append(answer?.toHex() ?: "-")
             val meaning = column.lastOrNull { it != null }?.let { Meanings.describe(did, it) }.orEmpty()
             if (meaning.isNotEmpty()) append("  # ").append(meaning)
@@ -77,6 +89,37 @@ class Survey {
     }
 
     companion object {
+        /** The key of an identifier of the control unit that listens at [tx]; of the engine when that is 0. */
+        fun key(tx: Int, did: Int): Int = (tx shl 16) or did
+
+        /** A key the way people write it: "11BE" for the engine, "714:2203" for another unit. */
+        fun name(key: Int): String =
+            if (key shr 16 == 0) String.format(Locale.ROOT, "%04X", key) else String.format(Locale.ROOT, "%03X:%04X", key shr 16, key and 0xFFFF)
+
+        /** The control unit that listens at [tx], if it is one of those worth asking. */
+        fun unit(tx: Int): Ecu? = UNITS[tx]?.let { Ecu(tx, it.first) }
+
+        /**
+         * The control units besides the engine that somebody got values out of: where they
+         * listen, where they answer, and what they are. Not every car has every one of them.
+         */
+        private val UNITS: Map<Int, Pair<Int, String>> = linkedMapOf(
+            0x7E1 to (0x7E9 to "gearbox"),
+            0x710 to (0x77A to "gateway"),
+            0x712 to (0x77C to "steering"),
+            0x713 to (0x77D to "brakes"),
+            0x714 to (0x77E to "instruments"),
+            0x746 to (0x7B0 to "climate"),
+            0x70B to (0x775 to "tyre pressures"),
+            0x70E to (0x778 to "body electrics"),
+            0x70F to (0x779 to "all-wheel drive"),
+            0x744 to (0x7AE to "charger"),
+            0x74F to (0x7B9 to "front camera"),
+            0x752 to (0x7BC to "parking brake"),
+            0x767 to (0x7D1 to "emergency call"),
+            0x773 to (0x7DD to "radio"),
+        )
+
         /**
          * Standard values are mirrored among the identifiers of the manufacturer at F400 and
          * up; these are the oil temperature and the pedal position, should the car keep them

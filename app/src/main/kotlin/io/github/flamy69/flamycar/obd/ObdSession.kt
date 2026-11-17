@@ -48,14 +48,17 @@ class ObdSession(
 
         fun onValues(values: Map<Signal, Float>)
 
-        /** A survey of the engine control unit is under way: [done] of [total] questions asked. */
+        /** A survey of the control units is under way: [done] of [total] questions asked. */
         fun onSurveyProgress(done: Int, total: Int) = Unit
 
         /** A reading of the survey is finished, or could not be taken ([problem]). */
         fun onSurveyDone(survey: Survey, problem: String?) = Unit
     }
 
-    /** The values on screen right now. The [Signal.quick] ones among them are read every round. */
+    /**
+     * The values on screen right now, which are the ones that are read: the [Signal.quick]
+     * ones among them every round, the others in turns.
+     */
     @Volatile
     var focus: Set<Signal> = setOf(Signal.BOOST)
 
@@ -79,6 +82,12 @@ class ObdSession(
 
     private val values = EnumMap<Signal, Float>(Signal::class.java)
     private val misses = EnumMap<Signal, Int>(Signal::class.java)
+
+    // What was answered in the round under way: several values may sit in the same answer.
+    private val answers = HashMap<String, Answer>()
+
+    // How often in a row each control unit kept quiet while being asked what it gives.
+    private val quiet = EnumMap<Target, Int>(Target::class.java)
 
     fun run() {
         while (running()) {
@@ -148,6 +157,7 @@ class ObdSession(
         calibrate(report)
         report.appendLine()
 
+        quiet.clear()
         val chosen = LinkedHashMap<Signal, Source>()
         for ((signal, sources) in CATALOG) {
             for (source in sources) {
@@ -268,15 +278,20 @@ class ObdSession(
         val ecu = ecuOf(query)
         val line = StringBuilder("%-12s %s @%s  ".format(signal, query.title, ecu ?: "all"))
         var usable = false
-        if (query.target == Target.CLUSTER && ecu == null) {
+        if (query.target != Target.ENGINE && ecu == null) {
             line.append("cannot be addressed")
         } else if (!query.standard && !longRequestsWork) {
             line.append("cannot be asked with this adapter")
+        } else if ((quiet[query.target] ?: 0) >= GIVEN_UP_AFTER) {
+            // A unit this car does not have is not waited for over and over.
+            line.append("left out, the unit does not answer")
         } else {
             // An engine that cannot be addressed alone is asked by broadcast: slower, but
             // control units answer the questions they know that way too.
             when (val answer = ask(ecu, query.hex, query.multi)) {
                 is Answer.Replies -> {
+                    // Once a unit has said anything, its silence only means that it does not know.
+                    quiet[query.target] = -1
                     line.append(answer.replies.joinToString("; ") { it.data.toHex() })
                     val value = valueIn(answer, query)
                     if (value != null) {
@@ -292,7 +307,11 @@ class ObdSession(
                     line.append(answer.reason)
                 }
                 Answer.Refused -> line.append("refused by the adapter")
-                Answer.Silence -> line.append("no answer")
+                Answer.Silence -> {
+                    line.append("no answer")
+                    val before = quiet[query.target] ?: 0
+                    if (query.target != Target.ENGINE && before >= 0) quiet[query.target] = before + 1
+                }
             }
         }
         report.appendLine(line)
@@ -301,8 +320,7 @@ class ObdSession(
 
     /** Reads the values round after round. Returns when the car stops answering. */
     private fun poll(info: CarInfo) {
-        val queries = info.signals.filterValues { it !is Derived }.keys.toList()
-        if (queries.isEmpty()) {
+        if (info.signals.values.all { it is Derived }) {
             pause(LAST_RETRY)
             return
         }
@@ -313,10 +331,20 @@ class ObdSession(
                 surveyWanted = false
                 if (!takeSurvey()) return
             }
-            val quick = quickOf(info, focus)
-            // A few of the others per round, so that the quick ones stay quick.
-            val rest = queries.filter { it !in quick }
-            val round = quick + List(min(OTHERS_PER_ROUND, rest.size)) { rest[turn++ % rest.size] }
+            val shown = focus
+            val wanted = wantedOf(info, shown)
+            if (wanted.isEmpty()) {
+                pause(IDLE_ROUND)
+                continue
+            }
+            // What left the screen is not read any more, and must not stand there as if it were.
+            values.keys.retainAll { it in wanted || it in shown }
+            val (quick, rest) = wanted.partition { it.quick }
+            // A few of the others per round, so that the quick ones stay quick. One control
+            // unit after the other: turning the adapter from one to the next takes time.
+            val round = (quick + List(min(OTHERS_PER_ROUND, rest.size)) { rest[turn++ % rest.size] })
+                .sortedBy { (info.signals.getValue(it) as? Query)?.target ?: Target.ENGINE }
+            answers.clear()
 
             var asked = 0
             var answered = 0
@@ -344,8 +372,9 @@ class ObdSession(
     }
 
     /**
-     * Takes one reading of the survey: asks the engine for every identifier on the list and
-     * notes down which answered. False when the car went silent meanwhile.
+     * Takes one reading of the survey: asks the engine, and every other control unit that is
+     * there, for every identifier on the list and notes down which answered. False when the
+     * car went silent meanwhile.
      */
     private fun takeSurvey(): Boolean {
         // An adapter that garbles long requests is put through its paces instead, and asked
@@ -360,21 +389,40 @@ class ObdSession(
             .mapNotNull { signal -> values[signal]?.let { "$signal=" + "%.2f".format(Locale.ROOT, it) } }
             .joinToString(" ")
         val found = LinkedHashMap<Int, ByteArray>()
-        for ((index, did) in targets.withIndex()) {
+        // Which of the other control units are there, found out as their turn comes.
+        val present = HashMap<Int, Boolean>()
+        for ((index, key) in targets.withIndex()) {
             if (!running()) return true
             if (index % 10 == 0) events.onSurveyProgress(index, targets.size)
-            when (val answer = ask(engine, "22%04X".format(did), whole = true)) {
+            val did = key and 0xFFFF
+            val tx = key shr 16
+            val ecu = if (tx == 0) engine else Survey.unit(tx)?.takeIf { elm.idDigits == 3 }
+            if (tx != 0) {
+                if (ecu == null) continue
+                val there = present.getOrPut(tx) {
+                    // Every unit answers the question whether anybody is there, one way or the other.
+                    val answer = ask(ecu, PRESENT)
+                    if (answer is Answer.NoBus) {
+                        events.onSurveyDone(survey, answer.reason)
+                        return false
+                    }
+                    (answer is Answer.Replies).also { survey.units[tx] = it }
+                }
+                if (!there) continue
+            }
+            val rx = ecu?.rx ?: engineRx
+            when (val answer = ask(ecu, "22%04X".format(did), whole = true)) {
                 is Answer.Replies -> {
-                    val reply = answer.replies.sortedBy { it.ecu != engineRx }.firstOrNull {
+                    val reply = answer.replies.sortedBy { it.ecu != rx }.firstOrNull {
                         it.data.size > 3 && it.data[0].u() == 0x62 && it.data[1].u() == did shr 8 && it.data[2].u() == did and 0xFF
                     }
-                    if (reply != null) found[did] = reply.data.copyOfRange(3, reply.data.size)
+                    if (reply != null) found[key] = reply.data.copyOfRange(3, reply.data.size)
                 }
                 is Answer.NoBus -> {
                     events.onSurveyDone(survey, answer.reason)
                     return false
                 }
-                // Engines keep quiet about identifiers they do not know.
+                // Control units keep quiet about identifiers they do not know, or say so.
                 else -> Unit
             }
         }
@@ -415,7 +463,7 @@ class ObdSession(
     /** True when the value was read, false when not, null when the bus is gone. */
     private fun read(signal: Signal, source: Source): Boolean? {
         val value: Float? = when (source) {
-            is Query -> when (val answer = ask(ecuOf(source), source.hex, source.multi)) {
+            is Query -> when (val answer = answers.getOrPut("${source.target} ${source.hex}") { ask(ecuOf(source), source.hex, source.multi) }) {
                 is Answer.Replies -> valueIn(answer, source)
                 is Answer.NoBus -> return null
                 else -> null
@@ -445,12 +493,17 @@ class ObdSession(
         return answer.replies.sortedBy { it.ecu != rx }.firstNotNullOfOrNull { query.read(it.data) }
     }
 
-    private fun quickOf(info: CarInfo, focus: Set<Signal>): List<Signal> {
+    /** What has to be asked for to show [shown]: the values themselves, or what they are made of. */
+    private fun wantedOf(info: CarInfo, shown: Set<Signal>): List<Signal> {
         val result = LinkedHashSet<Signal>()
-        for (signal in focus) {
-            val source = info.signals[signal] ?: continue
-            val read = if (source is Derived) source.needs else signal
-            if (read.quick && info.signals[read] !is Derived) result += read
+        for (signal in info.signals.keys) {
+            if (signal !in shown) continue
+            val source = info.signals.getValue(signal)
+            val read = if (source is Derived) listOf(source.needs) + source.also else listOf(signal)
+            for (part in read) {
+                val from = info.signals[part]
+                if (from != null && from !is Derived) result += part
+            }
         }
         return result.toList()
     }
@@ -458,13 +511,10 @@ class ObdSession(
     /** Whom to ask: one unit, or everybody (null) for the engine that only answers broadcasts. */
     private fun ecuOf(query: Query): Ecu? = when (query.target) {
         Target.ENGINE -> engine
-        Target.CLUSTER -> CLUSTER.takeIf { elm.idDigits == 3 }
+        else -> query.target.ecu.takeIf { elm.idDigits == 3 }
     }
 
-    private fun rxOf(query: Query): Int = when (query.target) {
-        Target.ENGINE -> engineRx
-        Target.CLUSTER -> CLUSTER.rx
-    }
+    private fun rxOf(query: Query): Int = query.target.ecu?.rx ?: engineRx
 
     /**
      * Each of the requests 00, 20, 40... is answered by four bytes of flags, one for each of
@@ -498,10 +548,12 @@ class ObdSession(
     private fun Byte.u(): Int = toInt() and 0xFF
 
     companion object {
-        /** The instrument cluster of Volkswagen group cars. */
-        val CLUSTER = Ecu(0x714, 0x77E)
-
         private const val FIRST_RETRY = 2_000L
+        private const val IDLE_ROUND = 200L
+        private const val GIVEN_UP_AFTER = 3
+
+        // "Is anybody there": answered by every control unit, and it changes nothing.
+        private const val PRESENT = "3E00"
         private const val LAST_RETRY = 15_000L
         private const val SILENT_ROUNDS = 4
         private const val STALE_AFTER = 3

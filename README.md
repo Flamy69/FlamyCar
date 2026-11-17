@@ -19,6 +19,12 @@ No accounts, no ads, no tracking. The app does not even have the permission to u
   and a table with everything else, as many rows and columns as stay readable on the display.
   What does not fit goes to a further page; the button on the display, or a touch where the
   car passes touches on, turns the page.
+- Further pages for what the other control units of a Volkswagen group car know: the engine in
+  detail (oil level, knock retard of each cylinder, camshafts, fuel flow), the chassis (wheel
+  speeds, steering angle, brake pressure and the temperature of the brake discs), the electrics
+  (current, charge and temperature of the battery, the alternator), the climate control and
+  what the instrument cluster counts (fuel in litres, range, consumption, odometer). A page is
+  there when the car gives something for it, and only what is on the display is read.
 - Boost is manifold pressure minus barometric pressure (the pressure at sea level where the car
   has no barometer), with a marker of the recent peak. The charge pressure before the throttle,
   and what the engine asked for, are in the table.
@@ -28,14 +34,17 @@ No accounts, no ads, no tracking. The app does not even have the permission to u
   of the manufacturer take. The app notices, tries sending them as ready-made CAN frames
   instead, and says so plainly when the adapter cannot do that either.
 - Demo mode: a simulated car instead of the adapter, to try the display without one
-- *Survey of the engine*: asks the engine control unit for some 850 values known from Volkswagen
-  group cars and notes down which it answers, to find the ones the app does not read yet
+- *Survey of the car*: asks the engine control unit for some 850 values known from Volkswagen
+  group cars, and the other control units that are there (brakes, steering, instruments,
+  climate control, gateway, gearbox) for what is known of them, and notes down what answers,
+  with what it is said to mean. This is how the values the app does not read yet get found.
 - *When something does not work*: a record of what the app and the adapter said to each other,
   which can be copied or shared. It tells what the car supports and where things went wrong;
   attach it to an [issue](https://github.com/Flamy69/FlamyCar/issues) when a value is wrong or
   missing.
-- The app only reads. It uses OBD service 01 and UDS service 22 and never writes to a control
-  unit, clears fault codes or changes a diagnostic session.
+- The app only reads. It uses OBD service 01 and UDS service 22, and during the survey asks
+  each control unit whether it is there (UDS service 3E). It never writes to a control unit,
+  clears fault codes or changes a diagnostic session.
 - English and Czech
 
 ## Download
@@ -100,15 +109,22 @@ The standard OBD-II values (coolant, intake air, manifold pressure, engine speed
 advance, fuel pressure and the like) work on any car with a CAN bus, which is every car sold in
 the EU since 2008.
 
-Oil temperature, oil pressure, exhaust gas temperature and torque are read by identifiers
-specific to Volkswagen group cars (MQB platform: SEAT Leon, Škoda Octavia, VW Golf and their
-relatives). Which of them an engine knows differs, so the app tries a list of candidates once
-after connecting and uses those that give a believable value.
+Oil temperature, oil pressure, exhaust gas temperature and torque, and everything on the pages
+after the first, are read by identifiers specific to Volkswagen group cars (MQB platform: SEAT
+Leon, Škoda Octavia, VW Golf and their relatives). Which of them a car knows differs, so the
+app tries a list of candidates once after connecting and uses those that give a believable
+value. Those of the engine come from the engine control unit; the others from the control
+units of the brakes (address 713), the steering (712), the instrument cluster (714), the
+climate control (746) and the gateway (710), which looks after the battery.
+
+They take an adapter that passes on requests of three bytes, lets the app choose which control
+unit to listen to and tells a unit to go on with a long answer (the ELM327 commands `AT CRA`,
+`AT FC SH`, `AT FC SD` and `AT FC SM`). Many cheap clones do none of that.
 
 These identifiers are **unverified**: they were written for a 2019 SEAT Leon 1.5 TSI and have
-not been confirmed on other engines. Compare such values with what you know before trusting
-them. The identifiers and their scalings were looked up in the
-[OBDb](https://github.com/OBDb) project (CC BY-SA 4.0).
+not been confirmed on any car. Compare such values with what you know before trusting them.
+The identifiers and their scalings were looked up in the [OBDb](https://github.com/OBDb)
+project (CC BY-SA 4.0).
 
 ## Building
 
@@ -153,9 +169,9 @@ from the repository secrets `KEYSTORE_BASE64` (the keystore file, Base64 encoded
 ```
 app/src/main/kotlin/io/github/flamy69/flamycar/
 ├── obd/                talking to the adapter: Elm327, CanFrames, ObdSession, Signals with the
-│                       catalog of values, SimulatedCar, BluetoothLink
+│                       catalog of values, Survey and Meanings, SimulatedCar, BluetoothLink
 ├── ObdManager          keeps the connection while somebody is looking
-├── Dashboard           which gauges go where
+├── Dashboard           which values go on which page
 ├── DashboardPainter    drawing them
 ├── car/                the screen for Android Auto
 └── ui/                 the app on the phone

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import io.github.flamy69.flamycar.obd.CATALOG
 import io.github.flamy69.flamycar.obd.CarInfo
+import io.github.flamy69.flamycar.obd.Page
 import io.github.flamy69.flamycar.obd.Signal
 import java.io.File
 import org.junit.Assert.assertEquals
@@ -35,7 +36,7 @@ class DashboardPainterTest {
     private val leon = CarInfo(
         "ELM327 v2.1", 6,
         everything.signals.filterKeys {
-            it !in setOf(
+            it.page == Page.ENGINE && it !in setOf(
                 Signal.BRAKE, Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.EXHAUST_TEMP, Signal.MAF,
             )
         },
@@ -53,6 +54,13 @@ class DashboardPainterTest {
             Signal.FUEL_TRIM_SHORT to 2.3f, Signal.FUEL_TRIM_LONG to -3.1f, Signal.VOLTAGE to 14.2f,
             Signal.SPEED to 96f, Signal.AMBIENT to 9f, Signal.FUEL_LEVEL to 62f, Signal.RUNTIME to 23f,
             Signal.MAF to 78.4f,
+            Signal.GEAR to 3f, Signal.OIL_LEVEL to 61.2f, Signal.KNOCK_3 to -1.5f, Signal.FUEL_RATE to 14.6f,
+            Signal.STEERING to -38f, Signal.BRAKE_PRESSURE to 0f, Signal.ACCEL_LONG to 2.6f, Signal.ACCEL_LAT to -1.1f,
+            Signal.WHEEL_FL to 96.2f, Signal.WHEEL_FR to 96.4f, Signal.WHEEL_RL to 95.9f, Signal.WHEEL_RR to 96.1f,
+            Signal.BRAKE_TEMP_FL to 155f, Signal.BRAKE_TEMP_FR to 159f, Signal.BRAKE_TEMP_RL to 70f, Signal.BRAKE_TEMP_RR to 72f,
+            Signal.BATTERY_VOLTAGE to 14.23f, Signal.BATTERY_CURRENT to 12.5f, Signal.BATTERY_SOC to 78f,
+            Signal.CABIN_TEMP to 21.5f, Signal.REFRIGERANT to 9.2f, Signal.HUMIDITY to 43f,
+            Signal.FUEL_LITERS to 31.5f, Signal.RANGE to 540f, Signal.CONSUMPTION to 6.2f, Signal.ODOMETER to 84213f,
         ),
         peakBoost = 1.21f,
     )
@@ -89,7 +97,7 @@ class DashboardPainterTest {
         val (picture, painter) = render("leon-small", 800, 480, live(leon), driving)
 
         assertEquals(1, painter.pages)
-        assertEquals(Dashboard.board(leon.signals.keys).let { it.bars + it.rows }.toSet(), painter.visible)
+        assertEquals(Dashboard.boards(leon.signals.keys).flatMap { it.bars + it.rows }.toSet(), painter.visible)
         // Bars for boost and the pedal, numbers in the table.
         assertTrue(picture.count(orange) > 3000)
         assertTrue(picture.count(white) > 1500)
@@ -109,7 +117,7 @@ class DashboardPainterTest {
 
     @Test
     fun `a car that gives everything gets every value somewhere`() {
-        val all = Dashboard.board(everything.signals.keys).let { it.bars + it.rows }.toSet()
+        val all = Dashboard.boards(everything.signals.keys).flatMap { it.bars + it.rows }.toSet()
         for ((name, width, height) in listOf(Triple("small", 800, 480), Triple("wide", 1280, 720), Triple("tall", 720, 1280))) {
             val (_, first) = render("everything-$name", width, height, live(everything), driving)
             val seen = HashSet(first.visible)
@@ -131,6 +139,27 @@ class DashboardPainterTest {
         assertTrue(Signal.BOOST in second.visible)
         assertTrue((second.visible - first.visible).isNotEmpty())
         assertEquals(first.visible, again.visible)
+    }
+
+    @Test
+    fun `the other pages come after those of the engine, each under its title`() {
+        val (_, first) = render("pages-1", 1280, 720, live(everything), driving)
+        val boards = Dashboard.boards(everything.signals.keys)
+        // At least a page for each topic.
+        assertTrue(first.pages >= boards.size)
+
+        val seen = ArrayList<Set<Signal>>()
+        for (page in 0 until first.pages) {
+            val (picture, painter) = render("pages-${page + 1}", 1280, 720, live(everything), driving, page)
+            seen += painter.visible
+            val engine = painter.visible.any { it.page == Page.ENGINE }
+            // One topic on a page; the bars only with the engine, a title in orange elsewhere.
+            assertEquals(1, painter.visible.map { it.page }.toSet().size)
+            assertEquals(engine, Signal.BOOST in painter.visible)
+            assertTrue(picture.count(orange) > 200)
+        }
+        assertTrue(seen.any { Signal.WHEEL_FL in it && Signal.BRAKE_TEMP_FL in it })
+        assertTrue(seen.last().contains(Signal.ODOMETER))
     }
 
     @Test

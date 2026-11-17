@@ -26,6 +26,9 @@ class ObdSessionTest {
         val seen = ArrayList<Map<Signal, Float>>()
         val hung = ArrayList<LongRequests>()
 
+        // How much had been said to the car when it was found out what it gives.
+        private var readyAt = 0
+
         /** Called after every round, for flipping switches in the car while it is running. */
         var afterRound: () -> Unit = {}
 
@@ -40,7 +43,10 @@ class ObdSessionTest {
             },
             avoid = avoid,
             hung = { hung += it },
-        )
+        ).apply {
+            // As if every value were on screen: only those are read.
+            focus = Signal.entries.toSet()
+        }
 
         override fun onWaitingForCar() {
             waits++
@@ -52,6 +58,7 @@ class ObdSessionTest {
 
         override fun onReady(info: CarInfo) {
             this.info = info
+            readyAt = car.log.size
         }
 
         override fun onValues(values: Map<Signal, Float>) {
@@ -64,10 +71,7 @@ class ObdSessionTest {
         fun latest(signal: Signal): Float? = seen.lastOrNull { signal in it }?.get(signal)
 
         /** The requests sent to the car once the reading in rounds had begun. */
-        fun polled(): List<String> {
-            val start = car.log.indexOfLast { it.startsWith("22202F") }
-            return car.log.drop(start + 1).filter { !it.startsWith("AT") }
-        }
+        fun polled(): List<String> = car.log.drop(readyAt).filter { !it.startsWith("AT") }
     }
 
     @Test
@@ -207,6 +211,7 @@ class ObdSessionTest {
             pause = { bench.rounds++ },
             avoid = setOf(LongRequests.RAW),
         )
+        session.focus = Signal.entries.toSet()
         bench.afterRound = { if (bench.seen.size == 5) session.requestSurvey() }
 
         session.run()
@@ -290,18 +295,68 @@ class ObdSessionTest {
     }
 
     @Test
-    fun `values on screen are read every round, the others take turns`() {
+    fun `what is on screen is read, the quick values every round and the others in turns`() {
         val bench = Bench()
-        bench.session.focus = setOf(Signal.BOOST, Signal.COOLANT)
+        bench.session.focus = setOf(Signal.BOOST, Signal.COOLANT, Signal.OIL_TEMP, Signal.LOAD, Signal.TORQUE)
 
         bench.session.run()
 
         val polled = bench.polled()
         val manifold = polled.count { it.startsWith("010B") }
         val coolant = polled.count { it.startsWith("0105") }
-        // Boost is made of the manifold pressure, which is quick. Coolant is not, on screen or not.
+        // Boost is made of the manifold pressure, which is quick. Coolant is not.
         assertTrue("manifold pressure read $manifold times", manifold >= 35)
-        assertTrue("coolant read $coolant times", coolant in 1..5)
+        assertTrue("coolant read $coolant times", coolant in 5..20)
+        // What the values on screen are made of is read as well: the air pressure for the
+        // boost, the two halves of the torque.
+        assertTrue(polled.any { it.startsWith("0133") })
+        assertTrue(polled.any { it.startsWith("0162") } && polled.any { it.startsWith("0163") })
+        assertNotNull(bench.latest(Signal.TORQUE))
+        // Nothing else is: not the engine speed, and no other control unit.
+        assertFalse(polled.any { it.startsWith("010C") })
+        assertFalse(bench.car.log.drop(bench.car.log.indexOf(polled.first())).any { it.startsWith("ATSH71") })
+        assertNull(bench.seen.last()[Signal.RPM])
+    }
+
+    @Test
+    fun `values of the other control units are read from them`() {
+        val bench = Bench(stopAfter = 60)
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertEquals(Target.BRAKES, (info.signals.getValue(Signal.WHEEL_FL) as Query).target)
+        assertEquals(Target.STEERING, (info.signals.getValue(Signal.STEERING) as Query).target)
+        assertEquals(84213f, bench.latest(Signal.ODOMETER)!!, 0.5f)
+        assertEquals(31.5f, bench.latest(Signal.FUEL_LITERS)!!, 0.01f)
+        assertEquals(12.5f, bench.latest(Signal.BATTERY_CURRENT)!!, 0.01f)
+        assertEquals(78f, bench.latest(Signal.BATTERY_SOC)!!, 0.01f)
+        assertEquals(21.5f, bench.latest(Signal.CABIN_TEMP)!!, 0.01f)
+        assertEquals(43f, bench.latest(Signal.HUMIDITY)!!, 0.01f)
+        // Four values out of one answer that takes two frames, which the unit sends only
+        // when the adapter was told where to send the go-ahead.
+        assertEquals(155f, bench.latest(Signal.BRAKE_TEMP_FL)!!, 0.01f)
+        assertEquals(72f, bench.latest(Signal.BRAKE_TEMP_RR)!!, 0.01f)
+        assertTrue("ATFCSH713" in bench.car.log && "ATFCSM1" in bench.car.log && "ATCRA77D" in bench.car.log)
+        // The engine is heard again after each visit elsewhere.
+        assertTrue("ATAR" in bench.car.log && "ATFCSM0" in bench.car.log)
+        assertNotNull(bench.latest(Signal.RPM))
+        // What a unit does not know is in the report, and so is what it has.
+        assertTrue(info.report, info.report.lines().any { it.contains("22 2B21 @713") && it.contains("7F 22 31") })
+        assertTrue(info.report, info.report.lines().any { it.startsWith("GEAR") && it.contains("22 14CB @7E0") })
+    }
+
+    @Test
+    fun `values in the same answer are asked for once a round`() {
+        val bench = Bench()
+        bench.session.focus = setOf(Signal.BRAKE_TEMP_FL, Signal.BRAKE_TEMP_FR, Signal.BRAKE_TEMP_RL, Signal.BRAKE_TEMP_RR)
+
+        bench.session.run()
+
+        val asked = bench.polled().count { it.startsWith("22180C") }
+        assertTrue("asked $asked times in ${bench.seen.size} rounds", asked <= bench.seen.size)
+        assertEquals(159f, bench.latest(Signal.BRAKE_TEMP_FR)!!, 0.01f)
+        assertEquals(70f, bench.latest(Signal.BRAKE_TEMP_RL)!!, 0.01f)
     }
 
     @Test
@@ -337,6 +392,7 @@ class ObdSessionTest {
             }
         }
         val session = ObdSession(Elm327(bench.car), events, running = { bench.rounds < 24 }, pause = { bench.rounds++ })
+        session.focus = Signal.entries.toSet()
         bench.afterRound = { if (bench.seen.size == 10 || bench.seen.size == 16) session.requestSurvey() }
 
         session.run()
@@ -345,7 +401,7 @@ class ObdSessionTest {
         assertEquals(2, survey.readings)
         assertTrue(progress > 50)
         val lines = survey.text().lines()
-        assertTrue(lines[0], lines[0].contains("7 identifiers answered"))
+        assertTrue(lines[0], lines[0].contains("44 identifiers answered"))
         assertTrue(lines[1], lines[1].startsWith("#1: ") && lines[1].contains("RPM="))
         // Oil temperature, 11BE: two bytes at each of the two readings.
         val oil = lines.single { it.startsWith("11BE") }.split(" | ")
@@ -355,6 +411,17 @@ class ObdSessionTest {
         val asked = bench.car.log.filter { it.startsWith("2211BE") }.size
         assertTrue(asked >= 3)
         assertEquals(1, bench.car.log.count { it.startsWith("221000") })
+        // The other control units were asked too, those that are there.
+        val units = lines.single { it.startsWith("Other control units: ") }
+        assertTrue(units, units.contains("7E1 gearbox is not there") && units.contains("714 instruments answers"))
+        assertTrue(units, units.contains("713 brakes answers") && units.contains("70F all-wheel drive is not there"))
+        val odometer = lines.single { it.startsWith("714:2203") }
+        assertTrue(odometer, odometer.startsWith("714:2203 | 01 48 F5 | 01 48 F5  # Odometer = 84213 km"))
+        assertTrue(lines.any { it.startsWith("713:180C | 00 01 36 01 3E 00 8C 00 90 ") })
+        // Nothing of the gearbox was asked for, which would have taken a while for nothing.
+        val gearbox = bench.car.log.drop(bench.car.log.indexOf("ATSH7E1") + 1).takeWhile { !it.startsWith("ATSH") }
+        assertEquals(listOf("3E001"), gearbox.filter { !it.startsWith("AT") })
+        assertTrue(survey.summary().lines().any { it == "714:2294  Distance to empty = 540 km" })
     }
 
     @Test

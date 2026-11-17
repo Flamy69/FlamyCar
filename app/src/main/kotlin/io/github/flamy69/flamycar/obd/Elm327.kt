@@ -70,6 +70,12 @@ class Elm327(
     private var currentTx: Int? = null
     private var currentFilter: Int? = null
 
+    // See goAhead: where the adapter was told to send it, whether it uses that, and whether
+    // it knows the commands at all.
+    private var goAheadTo: Int? = null
+    private var ownGoAhead = false
+    private var knowsGoAhead = true
+
     /**
      * Appending the number of expected answers to a request spares the adapter from waiting
      * for more of them. Some clones do not know the trick: those that say so are found out on
@@ -103,6 +109,8 @@ class Elm327(
         if (!answered) throw ElmException("The adapter does not answer the reset")
         currentTx = null
         currentFilter = null
+        goAheadTo = null
+        ownGoAhead = false
         formatting = true
         protocol = 0
 
@@ -212,7 +220,40 @@ class Elm327(
             if (!ok(exchange(command, AT_TIMEOUT))) return false
             currentFilter = filter
         }
+        goAhead(ecu.tx.takeIf { filter != null })
         return true
+    }
+
+    /**
+     * A unit that needs several frames for its answer sends the first and waits to be told to
+     * go on. The adapter does that by itself for the engine and the gearbox; for a unit
+     * elsewhere ([tx]) it has to be told where to send the go-ahead. An adapter that does not
+     * know how still gets the answers that fit into one frame.
+     */
+    private fun goAhead(tx: Int?) {
+        if (tx == null) {
+            if (ownGoAhead) {
+                exchange("ATFCSM0", AT_TIMEOUT)
+                ownGoAhead = false
+            }
+            return
+        }
+        if (!knowsGoAhead) return
+        if (goAheadTo != tx) {
+            if (!ok(exchange("ATFCSH%03X".format(tx), AT_TIMEOUT))) {
+                knowsGoAhead = false
+                return
+            }
+            goAheadTo = tx
+        }
+        if (!ownGoAhead) {
+            // Send everything, without pauses; then use what was set instead of the defaults.
+            if (!ok(exchange("ATFCSD300000", AT_TIMEOUT)) || !ok(exchange("ATFCSM1", AT_TIMEOUT))) {
+                knowsGoAhead = false
+                return
+            }
+            ownGoAhead = true
+        }
     }
 
     private fun setHeader(tx: Int): Boolean {

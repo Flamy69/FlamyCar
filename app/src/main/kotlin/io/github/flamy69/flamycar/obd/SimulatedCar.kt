@@ -66,6 +66,10 @@ class SimulatedCar(
     private var filter: Int? = null
     private var found = false
 
+    // Where the go-ahead for long answers is sent, and whether that is used.
+    private var goAheadTo: Int? = null
+    private var ownGoAhead = false
+
     // The state of the car.
     private var lastStep = clock()
     private val started = lastStep
@@ -112,6 +116,7 @@ class SimulatedCar(
     private fun adapter(command: String): String = when {
         command == "Z" -> {
             echo = true; spaces = true; headers = false; formatting = true; tx = 0x7DF; filter = null; found = false
+            goAheadTo = null; ownGoAhead = false
             "\rELM327 v1.5"
         }
         command == "I" -> "ELM327 v1.5"
@@ -125,6 +130,11 @@ class SimulatedCar(
         command == "RV" -> "%.1fV".format(java.util.Locale.ROOT, voltage())
         command.startsWith("SH") -> command.drop(2).toIntOrNull(16)?.let { ok { tx = it } } ?: "?"
         command.startsWith("CRA") -> command.drop(3).toIntOrNull(16)?.let { ok { filter = it } } ?: "?"
+        command.startsWith("FCSH") -> command.drop(4).toIntOrNull(16)?.let { ok { goAheadTo = it } } ?: "?"
+        command.startsWith("FCSD") -> "OK"
+        command == "FCSM0" -> ok { ownGoAhead = false }
+        // Like the real thing: only once it was told where to send it.
+        command == "FCSM1" -> if (goAheadTo != null) ok { ownGoAhead = true } else "?"
         else -> "?"
     }
 
@@ -166,7 +176,11 @@ class SimulatedCar(
         fun reply(from: Int, data: ByteArray?) {
             // Units outside the range of the engine and gearbox are heard only when let through.
             val heard = if (from in 0x7E8..0x7EF) filter == null || filter == from else filter == from
-            if (data != null && heard) frames += frames(from, data)
+            if (data == null || !heard) return
+            // A unit outside that range goes on with a long answer only when told to, which
+            // the adapter does not do by itself.
+            val goes = from in 0x7E8..0x7EF || (ownGoAhead && goAheadTo == tx)
+            frames += frames(from, data).let { if (goes) it else it.take(1) }
         }
         when (tx) {
             0x7DF -> {
@@ -175,7 +189,7 @@ class SimulatedCar(
             }
             0x7E0 -> if (answersDirectly || request[0].toInt() != 0x01) reply(0x7E8, engine(request))
             0x7E1 -> reply(0x7E9, gearbox(request))
-            0x714 -> reply(0x77E, cluster(request))
+            else -> UNITS[tx]?.let { reply(it, other(tx, request)) }
         }
         return prefix + if (frames.isEmpty()) "NO DATA" else frames.take(count).joinToString("\r")
     }
@@ -226,12 +240,57 @@ class SimulatedCar(
     private fun gearbox(request: ByteArray): ByteArray? =
         if (request.contentEquals(byteArrayOf(0x01, 0x00))) byteArrayOf(0x41, 0x00, 0x00, 0x08, 0x00, 0x00) else null
 
-    private fun cluster(request: ByteArray): ByteArray? =
-        if (request.contentEquals(byteArrayOf(0x22, 0x20, 0x2F))) {
-            byteArrayOf(0x62, 0x20, 0x2F, (oil + 58).toInt().toByte())
-        } else {
-            null
+    /** The control units besides the engine and the gearbox: a few values each. */
+    private fun other(tx: Int, request: ByteArray): ByteArray? {
+        if (request.contentEquals(byteArrayOf(0x3E, 0x00))) return byteArrayOf(0x7E, 0x00)
+        if (request.size != 3 || request[0].toInt() != 0x22) return null
+        val did = ((request[1].toInt() and 0xFF) shl 8) or (request[2].toInt() and 0xFF)
+        val speed = rpm / 45
+        val braking = throttle == 0f && rpm > 1500
+        val data = when (tx) {
+            0x714 -> when (did) {
+                0x202F -> byte(oil + 58)
+                0x229A -> word(31.5f * 8)
+                0x2294 -> word(540f)
+                0x2299 -> word(62f)
+                0x2203 -> byteArrayOf(0x01, 0x48, 0xF5.toByte()) // 84 213 km
+                else -> null
+            }
+            0x713 -> when (did) {
+                0x1800, 0x1802 -> word(speed * 10)
+                0x1801, 0x1803 -> word(speed * 10 + 2)
+                0x1816 -> byteArrayOf(0) + word(if (braking) 3200f else 0f) + ByteArray(6)
+                // The discs, front to rear, in half degrees.
+                0x180C -> byteArrayOf(0) + word(310f) + word(318f) + word(140f) + word(144f)
+                else -> null
+            }
+            0x712 -> when (did) {
+                0x1812 -> word((40 * sin(clock() / 2000.0).toFloat() + 60) * 8)
+                else -> null
+            }
+            0x710 -> when (did) {
+                0x2A07 -> word((voltage() - 4) * 1000)
+                0x2A09 -> byteArrayOf(0, 0) + word(12_500f)
+                0x2A0B -> byte(24f + 40)
+                0x2A0C -> byte(78f)
+                0x2A0F -> byte(52f)
+                0x2A10 -> byte((12.6f - 9) * 10)
+                0x4F00 -> byte((14.1f - 10.6f) * 10)
+                else -> null
+            }
+            0x746 -> when (did) {
+                0x2613 -> word(215f)
+                0x2605 -> byte(9.2f * 5)
+                0x2603 -> byte(21f)
+                0x2606 -> byte(40f * 2.5f)
+                0x260C, 0x260D -> byte(12f * 3)
+                0x27C4 -> byte(60f) + ByteArray(3) + byte(43f * 2)
+                else -> null
+            }
+            else -> null
         }
+        return if (data != null) byteArrayOf(0x62, request[1], request[2]) + data else byteArrayOf(0x7F, 0x22, 0x31)
+    }
 
     private fun standard(pid: Int): ByteArray? {
         if (pid % 0x20 == 0) {
@@ -286,6 +345,15 @@ class SimulatedCar(
             0x11BE -> word((oil + 273.1f) * 10)
             0x177D -> word((120 + rpm / 6000 * 330) * 10)
             0x4F70 -> word((130 + rpm / 6000 * 320) * 10)
+            0x14CB -> byte(if (rpm < 1000) 0f else 3f)
+            0x11BC -> word(61.2f * 250)
+            0x2025 -> word(5.4f * 1000)
+            0x1628 -> word((34 + manifold * 6 + 273.1f) * 10)
+            0x112C -> word(load * 85 * 100)
+            0x200A, 0x200B, 0x200D -> byte(128f)
+            0x200C -> byte(128f - 4)
+            0x113F -> word((0.8f + load * 22) * 100)
+            0x1633 -> word(if (throttle > 0.9f) 2600f else 0f)
             0x139C -> word((380 + load * 480 + 273.1f) * 10)
             0x1010 -> word(load * 200 * 10)
             else -> null
@@ -333,6 +401,9 @@ class SimulatedCar(
     private fun word(value: Long): ByteArray = byteArrayOf((value shr 8).toByte(), value.toByte())
 
     companion object {
+        /** Where the control units besides the engine and the gearbox listen, and where they answer. */
+        private val UNITS = mapOf(0x714 to 0x77E, 0x713 to 0x77D, 0x712 to 0x77C, 0x710 to 0x77A, 0x746 to 0x7B0)
+
         /** The standard values this engine gives. */
         val PIDS = setOf(
             0x04, 0x05, 0x06, 0x07, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x1F, 0x2F, 0x33, 0x34, 0x3C,

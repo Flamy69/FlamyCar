@@ -39,13 +39,16 @@ class Meaning(
 /**
  * The meanings of the identifiers that the survey asks for, from the OBDb project
  * (https://github.com/OBDb, CC BY-SA 4.0), put together from its data for cars of the
- * Volkswagen group. Nobody checked them on this engine: they tell where to look, not what is
- * true.
+ * Volkswagen group. Nobody checked them on this car: they tell where to look, not what is
+ * true. An identifier is named by its key in the [Survey].
  */
 object Meanings {
     private val all: Map<Int, List<Meaning>> by lazy(::load)
 
     fun of(did: Int): List<Meaning> = all[did].orEmpty()
+
+    /** The identifiers of the control units other than the engine that somebody knows a meaning of. */
+    fun others(): List<Int> = all.keys.filter { it shr 16 != 0 }.sorted()
 
     /** [data] in words, e.g. "Oil temp 2 = 85.30 °C"; empty when nobody knows the identifier. */
     fun describe(did: Int, data: ByteArray): String = of(did).joinToString("; ") { meaning ->
@@ -63,7 +66,9 @@ object Meanings {
             for (line in lines) {
                 val cells = line.split('\t')
                 if (cells.size < 10) continue
-                val did = cells[0].toIntOrNull(16) ?: continue
+                // "11BE" for the engine, "714:2203" for another control unit.
+                val tx = if (':' in cells[0]) cells[0].substringBefore(':').toIntOrNull(16) ?: continue else 0
+                val did = Survey.key(tx, cells[0].substringAfter(':').toIntOrNull(16) ?: continue)
                 result.getOrPut(did) { ArrayList() } += Meaning(
                     name = cells[1],
                     bit = cells[2].toIntOrNull() ?: continue,

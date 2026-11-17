@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.SystemClock
+import io.github.flamy69.flamycar.obd.Page
 import io.github.flamy69.flamycar.obd.Signal
 import java.util.EnumMap
 import java.util.Locale
@@ -19,7 +20,8 @@ import kotlin.math.min
 /**
  * Draws the values: bars at the top for what moves with the feet, and under them a table with
  * everything else, as many rows and columns as stay readable. What does not fit goes to
- * further pages.
+ * further pages, and so does everything that is not about the engine: the chassis, the
+ * electrics and so on have pages of their own, each under its title.
  *
  * The same painter serves the display of the car and the preview in the app on the phone, so
  * it draws on a plain canvas and sizes everything from the area it is given, not from the
@@ -63,15 +65,24 @@ class DashboardPainter(private val context: Context) {
         val margin = min(bounds.width(), bounds.height()) * 0.025f
         bounds.inset(margin, margin)
 
-        val board = status.car?.let { Dashboard.board(it.signals.keys) }
-        if (status.phase != Phase.LIVE || board == null || (board.bars.isEmpty() && board.rows.isEmpty())) {
+        val boards = status.car?.let { Dashboard.boards(it.signals.keys) }.orEmpty()
+        if (status.phase != Phase.LIVE || boards.isEmpty()) {
             shown.clear()
             pages = 1
             visible = emptySet()
             drawMessage(canvas, bounds, status)
         } else {
-            glide(board.bars, readings, elapsed)
-            drawBoard(canvas, bounds, board, readings, page)
+            val layouts = boards.map { layout(bounds, it) }
+            val total = layouts.sumOf { it.pages }
+            pages = total
+            val number = Math.floorMod(page, total)
+            // The page asked for lies in one of the boards, some pages into it.
+            var within = number
+            val layout = layouts.first { candidate ->
+                (within < candidate.pages).also { if (!it) within -= candidate.pages }
+            }
+            glide(layout.board.bars, readings, elapsed)
+            drawBoard(canvas, bounds, layout, readings, within, (number + 1).toString() + "/" + total)
         }
         if (status.demo) drawBadge(canvas, bounds, context.getString(R.string.demo_badge))
     }
@@ -87,14 +98,64 @@ class DashboardPainter(private val context: Context) {
         }
     }
 
-    private fun drawBoard(canvas: Canvas, bounds: RectF, board: Board, readings: Readings, page: Int) {
-        // The bars: each across the whole width, as long as there are no more than two; with
-        // three, the pedals share a line. The names take the same width, so that the bars
-        // start under each other.
-        val barHeight = bounds.height() * 0.085f
-        val gap = barHeight * 0.3f
+    /** How a board is laid out: where its table begins, and how much of it fits on a page. */
+    private class Layout(val board: Board, val top: Float, val rows: Int, val columns: Int, val pages: Int)
+
+    // The bars: each across the whole width, as long as there are no more than two; with
+    // three, the pedals share a line.
+    private fun lines(board: Board): List<List<Signal>> =
+        if (board.bars.size == 3) listOf(board.bars.take(1), board.bars.drop(1)) else board.bars.map { listOf(it) }
+
+    private fun layout(bounds: RectF, board: Board): Layout {
+        val barHeight = bounds.height() * BAR_HEIGHT
+        val gap = barHeight * BAR_GAP
+        val lines = lines(board).size
+        var top = bounds.top + lines * (barHeight + gap)
+        if (lines > 0) top += gap
+        if (board.page != Page.ENGINE) top += barHeight * HEADING + gap
+
+        // The table: the largest writing with which everything fits on one page; when not even
+        // the smallest readable writing does that, as many pages as it takes.
+        val height = bounds.bottom - top
+        val count = board.rows.size
+        if (count == 0 || height < 10) return Layout(board, top, 0, 0, 1)
+        val smallest = bounds.height() * SMALLEST_WRITING
+        val largest = bounds.height() * LARGEST_WRITING
+        var rows = max(1, ceil(height * WRITING_IN_ROW / largest).toInt())
+        var columns: Int
+        while (true) {
+            val size = height / rows * WRITING_IN_ROW
+            columns = (bounds.width() / (size * COLUMN_WIDTH)).toInt().coerceIn(1, MOST_COLUMNS)
+            val next = height / (rows + 1) * WRITING_IN_ROW
+            if (rows * columns >= count || next < smallest) break
+            rows++
+        }
+        return Layout(board, top, rows, columns, max(1, ceil(count / (rows * columns).toFloat()).toInt()))
+    }
+
+    private fun drawBoard(canvas: Canvas, bounds: RectF, layout: Layout, readings: Readings, page: Int, number: String) {
+        val board = layout.board
+        // The names of the bars take the same width, so that the bars start under each other.
+        val barHeight = bounds.height() * BAR_HEIGHT
+        val gap = barHeight * BAR_GAP
         var top = bounds.top
-        val lines = if (board.bars.size == 3) listOf(board.bars.take(1), board.bars.drop(1)) else board.bars.map { listOf(it) }
+        val lines = lines(board)
+        if (board.page != Page.ENGINE) {
+            // The title of the page, and which of how many it is.
+            val size = barHeight * HEADING
+            val baseline = top + size * 0.86f
+            val title = context.getString(board.page.title)
+            text.typeface = bold
+            text.color = ACCENT
+            text.textAlign = Paint.Align.LEFT
+            fit(title, size, bounds.width() * 0.8f)
+            canvas.drawText(title, bounds.left, baseline, text)
+            text.typeface = Typeface.DEFAULT
+            text.color = DIM
+            text.textAlign = Paint.Align.RIGHT
+            text.textSize = size * 0.7f
+            canvas.drawText(number, bounds.right, baseline, text)
+        }
         text.typeface = Typeface.DEFAULT
         text.textSize = barHeight * BAR_WRITING
         val names = board.bars.maxOfOrNull { text.measureText(context.getString(it.label)) } ?: 0f
@@ -107,31 +168,16 @@ class DashboardPainter(private val context: Context) {
             }
             top += barHeight + gap
         }
-        if (lines.isNotEmpty()) top += gap
 
-        // The table: the largest writing with which everything fits on one page; when not even
-        // the smallest readable writing does that, as many pages as it takes.
-        val table = RectF(bounds.left, top, bounds.right, bounds.bottom)
-        val count = board.rows.size
-        if (count == 0 || table.height() < 10) {
-            pages = 1
+        val table = RectF(bounds.left, layout.top, bounds.right, bounds.bottom)
+        val rows = layout.rows
+        val columns = layout.columns
+        if (rows == 0) {
             visible = board.bars.toSet()
             return
         }
-        val smallest = bounds.height() * SMALLEST_WRITING
-        val largest = bounds.height() * LARGEST_WRITING
-        var rows = max(1, ceil(table.height() * WRITING_IN_ROW / largest).toInt())
-        var columns = 1
-        while (true) {
-            val size = table.height() / rows * WRITING_IN_ROW
-            columns = (table.width() / (size * COLUMN_WIDTH)).toInt().coerceIn(1, MOST_COLUMNS)
-            val next = table.height() / (rows + 1) * WRITING_IN_ROW
-            if (rows * columns >= count || next < smallest) break
-            rows++
-        }
         val capacity = rows * columns
-        pages = max(1, ceil(count / capacity.toFloat()).toInt())
-        val onPage = board.rows.drop(Math.floorMod(page, pages) * capacity).take(capacity)
+        val onPage = board.rows.drop(page * capacity).take(capacity)
         visible = (board.bars + onPage).toSet()
 
         val rowHeight = table.height() / rows
@@ -282,6 +328,13 @@ class DashboardPainter(private val context: Context) {
     private companion object {
         /** How long a bar takes to cover most of the way to a new value. */
         const val GLIDE_SECONDS = 0.1f
+
+        /** The height of a bar, as a part of the height of the display, and the gap under it, as a part of that. */
+        const val BAR_HEIGHT = 0.085f
+        const val BAR_GAP = 0.3f
+
+        /** The height of the title of a page, as a part of the height of a bar. */
+        const val HEADING = 0.8f
 
         /** The height of the writing of a bar, as a part of the height of the bar. */
         const val BAR_WRITING = 0.62f

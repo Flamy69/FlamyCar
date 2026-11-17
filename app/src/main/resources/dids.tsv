@@ -87,7 +87,7 @@
 10A8	Injection speed injector 3	0	16	1.0	4.0	0.0	0	0	rpm
 10BE	Requested torque, amount for auxiliary units	0	16	1.0	10.0	0.0	1	0	Nm
 10C2	Exhaust gas recirculation valve duty	0	16	1.0	100.0	0.0	1	0	%
-10CA	Acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+10CA	Acceleration	0	16	1.0	1000.0	0.0	1	0	m/s²
 10D0	Injector 1 rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
 10D0	Injector 1 rail pressure calibration point 1	0	16	0.05	1000.0	0.0	1	0	ms
 10D1	Injector 3 rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
@@ -117,7 +117,7 @@
 10DF	Injector 2 rail pressure calibration point 3	0	16	0.05	1000.0	0.0	1	0	ms
 10E0	Odometer	0	32	1.0	1.0	0.0	0	0	km
 10E1	Injector 5, rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
-10E2	Wear index	0	16	1.0	1.0	0.0	1	0	meters
+10E2	Wear index	0	16	1.0	1.0	0.0	1	0	m
 10E3	Torque reduction due to exhaust temperature	0	16	1.0	10000.0	0.0	1	0	
 10E4	Regulation factor total	0	16	1.0	10000.0	0.0	1	0	%
 10E5	Ignition timing angle retard, cylinder 4	0	16	75.0	100.0	0.0	1	0	°
@@ -228,7 +228,7 @@
 115C	Service regeneration status	0	8	1.0	1.0	0.0	0	0	
 115E	Time since last regeneration	0	32	1.0	10066666667.0	0.0	0	0	min
 1160	Odometer, high resolution	0	32	1.0	1000.0	0.0	0	0	km
-1160	Odometer, high resolution	0	32	1.0	1.0	0.0	0	0	meters
+1160	Odometer, high resolution	0	32	1.0	1.0	0.0	0	0	m
 1161	Engine RPM at idle required	0	16	1.0	2.0	0.0	1	0	rpm
 1164	Service regeneration current duration	0	32	0.0001666667	1.0	0.0	0	0	min
 1164	Service regeneration value, two-byte reply, raw count	0	16	1.0	1.0	0.0	0	0	
@@ -243,8 +243,8 @@
 1184	PSN_EDGE_REL_AD_CAM_SAVE_EX_1	0	16	1.0	16.0	0.0	1	0	°
 1185	PSN_EDGE_REL_AD_CAM_SAVE_EX_2	0	16	1.0	16.0	0.0	1	0	°
 1186	PSN_EDGE_REL_AD_CAM_SAVE_IN_1	0	16	1.0	16.0	0.0	1	0	°
-1187	Acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
-1187	Acceleration	0	16	0.001	1.0	0.0	1	0	metersPerSecondSquared
+1187	Acceleration	0	16	1.0	1000.0	0.0	1	0	m/s²
+1187	Acceleration	0	16	0.001	1.0	0.0	1	0	m/s²
 1189	Intake camshaft signal edge position adapted edge 2	0	16	1.0	16.0	-32.0	0	0	°
 118A	Intake camshaft signal edge position adapted edge 3	0	16	1.0	16.0	-32.0	0	0	°
 118B	Intake camshaft signal edge position adapted edge 4	0	16	1.0	16.0	-32.0	0	0	°
@@ -356,7 +356,7 @@
 1291	Coolant at engine start	0	16	1.0	10.0	-273.1	0	0	°C
 1298	Cat. temperature, bank 1	0	16	1.0	16.0	-273.15	0	0	°C
 1299	Cat. temperature, bank 2	0	16	1.0	16.0	-273.15	0	0	°C
-12B0	Acceleration	0	16	10.0	10000.0	0.0	1	0	metersPerSecondSquared
+12B0	Acceleration	0	16	10.0	10000.0	0.0	1	0	m/s²
 12C7	Pilot injection 2, activation start	0	16	1.0	50.0	0.0	1	0	°
 12C8	Pilot injection 1, activation start	0	16	1.0	50.0	0.0	1	0	°
 12CB	Service limit value	0	16	1.0	100.0	0.0	0	0	
@@ -374,7 +374,7 @@
 1340	Torque increase request from ESP	0	32	1.0	10.0	0.0	1	0	Nm
 1341	Camshaft end position	0	16	1.0	5.0	0.0	1	0	°
 1347	Regeneration duration	0	32	1.0	1.0	0.0	0	0	min
-1354	Soot index	0	16	1.0	1.0	0.0	1	0	meters
+1354	Soot index	0	16	1.0	1.0	0.0	1	0	m
 1356	Charge limit overcharge protection	0	16	1.0	100.0	0.0	1	0	
 136C	Camshaft adjustment, exhaust bank 1, actual value	0	16	1.0	125.0	0.0	1	0	°
 136D	Camshaft adjustment, exhaust bank 2, actual value	0	16	1.0	64.0	0.0	1	0	°
@@ -513,11 +513,11 @@
 15CB	Result of crankcase ventilation test, successful	0	16	1.0	1.0	0.0	0	0	
 15CC	Result of crankcase ventilation test, fail	0	16	1.0	1.0	0.0	0	0	
 15CD	Coolant temperature at radiator outlet v.1	0	16	1.0	10.0	-273.1	1	0	°C
-15CF	Longitudinal acceleration, raw	0	16	10.0	10000.0	0.0	1	0	metersPerSecondSquared
-15CF	Longitudinal acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
-15D0	Yaw acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
-15D1	Vehicle lateral acceleration, raw value	0	16	100.0	10000.0	0.0	1	0	gravity
-15D1	Lateral acceleration, raw value	0	16	1.0	100.0	0.0	1	0	metersPerSecondSquared
+15CF	Longitudinal acceleration, raw	0	16	10.0	10000.0	0.0	1	0	m/s²
+15CF	Longitudinal acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	m/s²
+15D0	Yaw acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	m/s²
+15D1	Vehicle lateral acceleration, raw value	0	16	100.0	10000.0	0.0	1	0	g
+15D1	Lateral acceleration, raw value	0	16	1.0	100.0	0.0	1	0	m/s²
 15D4	Lambda output value	0	16	199997.0	6553500000.0	0.0	0	0	
 15E7	Effective injection duration	0	32	1.0	1000.0	0.0	0	0	ms
 1610	Requested brake torque, auxiliary system	0	32	1.0	10.0	0.0	1	0	Nm
@@ -528,10 +528,10 @@
 162F	Particulate filter air pressure sensor raw value	0	16	1.0	1.0	0.0	1	0	
 1631	Pilot injection 3 start	0	16	21973.0	1000000.0	0.0	1	0	°
 1632	Engine oil temperature measured value	0	16	1.0	10.0	-273.1	0	0	°C
-1633	Longitudinal acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+1633	Longitudinal acceleration	0	16	1.0	1000.0	0.0	1	0	m/s²
 163B	Post injection 2: quantity specified value	0	16	1.0	100.0	0.0	0	0	
 163C	Post injection 1: quantity specified value	0	16	1.0	100.0	0.0	0	0	
-1644	Lateral acceleration	0	16	1.0	100.0	0.0	1	0	metersPerSecondSquared
+1644	Lateral acceleration	0	16	1.0	100.0	0.0	1	0	m/s²
 166D	Exhaust gas temperature sensor 4	0	16	1.0	10.0	-273.1	0	0	°C
 166E	Exhaust gas temperature, sensor 4, bank 2	0	16	1.0	10.0	-273.1	0	0	°C
 166F	Exhaust gas temperature sensor 1	0	16	1.0	10.0	-273.1	0	0	°C
@@ -752,7 +752,7 @@
 294A	Dynamic average of ignition angle delay adjustment	0	16	1.0	100.0	0.0	1	0	°
 295A	Odometer	0	24	1.0	1.0	0.0	0	0	km
 295A	Odometer (alternative)	0	32	1.0	1.0	0.0	0	0	km
-295B	Odometer with ECU installed	0	24	1.0	1.0	0.0	0	0	meters
+295B	Odometer with ECU installed	0	24	1.0	1.0	0.0	0	0	m
 295C	Load shift flaps, actual value	0	8	1.0	1.0	0.0	0	0	
 295D	Load shift flaps, specified value	0	8	1.0	1.0	0.0	0	0	
 2966	Misfires, cylinder 1	0	16	1.0	1.0	0.0	0	0	
@@ -980,3 +980,593 @@ F44A	Accelerator position 2	0	8	100.0	255.0	0.0	0	0	%
 F45B	HV battery remaining charge	0	8	1.0	2.55	0.0	0	0	%
 F469	High press EGR closing v1	8	8	1.0	1.0	0.0	1	0	%
 FE47	Charge air pressure, specified value	0	8	2.0	1.0	0.0	0	0	kPa
+70B:18A0	Front right tire pressure	40	8	1.0	40.0	0.0	0	0	bar
+70B:18A1	Front left tire pressure	40	8	1.0	40.0	0.0	0	0	bar
+70B:18A2	Rear left tire pressure	40	8	1.0	40.0	0.0	0	0	bar
+70B:18A3	Rear right tire pressure	40	8	1.0	40.0	0.0	0	0	bar
+70E:1945	Washer nozzle heater active	0	8	1.0	1.0	0.0	0	0	
+70F:08A7	All-wheel drive differential lock engagement	16	8	1.0	1.0	0.0	0	0	
+70F:0C0A	All-wheel drive mode	0	8	1.0	1.0	0.0	0	0	
+70F:2B1B	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+70F:2B1C	Front right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+70F:2B1D	Rear left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+70F:2B1E	Rear right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+70F:2BE4	All-wheel drive friction disc temperature	8	16	1.0	100.0	-227.67	0	0	°C
+70F:2BE6	All-wheel drive current	0	16	1.0	1000.0	0.0	0	0	A
+70F:2BE7	All-wheel drive pulse width modulation	0	8	1.0	1.0	0.0	0	0	%
+70F:2BE9	All-wheel drive voltage	0	8	1.0	10.0	0.0	0	0	V
+70F:2BF0	All-wheel drive front-rear speed differential	0	16	1.0	10.0	0.0	0	0	km/h
+70F:2BF1	All-wheel drive temperature	8	16	1.0	100.0	-227.67	0	0	°C
+70F:2BF3	All-wheel drive duty cycle	0	8	100.39	255.0	0.0	0	0	%
+710:123A	Bze_q_lad	0	32	1.0	10.0	0.0	0	0	Ah
+710:123A	Bze_q_elad	32	32	1.0	10.0	0.0	0	0	Ah
+710:1512	High voltage battery energy information	0	16	1.0	40.0	0.0	0	0	kWh
+710:1512	NV energy requirement	16	8	1.0	20.0	0.0	0	0	kWh
+710:1512	Electric machine high-voltage battery energy information	24	16	1.0	20.0	0.0	0	0	kWh
+710:15D1	Electric motor power limitation	8	16	50.0	1.0	0.0	0	0	W
+710:15D1	Electric motor non-vehicle power limitation	24	8	50.0	1.0	0.0	0	0	W
+710:15D1	Non-vehicle energy requirement	32	8	50.0	1000.0	0.0	0	0	kWh
+710:15D1	Electric motor battery energy	40	16	50.0	1000.0	0.0	0	0	kWh
+710:22E4	Energy content	0	16	1.0	10.0	0.0	0	0	kWh
+710:2A00	Generator target voltage	0	8	1.0	10.0	10.6	0	0	V
+710:2A06	12V battery capacity	16	8	1.0	1.0	0.0	0	0	Ah
+710:2A07	Battery voltage	0	16	1.0	1000.0	4.0	0	0	V
+710:2A08	Battery current filtered	0	24	1.0	1000.0	-3000.0	0	0	A
+710:2A09	Battery current	0	32	1.0	1000.0	0.0	1	0	A
+710:2A0A	Battery sensor temperature	0	8	1.0	1.0	-40.0	0	0	°C
+710:2A0A	Odometer	8	24	1.0	1.0	0.0	0	0	km
+710:2A0A	Odometer	0	32	1.0	1.0	0.0	0	0	km
+710:2A0A	Odometer	8	24	1.0	1.0	-40.0	0	0	km
+710:2A0B	Battery temperature	0	8	1.0	1.0	-40.0	0	0	°C
+710:2A0C	Battery charge level	0	8	1.0	1.0	0.0	0	0	%
+710:2A0D	Battery condition for display	0	8	10.0	1.0	0.0	0	0	%
+710:2A0E	Battery internal resistance	0	8	20.0	100.0	0.0	0	0	
+710:2A0E	Battery internal resistance	0	8	1.0	5.0	0.0	1	0	
+710:2A0F	Usable battery charge	0	8	1.0	1.0	0.0	0	0	Ah
+710:2A10	Battery voltage at rest	0	8	1.0	10.0	9.0	0	0	V
+710:2A15	Energy balance of last driving cycle	0	16	1.0	100.0	0.0	1	0	Ah
+710:2A17	Overall energy balance	0	24	21.0	20.0	0.0	1	0	Ah
+710:2A18	Entire energy throughput	0	24	1.0	10.0	0.0	1	0	Ah
+710:2A1C	Generator current	0	16	1.0	10.0	9.0	0	0	A
+710:2A1D	Battery acid stratification	0	8	10.0	1.0	9.0	0	0	%
+710:2A25	Battery internal resistance, raw	0	8	1.0	5.0	0.0	0	0	
+710:2A53	DC-DC converter, low voltage	0	8	1.0	10.0	0.0	0	0	V
+710:2A53	DC-DC converter, current	8	16	1.0	1.0	-511.0	0	0	A
+710:2A53	DC-DC converter, reserved current	24	16	1.0	1.0	-511.0	0	0	A
+710:2A61	Battery total charge	0	32	1.0	10.0	0.0	0	0	Ah
+710:2A61	Battery total discharge	32	32	1.0	10.0	0.0	0	0	Ah
+710:2AB2	HV battery capacity	0	16	50.0	1.0	0.0	0	0	W
+710:2AB2	Maximum energy content of the traction battery	0	32	1.0	1310770.0	0.0	0	0	kWh
+710:2AB4	Estimated electric power reserve	16	16	1.0	1.0	0.0	0	0	km
+710:2AB4	Average battery consumption	72	8	1.0	1.0	0.0	0	0	A
+710:2AB5	Estimated reserve range	32	16	1.0	1.0	0.0	0	0	km
+710:2AB6	Range remaining	0	16	1.0	1.0	0.0	0	0	mi
+710:2AB7	Average consumption, category 0	0	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 1	16	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 2	32	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 3	48	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 4	64	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 5	80	16	1.0	10.0	0.0	0	0	kWh
+710:2AB7	Average consumption, category 6	96	16	1.0	10.0	0.0	0	0	kWh
+710:2AB8	HV battery energy content	16	16	25.0	1000.0	0.0	0	0	kWh
+710:2AB8	Battery energy content	0	32	1.0	1310770.0	0.0	0	0	kWh
+710:2AF7	12V battery voltage	0	16	1.0	1000.0	4.0	0	0	V
+710:2AF7	12V battery current	16	32	1.0	1000.0	0.0	1	0	A
+710:2AF7	12V battery soc	56	8	1.0	1.0	0.0	0	0	%
+710:2AF7	12V battery temperature	64	8	1.0	1.0	-40.0	0	0	°C
+710:2AF7	12V battery sensor temperature	72	8	1.0	1.0	-40.0	0	0	°C
+710:2AF7	12V battery total charge	96	32	1.0	10.0	0.0	0	0	Ah
+710:2AF7	12V battery total discharge	128	32	1.0	10.0	0.0	0	0	Ah
+710:2AF7	12V battery aging by capacity	160	8	1.0	1.0	0.0	0	0	%
+710:2AF7	12V battery aging by power	168	8	1.0	1.0	0.0	0	0	%
+710:2AF7	12V battery adapted capacity	176	8	1.0	1.0	0.0	0	0	Ah
+710:4F00	Generator voltage, actual	0	8	1.0	10.0	10.6	0	0	V
+710:5505	Steering wheel temperature	0	8	1.0	1.0	0.0	0	0	°C
+712:1805	Steering wheel torque sensor 1	0	16	0.004395	1.0	0.06	1	0	°
+712:1806	Steering wheel torque sensor 2	0	16	0.004395	1.0	0.06	1	0	°
+712:1812	Steering wheel angle	0	16	1.0	8.0	0.06	1	0	°
+712:1812	Steering wheel angle	0	16	1.0	8.0	0.0	1	0	°
+712:1812	Steering wheel angle	0	16	1.0	8.0	-750.0	0	0	°
+713:03E8	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:03E8	Front right wheel speed	16	16	1.0	10.0	0.0	0	0	km/h
+713:03E8	Rear left wheel speed	32	16	1.0	10.0	0.0	0	0	km/h
+713:03E8	Rear right wheel speed	48	16	1.0	10.0	0.0	0	0	km/h
+713:1800	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:1800	Front left wheel speed	0	16	1.0	100.0	0.0	0	0	km/h
+713:1801	Front right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:1801	Front right wheel speed	0	16	1.0	100.0	0.0	0	0	km/h
+713:1802	Rear left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:1802	Rear left wheel speed	0	16	1.0	100.0	0.0	0	0	km/h
+713:1803	Rear right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:1803	Rear right wheel speed	0	16	1.0	100.0	0.0	0	0	km/h
+713:1804	Steering wheel angle	80	16	0.4375	1.0	0.0	1	0	°
+713:1808	Hill descent control	6	1	1.0	1.0	0.0	0	0	on/off
+713:1808	Hill descent control, incline	8	8	1.0	1.0	0.0	0	0	%
+713:180A	All-wheel drive clutch fully open	2	1	1.0	1.0	0.0	0	0	on/off
+713:180A	All-wheel drive clutch blockage degree	15	1	8.0	1.0	0.0	0	0	on/off
+713:180C	Electronic differential lock: active	1	1	1.0	1.0	0.0	0	0	on/off
+713:180C	Electronic differential lock: front left brake temperature	8	16	1.0	2.0	0.0	1	0	°C
+713:180C	Electronic differential lock: front right brake temperature	24	16	1.0	2.0	0.0	1	0	°C
+713:180C	Electronic differential lock: rear left brake temperature	40	16	1.0	2.0	0.0	1	0	°C
+713:180C	Electronic differential lock: rear right brake temperature	56	16	1.0	2.0	0.0	1	0	°C
+713:180C	Electronic differential lock: front left brake temperature	8	16	0.5	1.0	0.0	1	0	°C
+713:180C	Electronic differential lock: front right brake temperature	24	16	0.5	1.0	0.0	1	0	°C
+713:180C	Electronic differential lock: rear left brake temperature	40	16	0.5	1.0	0.0	1	0	°C
+713:180C	Electronic differential lock: rear right brake temperature	56	16	0.5	1.0	0.0	1	0	°C
+713:180E	Brake disk drying	1	1	1.0	1.0	0.0	0	0	on/off
+713:180E	Brake disk drying, odometer at last activation	8	24	1.0	1.0	0.0	0	0	km
+713:1810	Hydraulic brake booster: active	6	1	1.0	1.0	0.0	0	0	on/off
+713:1816	Brake pressure sensor	8	16	1.0	100.0	0.0	1	0	bar
+713:1816	Air gab vacuum sensor	56	16	1.0	1.0	0.0	1	0	
+713:1821	Tire pressure monitoring available?	7	1	1.0	1.0	0.0	0	0	yes/no
+713:1821	Odometer reading at last adaptation	8	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading two adaptations ago	40	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading three adaptations ago	72	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading four adaptations ago	104	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading at last warning	136	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading at next-to-last warning	168	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading at third-to-last warning	200	32	1.0	1.0	0.0	0	0	km
+713:1821	Odometer reading at fourth-to-last warning	232	32	1.0	1.0	0.0	0	0	km
+713:1821	Front left tire pressure diffusion indicator	264	8	1.0	1.0	0.0	0	0	
+713:1821	Front right tire pressure diffusion indicator	272	8	1.0	1.0	0.0	0	0	
+713:1821	Rear left tire pressure diffusion indicator	280	8	1.0	1.0	0.0	0	0	
+713:18B6	Counter steer support	6	1	1.0	1.0	0.0	0	0	on/off
+713:18B6	Counter steer support, odometer, last activated	8	24	1.0	1.0	0.0	0	0	km
+713:18B6	Counter steer support, steering torque	32	16	1.0	1000.0	0.0	0	0	Nm
+713:2005	Pressure in brake servo unit	0	16	1.0	16.0	0.0	1	0	
+713:2B1B	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:2B1C	Front right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:2B1D	Rear left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:2B1E	Rear right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+713:2B21	Brake pressure	0	16	152999.0	10000000.0	-42.503	1	0	bar
+713:2B29	Steering wheel angle	0	16	1.0	1000.0	0.0	1	0	rad
+714:0530	Trip consumption, short	238	18	1.0	1000.0	0.0	1	0	kilowattHoursPer100Miles
+714:1014	Ambient air temperature	0	8	1.0	2.0	-50.0	0	0	°C
+714:1014	Ambient air temperature	0	8	0.5	1.0	-50.0	0	0	°C
+714:202F	Engine oil temperature	0	8	1.0	1.0	-58.0	0	0	°C
+714:2203	Odometer	0	24	1.0	1.0	0.0	0	0	km
+714:2203	Odometer	0	16	10.0	1.0	0.0	0	0	km
+714:2206	Fuel level	0	8	1.0	1.0	0.0	0	0	l
+714:220C	Outside temperature	0	8	1.0	2.0	-50.0	0	0	°C
+714:2211	Charge air pressure	0	8	100.0	255.0	0.0	0	0	%
+714:224B	Oil thermal wear	0	16	1.0	1.0	0.0	0	0	km
+714:2294	Distance to empty	0	16	1.0	1.0	0.0	0	0	km
+714:2299	Fuel consumption, average	0	16	1.0	10.0	0.0	0	0	l
+714:229A	Fuel level input	0	16	1.0	8.0	0.0	0	0	l
+714:22B0	Fuel volume	336	16	1.0	10.0	0.0	0	0	l
+714:22B8	Odometer, mileage, HR	0	32	1.0	1000.0	0.0	0	0	km
+714:22E0	Range remaining, displayed	0	16	1.0	1.0	0.0	0	0	km
+714:2613	Cabin temperature	0	16	1.0	10.0	0.0	0	0	°C
+744:1525	Voltage proximity, socket a	0	16	1.0	1.0	0.0	0	0	mV
+744:15D5	Maximum charging power	0	16	1.0	1.0	0.0	0	0	A
+744:15D6	Power efficiency	0	8	1.0	10.0	75.0	0	0	A
+744:15E1	Power loss battery charger	0	8	20.0	1.0	0.0	0	0	
+744:15E2	Charger coolant temperature	0	8	1.0	1.0	-40.0	0	0	°C
+744:1DA7	High voltage output	0	16	1.0	10.0	0.0	0	0	V
+744:1DD0	HV battery state of charge display	0	8	1.0	2.0	0.0	0	0	%
+744:1DD3	Maximum charge power	0	16	1.0	1.0	0.0	0	0	
+744:1DDA	Temperature sensor, socket a	8	16	1.0	10.0	-55.0	0	0	°C
+746:0800	A/C compressor power, actual	40	16	1.0	1.0	0.0	0	0	W
+746:2603	A/C compressor speed	0	8	100.0	1.0	0.0	0	0	rpm
+746:2604	A/C compressor load	0	8	1.0	10.0	0.0	0	0	Nm
+746:2605	Refrigerant pressure	0	8	1.0	5.0	0.0	0	0	bar
+746:2605	Refrigerant pressure	0	8	0.2	1.0	0.0	0	0	bar
+746:2606	Radiator fan actual duty	0	8	1.0	2.5	0.0	0	0	%
+746:2606	Radiator fan actual duty	0	8	0.4	1.0	0.0	0	0	%
+746:2607	Radiator fan commanded duty	0	8	1.0	2.5	0.0	0	0	%
+746:2607	Radiator fan commanded duty	0	8	0.4	1.0	0.0	0	0	%
+746:2609	Outside temperature	0	8	1.0	2.0	-50.0	0	0	°C
+746:2609	Outside temperature, from cabin	0	8	1.0	2.0	0.0	1	0	°C
+746:2609	Outside temperature	0	8	0.5	1.0	0.0	1	0	°C
+746:2609	Outside temperature	0	8	0.5	1.0	-50.0	0	0	°C
+746:260A	Outside temperature, system calculated	0	8	1.0	2.0	-50.0	0	0	°C
+746:260A	Outside temperature, system calculated	0	8	1.0	2.0	0.0	1	0	°C
+746:260C	Front left deflector temperature	0	8	1.0	3.0	0.0	0	0	°C
+746:260C	Front left air vent temperature	0	8	0.333	1.0	0.0	0	0	°C
+746:260D	Front right deflector temperature	0	8	1.0	3.0	0.0	0	0	°C
+746:260D	Front right air vent temperature	0	8	0.333	1.0	0.0	0	0	°C
+746:2611	Leg deflector temperature	0	8	1.0	3.0	0.0	0	0	°C
+746:2611	Leg air vent temperature	0	8	0.333	1.0	0.0	0	0	°C
+746:2612	Temperature after evaporator	0	8	1.0	3.0	0.0	1	0	°C
+746:2612	Temperature after evaporator	0	8	0.333	1.0	0.0	1	0	°C
+746:2613	Cabin temperature	0	16	1.0	10.0	0.0	1	0	°C
+746:2613	Cabin temperature	0	16	0.1	1.0	0.0	1	0	°C
+746:261E	Recirculation flap actual position	16	8	1.0	2.0	0.0	0	0	%
+746:261E	Recirculation flap actual position	0	16	1.0	1.0	0.0	0	0	
+746:261F	Recirculation flap target position	0	16	1.0	1.0	0.0	0	0	
+746:2620	Recirculation flap fresh air threshold	0	16	1.0	1.0	0.0	0	0	
+746:2621	Recirculation flap threshold	0	16	1.0	1.0	0.0	0	0	
+746:2622	Front left temperature flap actual value	16	8	1.0	2.0	0.0	0	0	%
+746:2622	Front left temperature flap actual value	16	8	0.5	1.0	0.0	0	0	%
+746:2626	Front right temperature flap actual value	16	8	1.0	2.0	0.0	0	0	%
+746:2626	Front right temperature flap actual value	16	8	0.5	1.0	0.0	0	0	%
+746:263D	Rear deflector temperature	0	8	1.0	3.0	0.0	0	0	°C
+746:263D	Rear air vent temperature	0	8	0.333	1.0	0.0	0	0	°C
+746:26ED	Air pollution level	0	8	1.0	10.0	0.0	1	0	
+746:26ED	Air pollution level	0	8	0.1	1.0	0.0	1	0	
+746:27C3	Outside humidity	56	8	1.0	2.0	0.0	0	0	%
+746:27C4	Windshield temperature	0	8	0.576	1.0	-38.8	0	0	°C
+746:27C4	Cabin humidity	32	8	1.0	2.0	0.0	0	0	%
+746:27D6	Air conditioning compressor power consumption	16	8	1.0	25.0	0.0	0	0	kW
+746:42DB	CO2 content interior	8	8	100.0	1.0	0.0	0	0	
+746:482B	A/C clutch	0	8	1.0	1.0	0.0	0	0	
+746:4EEF	A/C refrigerant pressure, sensor 1	0	16	88.0	10000.0	0.0	0	0	bar
+746:4EEF	A/C refrigerant temperature, sensor 1	16	16	10.0	100.0	-40.0	0	0	°C
+746:4EEF	A/C refrigerant temperature, sensor 1 interior	32	16	10.0	100.0	-40.0	0	0	°C
+746:F449	Absolute pedal position, drive	0	8	1.0	2.55	0.0	0	0	%
+74F:F41B	Distance to detected pedestrian	0	16	1.0	4.0	0.0	0	0	m
+752:0005	Parking brake, air gap - left	0	16	1.0	1000.0	0.0	0	0	mm
+752:0005	Parking brake, air gap - right	16	16	1.0	1000.0	0.0	0	0	mm
+767:0838	ECall battery charge level	8	8	1.0	1.0	0.0	0	0	%
+767:0838	ECall battery status	0	8	1.0	1.0	0.0	0	0	
+767:2431	Satellites, visible	0	8	1.0	1.0	0.0	0	0	
+767:2431	Satellites, tracked	8	8	1.0	1.0	0.0	0	0	
+773:1814	SIM card, SIM card in main unit	8	8	1.0	1.0	0.0	0	0	
+7E1:028D	Control module temperature	0	8	1.0	1.0	0.0	1	0	°C
+7E1:0301	Control module temperature	0	8	1.0	1.0	-40.0	0	0	°C
+7E1:0302	Total drive time	0	16	1.0	4.0	0.0	0	0	h
+7E1:0303	Driving time in eco mode	0	8	1.0	2.5	0.0	0	0	%
+7E1:0304	Driving time in sport mode	0	8	1.0	2.5	0.0	0	0	%
+7E1:0305	Driving time in manual mode	0	8	1.0	2.5	0.0	0	0	%
+7E1:0327	Transmission gear ratio	0	8	1.0	100.0	0.0	1	0	
+7E1:0805	Brake light reading valid?	4	1	1.0	1.0	0.0	0	0	yes/no
+7E1:0805	Brake pressure reading valid?	5	1	1.0	1.0	0.0	0	0	yes/no
+7E1:0805	Brake	6	1	1.0	1.0	0.0	0	0	on/off
+7E1:0805	Brake light	7	1	1.0	1.0	0.0	0	0	on/off
+7E1:1001	Front right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:1001	Transmission read 1001, first byte raw count	0	8	1.0	1.0	0.0	0	0	
+7E1:1002	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:1003	Rear right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:1004	Rear left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:1005	Vehicle speed ESP	0	16	1.0	100.0	0.0	0	0	km/h
+7E1:1009	Speed ​​output	0	16	1.0	1.0	0.0	1	1	rpm
+7E1:100A	Vehicle speed from transmission	0	16	1.0	10.0	0.0	1	1	km/h
+7E1:100B	Driver demand torque	0	16	1.0	20.0	0.0	1	0	Nm
+7E1:100B	Driver demand torque	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:100C	Engine torque	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:100E	Engine torque limitation	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:100F	Engine torque loss	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1010	Converter loss torque	0	16	1.0	20.0	0.0	1	0	Nm
+7E1:1011	Adaptive mode	0	8	1.0	1.0	0.0	0	0	
+7E1:1012	ID of current driving program	0	8	1.0	1.0	0.0	0	0	
+7E1:1013	Current type of driver counter	0	16	1.0	1.0	0.0	0	0	
+7E1:1017	Road resistance	0	8	24.9	100.0	-31.6	0	0	%
+7E1:1018	Driving strategy mountain factor	0	8	100.0	255.0	0.0	0	0	%
+7E1:1019	Driving strategy sport factor	0	8	1700.0	255.0	0.0	0	0	%
+7E1:101A	Odometer #3	0	24	1.0	1.0	0.0	0	1	km
+7E1:101A	Odometer #3	0	24	1.0	1.0	0.0	0	0	km
+7E1:1021	Transmission drag torque	0	16	1.0	1.0	0.0	1	0	Nm
+7E1:1022	Transmission torque losses	0	16	1.0	1.0	0.0	1	0	Nm
+7E1:1024	Current N215 pressure control valve 1	0	16	1.0	10.0	0.0	0	0	mA
+7E1:1025	Current N218 pressure control valve 4	0	16	1.0	10.0	0.0	0	0	mA
+7E1:1026	Current N216 pressure control valve 2	0	16	1.0	10.0	0.0	0	0	mA
+7E1:1027	Current N233 pressure control valve 5	0	16	1.0	10.0	0.0	0	0	mA
+7E1:1028	Current N217 pressure control valve 3	0	16	1.0	10.0	0.0	0	0	mA
+7E1:1029	Current N371 pressure control valve 6 lock-up clutch	0	16	1.0	10.0	0.0	0	0	mA
+7E1:102A	Clutch center central plate temperature	0	16	1.0	1.0	0.0	1	1	°C
+7E1:102B	Clutch 1 temperature	0	8	1.0	1.0	0.0	0	0	°C
+7E1:102C	Clutch 2 temperature	0	8	1.0	1.0	0.0	0	0	°C
+7E1:102D	Pressure supply actual pressure analog digital value	0	16	1.0	1.0	0.0	0	1	
+7E1:102E	M009, desired solenoid out 10	0	1	1.0	1.0	0.0	0	0	on/off
+7E1:102E	M009, desired solenoid out 11	1	1	1.0	1.0	0.0	0	0	on/off
+7E1:102E	M009, desired solenoid out 12	2	1	1.0	1.0	0.0	0	0	on/off
+7E1:102E	M009, desired solenoid out 13	3	1	1.0	1.0	0.0	0	0	on/off
+7E1:102E	M009, desired solenoid out 14	4	1	1.0	1.0	0.0	0	0	on/off
+7E1:1033	Time since shift	0	8	30.0	1.0	0.0	0	0	ms
+7E1:1037	Current solenoid	0	16	1.0	10.0	0.0	0	0	mA
+7E1:103A	Time in run-on after shutdown	0	16	1.0	1.0	0.0	0	0	s
+7E1:103B	Time since reset	0	8	30.0	1.0	0.0	0	0	ms
+7E1:103D	Odometer	0	24	1.0	1.0	0.0	0	0	km
+7E1:1057	Clutch 1 adaptation basic characteristic point 0 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1058	Clutch 1 adaptation basic characteristic point 0 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1059	Clutch 1 adaptation basic characteristic point 1 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:105A	Clutch 1 adaptation basic characteristic point 1 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:105B	Clutch 1 adaptation basic characteristic point 2 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:105C	Clutch 1 adaptation basic characteristic point 2 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:105D	Clutch 1 adaptation basic characteristic point 3 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:105E	Clutch 1 adaptation basic characteristic point 3 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1061	Desired torque raw	0	16	1.0	1.0	0.0	1	0	Nm
+7E1:1062	Clutch 1 friction value correction factor	0	16	0.09766	1.0	0.0	1	1	%
+7E1:1063	Clutch 1 characteristic curve shift	0	16	9.8	10000.0	0.0	1	1	mm
+7E1:1064	Analysis, clutch 1, maximum temperature	0	16	1.0	1.0	0.0	1	1	°C
+7E1:1065	Clutch 1 temperature time in range 0	0	16	1.0	50.0	0.0	0	1	s
+7E1:1066	Analysis, clutch 1 temperature time in range 1	0	16	1.0	50.0	0.0	0	1	s
+7E1:1067	Analysis, clutch 1 temperature time in range 2	0	16	1.0	50.0	0.0	0	1	s
+7E1:1068	Analysis, clutch 1 temperature time in range 3	0	16	1.0	50.0	0.0	0	1	s
+7E1:1069	Clutch 1 protection function engaged quantity	0	32	1.0	1.0	0.0	0	1	
+7E1:106A	Reserve torque	0	16	1.0	1.0	0.0	1	0	Nm
+7E1:106C	Clutch 2 adaptation basic characteristic point 0 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:106D	Clutch 2 adaptation basic characteristic point 0 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:106E	Clutch 2 adaptation basic characteristic point 1 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:106F	Clutch 2 adaptation basic characteristic point 1 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1070	Clutch 2 adaptation basic characteristic point 2 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1071	Clutch 2 adaptation basic characteristic point 2 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1072	Clutch 2 adaptation basic characteristic point 3 position	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1073	Clutch 2 adaptation basic characteristic point 3 moment	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:1074	Clutch 2 adaptation end position opened	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1075	Clutch 2 adaptation end position closed	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1077	Clutch 2 friction value correction factor	0	16	0.09766	1.0	0.0	1	0	%
+7E1:1078	Clutch 2 characteristic curve shift	0	16	9.8	10000.0	0.0	1	1	mm
+7E1:1079	Analysis, clutch 2, maximum temperature	0	16	1.0	1.0	0.0	1	1	°C
+7E1:107A	Analysis, clutch 2 temperature time in range 0	0	16	1.0	50.0	0.0	0	1	s
+7E1:107B	Analysis, clutch 2 temperature time in range 1	0	16	1.0	50.0	0.0	0	1	s
+7E1:107C	Analysis, clutch 2 temperature time in range 2	0	16	1.0	50.0	0.0	0	1	s
+7E1:107D	Analysis, clutch 2 temperature time in range 3	0	16	1.0	50.0	0.0	0	1	s
+7E1:107E	Clutch 2 protection function engaged quantity	0	32	1.0	1.0	0.0	0	1	
+7E1:1082	Gear actuator adaptation engaged position G1	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1083	Gear actuator adaptation synchronization position G1	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1084	Gear selector a adaptation neutral position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1085	Gear actuator adaptation synchronization position G3	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1086	Gear actuator adaptation engaged position G3	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1090	Gear actuator adaptation engaged position G2	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1091	Gear actuator adaptation synchronization position G2	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1092	Gear selector b adaptation neutral position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1093	Gear actuator adaptation synchronization position G4	0	16	1.0	100.0	0.0	1	1	mm
+7E1:1094	Gear actuator adaptation engaged position G4	0	16	1.0	100.0	0.0	1	1	mm
+7E1:109E	Gear actuator adaptation engaged position G5	0	16	1.0	100.0	0.0	1	1	mm
+7E1:109F	Gear actuator adaptation synchronization position G5	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10A0	Gear selector c adaptation neutral position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10A1	Gear actuator adaptation synchronization position G7	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10A2	Gear actuator adaptation engaged position G7	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10AC	Gear actuator adaptation engaged position G6	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10AD	Gear actuator adaptation synchronization position G6	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10AE	Gear selector d adaptation neutral position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10AF	Gear actuator adaptation synchronization position reverse	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10B0	Gear actuator adaptation engaged position GR	0	16	1.0	100.0	0.0	1	1	mm
+7E1:10C9	Clutch 1 successful adaptations counter	0	16	1.0	1.0	0.0	0	1	
+7E1:10CA	Clutch 1 adaptation kiss point part 1 odometer reading	0	16	10.0	1.0	0.0	0	1	km
+7E1:10CC	Clutch 1 failed adaptations counter	0	16	1.0	1.0	0.0	0	0	
+7E1:10EA	Clutch 2 successful adaptations counter	0	16	1.0	1.0	0.0	0	1	
+7E1:10EB	Clutch 2 adaptation kiss point part 1 odometer reading	0	16	10.0	1.0	0.0	0	1	km
+7E1:10ED	Clutch 2 failed adaptations counter	0	16	1.0	1.0	0.0	0	0	
+7E1:10F9	Clutch 1 actual pressure raw value	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:10FA	Clutch 2 actual pressure raw value	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:1100	Torque converter lockup clutch fill time adaptation	0	16	10.0	1.0	0.0	0	0	ms
+7E1:1101	Torque converter lockup clutch adaptation count	0	16	1.0	1.0	0.0	0	0	
+7E1:1102	Adaptation inflation current PF lockup clutch	0	16	1.0	1.0	0.0	1	0	mA
+7E1:1103	Adaptation counter PF lockup clutch	0	16	1.0	1.0	0.0	0	0	
+7E1:110A	Lower adapted coupling point K2 from micro-slip path adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:110B	Upper adapted coupling point K1 from macro slip path adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:110C	Upper adapted coupling point K2 from macro slip path adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1110	Working hours	0	32	2.0	360000.0	0.0	0	1	
+7E1:1111	Operating time, temperature range 1	0	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 2	32	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 3	64	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 4	96	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 5	128	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 6	160	32	238607.0	42949672950.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 1	0	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 2	32	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 3	64	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 4	96	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 5	128	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1111	Operating time, temperature range 6	160	32	23860.7	4294967295.0	0.0	0	1	h
+7E1:1117	Reached maximum temperature	0	16	1.0	1.0	0.0	1	1	°C
+7E1:1118	Clutch #1 maximum temperature	0	16	1.0	1.0	0.0	0	1	°C
+7E1:1118	Clutch #2 maximum temperature	16	16	1.0	1.0	0.0	0	1	°C
+7E1:1120	Clutch 1 lower adaptation point	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1121	Clutch 2 lower adaptation point	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1124	Clutch 1 upper adaptation point	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1125	Clutch 2 upper adaptation point	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1130	Current lower pressure point clutch 1 from current to pressure adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1131	Current upper pressure point clutch 1 from current to pressure adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1132	Current lower pressure point clutch 2 from current to pressure adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1133	Current upper pressure point clutch 2 from current to pressure adaptation	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1138	Engaged position side a gear selector 1-3	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1139	Engaged position side a gear selector 2-4	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113A	Engaged position side a gear selector 5 and neutral	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113B	Engaged position side a gear selector 6 and reverse	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113C	Synchronous position side a gear selector 1-3	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113D	Synchronous position side a gear selector 2-4	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113E	Synchronous position side a gear selector 5 and neutral	0	16	100.0	10000.0	0.0	0	1	%
+7E1:113F	Synchronous position side a gear selector 6 and reverse	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1140	Neutral position gear selector 1-3	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1141	Neutral position gear selector 2-4	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1142	Neutral position gear selector 5 and neutral	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1143	Neutral position gear selector 6 and reverse	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1144	Engaged position side b gear selector 1-3	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1145	Engaged position side b gear selector 2-4	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1146	Engaged position side b gear selector 5 and neutral	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1147	Engaged position side b gear selector 6 and reverse	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1148	Synchronous position side b gear selector 1-3	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1149	Synchronous position side b gear selector 2-4	0	16	100.0	10000.0	0.0	0	1	%
+7E1:114A	Synchronous position side b gear selector 5 and neutral	0	16	100.0	10000.0	0.0	0	1	%
+7E1:114B	Synchronous position side b gear selector 6 and reverse	0	16	100.0	10000.0	0.0	0	1	%
+7E1:1154	Number of times the permitted centrifugal oil temperature has been exceeded	0	8	1.0	1.0	0.0	0	0	
+7E1:1155	Number of warnings due to increased centrifugal oil temperature	0	8	1.0	1.0	0.0	0	0	
+7E1:1156	Clutch adaptation values initial kill point 0 for K1	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1157	Clutch adaptation values initial kill point 0 for K2	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1158	Clutch adaptation values lower current point adaptation K1	0	8	5.0	1.0	0.0	0	0	mA
+7E1:1159	Clutch adaptation values lower current point adaptation K2	0	8	5.0	1.0	0.0	0	0	mA
+7E1:115A	Kilometers driven since last event on K1	0	16	10.0	1.0	0.0	0	1	km
+7E1:115C	Kilometers driven since last event on K2	0	16	10.0	1.0	0.0	0	1	km
+7E1:1179	Gear selector synchronous position G1	0	16	1.0	100.0	0.0	1	1	%
+7E1:117A	Gear selector synchronous position G2	0	16	1.0	100.0	0.0	1	1	%
+7E1:117B	Gear selector synchronous position G3	0	16	1.0	100.0	0.0	1	1	%
+7E1:117C	Gear selector synchronous position G4	0	16	1.0	100.0	0.0	1	1	%
+7E1:117D	Gear selector synchronous position G5	0	16	1.0	100.0	0.0	1	1	%
+7E1:117E	Gear selector synchronous position G6	0	16	1.0	100.0	0.0	1	1	%
+7E1:117F	Gear selector synchronous position, reverse	0	16	1.0	100.0	0.0	1	1	%
+7E1:1180	Correction values for main press adaptation: low press on clutch 1	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1181	Correction values for main press adaptation: high press on clutch 1	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1182	Correction values for main pressure adaptation low pressure on clutch 2	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1183	Correction values for main pressure adaptation high pressure on clutch 2	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1191	Pressure supply actual pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1196	Hybrid temperature	0	16	1.0	1.0	0.0	0	0	°C
+7E1:1196	Transmission control module data 1196, raw	0	32	1.0	1.0	0.0	0	0	
+7E1:11A7	Correction values for main pressure adaptation	0	16	1.0	100.0	0.0	1	1	bar
+7E1:1200	Launch control counter, variant 1	0	16	1.0	1.0	0.0	0	1	
+7E1:120F	Clutch 0 temperature calculated	0	16	1.0	1.0	0.0	1	0	°C
+7E1:1259	Clutch temperature	0	8	1.0	1.0	-40.0	0	0	°C
+7E1:125C	Clutch 1 nominal pressure	0	16	1.0	100.0	0.0	1	0	bar
+7E1:125D	Nominal pressure clutch 2	0	16	1.0	100.0	0.0	1	0	bar
+7E1:1260	Pressure_clutch_1	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1261	Pressure_clutch_2	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:132A	Pressure sensor 1 temperature	0	16	1.0	1.0	0.0	1	0	°C
+7E1:132B	Pressure sensor 2 temperature	0	16	1.0	1.0	0.0	1	0	°C
+7E1:13CC	Clutch 1 absolute pressure	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:13CD	Clutch 2 absolute pressure	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:1419	Stiffness point pressure clutch 1	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:141A	Stiffness point pressure clutch 2	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1426	Clutch 0 commanded pressure offset	0	16	1.0	1000.0	0.0	1	0	bar
+7E1:1711	Clutch kiss point rapid adaptation remaining	0	16	1.0	1.0	0.0	0	1	km
+7E1:17FC	Torque converter time in temperature range 1	0	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 2	24	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 3	48	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 4	72	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 5	96	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 6	120	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 7	144	24	1.0	1.0	0.0	0	0	min
+7E1:17FC	Torque converter time in temperature range 8	168	24	1.0	1.0	0.0	0	0	min
+7E1:17FD	Clutch overheating, clutch	0	8	1.0	1.0	0.0	0	0	
+7E1:18E3	Clutch temperature calculated	0	16	1.0	1.0	0.0	1	0	°C
+7E1:2002	Engine torque	0	16	1.0	1.0	0.0	0	0	Nm
+7E1:203F	Torque limitation	0	16	1.0	1.0	0.0	0	0	Nm
+7E1:2102	Transmission input speed	0	16	1.0	4.0	0.0	0	0	rpm
+7E1:2103	Transmission output speed	0	16	1.0	4.0	0.0	0	0	rpm
+7E1:2104	Automatic transmission fluid temperature	0	8	1.0	1.0	0.0	1	0	°C
+7E1:2104	Automatic transmission fluid temperature	0	8	1.0	1.0	-40.0	0	0	°C
+7E1:2104	Automatic transmission fluid temperature variant 2 DSG S-Tronic	0	16	1.0	1.0	0.0	1	1	°C
+7E1:2105	Torque transmitting function, ratio	0	16	1.0	10.0	0.0	0	0	
+7E1:2106	Vehicle speed, HR	0	16	1.0	100.0	0.0	0	0	km/h
+7E1:2108	Driving resistance index	0	8	1.0	1.0	-128.0	0	0	
+7E1:210D	Driving mode sensor, hall sensor a	8	8	1.0	1.0	0.0	0	0	
+7E1:210E	Driving position	0	8	1.0	1.0	0.0	0	0	
+7E1:210F	Current gear	0	8	1.0	1.0	-2.0	0	0	
+7E1:210F	Gear	0	8	1.0	1.0	0.0	0	0	
+7E1:2110	Engine specified torque during transmission intervention	0	16	1.0	1.0	0.0	0	0	Nm
+7E1:2114	Kick down	0	8	1.0	1.0	0.0	0	0	
+7E1:2115	Dynamic shift program	0	8	1.0	1.0	0.0	0	0	
+7E1:2116	Acceleration	0	16	1.0	10.0	0.0	1	0	m/s²
+7E1:2117	Excessive temperature protection	0	8	1.0	1.0	0.0	0	0	
+7E1:2118	Acceleration or deceleration mode	0	8	1.0	1.0	0.0	0	0	
+7E1:2119	Torque factor	0	8	1.0	1.0	0.0	0	0	
+7E1:211A	Max permissible engine torque	0	16	1.0	1.0	0.0	1	0	Nm
+7E1:2130	Torque converter amplification	0	8	1.0	100.0	0.0	0	0	
+7E1:2131	Torque converter slip	0	16	1.0	1.0	0.0	1	0	rpm
+7E1:2142	Specified torque clutch 1 - data	0	16	1.0	20.0	0.0	1	0	Nm
+7E1:2143	Specified torque clutch 2 - data	0	16	1.0	20.0	0.0	1	0	Nm
+7E1:214C	Clutch 1 pressure	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:214D	Clutch 2 pressure	0	8	1.0	10.0	-1.0	0	0	bar
+7E1:282C	Route data, active	0	8	1.0	1.0	0.0	0	0	
+7E1:2B1B	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:2B1C	Front right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:2B1D	Rear left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:2B1E	Rear right wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
+7E1:3800	Stop signal switch	0	8	1.0	1.0	0.0	0	0	
+7E1:3803	Brake pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:380A	Transmission input speed	0	16	1.0	1.0	0.0	0	1	rpm
+7E1:380B	Transmission output speed	0	16	1.0	1.0	0.0	0	1	rpm
+7E1:380C	Input shaft 1	0	16	1.0	1.0	0.0	1	1	rpm
+7E1:380D	Input shaft 2	0	16	1.0	1.0	0.0	1	1	rpm
+7E1:380E	Output shaft 1	0	16	1.0	1.0	0.0	1	1	rpm
+7E1:380F	Output shaft 2	0	16	1.0	1.0	0.0	1	0	rpm
+7E1:380F	Output shaft 2	0	16	1.0	1.0	0.0	1	1	rpm
+7E1:3816	Current gear	0	8	1.0	1.0	-2.0	0	0	
+7E1:3816	Current gear	0	8	1.0	1.0	-1.0	0	0	
+7E1:381A	Air conditioning compressor shutdown requirement	0	8	1.0	1.0	0.0	0	0	
+7E1:381D	Oil pressure actual	0	16	100.0	10000.0	0.0	0	1	bar
+7E1:381E	Oil pressure actual current	0	16	1.0	10.0	0.0	0	1	mA
+7E1:3820	Transmission part 1 pressure commanded	0	16	1.0	100.0	0.0	0	1	bar
+7E1:3821	Transmission part 1 pressure actual	0	16	1.0	100.0	0.0	0	1	bar
+7E1:3823	Transmission part 2 pressure commanded	0	16	1.0	100.0	0.0	0	1	bar
+7E1:3824	Transmission part 2 pressure actual	0	16	1.0	100.0	0.0	0	1	bar
+7E1:3826	Transmission part 1 valve current commanded	0	16	1.0	10.0	0.0	0	1	mA
+7E1:3827	Transmission part 1 valve current actual	0	16	1.0	10.0	0.0	0	1	mA
+7E1:382A	Transmission part 2 valve current commanded	0	16	1.0	10.0	0.0	0	1	mA
+7E1:382B	Transmission part 2 valve current actual	0	16	1.0	10.0	0.0	0	1	mA
+7E1:382E	Specified torque clutch 1	0	16	5.0	100.0	0.0	1	1	Nm
+7E1:3832	Actual position clutch 1 duty cycle factor 1	0	16	1.0	100.0	0.0	0	1	%
+7E1:3833	Actual position clutch 1 duty cycle factor 2	0	16	1.0	100.0	0.0	0	0	%
+7E1:3833	Actual position clutch 1 duty cycle factor 2	0	16	1.0	100.0	0.0	0	1	%
+7E1:3834	Clutch 1 valve current: specified	0	16	1.0	10.0	0.0	1	1	mA
+7E1:3835	Clutch 1 valve current: actual	0	16	1.0	10.0	0.0	1	1	mA
+7E1:3838	Specified torque clutch 2	0	16	5.0	100.0	0.0	1	1	Nm
+7E1:3839	Clutch 2 actual torque	0	16	1.0	20.0	0.0	1	1	Nm
+7E1:383B	Actual position clutch 2 duty cycle factor 1	0	16	1.0	100.0	0.0	0	1	%
+7E1:383B	Actual position clutch 2 duty cycle factor 1	0	16	1.0	100.0	0.0	0	0	%
+7E1:383C	Actual position clutch 2 duty cycle factor 2	0	16	1.0	100.0	0.0	0	0	%
+7E1:383C	Actual position clutch 2 duty cycle factor 2	0	16	1.0	100.0	0.0	0	1	%
+7E1:383D	Clutch 2 valve current: specified	0	16	1.0	10.0	0.0	1	1	mA
+7E1:383E	Clutch 2 valve current: actual	0	16	1.0	10.0	0.0	1	1	mA
+7E1:3841	Odometer	0	32	1.0	10.0	0.0	0	0	km
+7E1:3841	Odometer	0	32	1.0	10.0	0.0	0	1	km
+7E1:3852	Actual position of gear positioner a	0	16	100.0	10000.0	0.0	1	1	mm
+7E1:385A	Actual position of gear positioner b	0	16	100.0	10000.0	0.0	1	1	mm
+7E1:3862	Actual position of gear positioner c	0	16	100.0	10000.0	0.0	1	1	mm
+7E1:386A	Actual position of gear positioner d	0	16	100.0	10000.0	0.0	1	1	mm
+7E1:3871	Specified idle RPM	0	16	1.0	1.0	0.0	0	1	rpm
+7E1:387F	Clutch 1 temperature protection warning 1 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3880	Clutch 1 temperature protection warning 2 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3881	Clutch 1 temperature protection overheat protection 1 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3883	Clutch 2 temperature protection warning 1 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3884	Clutch 2 temperature protection warning 2 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3885	Clutch 2 temperature protection overheat protection 1 quantity	0	16	1.0	1.0	0.0	0	1	
+7E1:3887	Odometer #2	0	32	1.0	10.0	0.0	0	1	km
+7E1:3887	Odometer #2	0	32	1.0	10.0	0.0	0	0	km
+7E1:3888	Driving time ecological	0	8	1.0	1.0	0.0	0	0	%
+7E1:3889	Driving time sporty	0	8	1.0	1.0	0.0	0	0	%
+7E1:388A	Driving time manual	0	8	1.0	1.0	0.0	0	0	%
+7E1:388B	Drive cycles counter	0	16	1.0	1.0	0.0	0	1	
+7E1:388C	Ignition cycles	0	16	1.0	1.0	0.0	0	1	
+7E1:388D	Lower adapted coupling point clutch 1 from kiss point adaptation	0	8	1.0	200.0	0.0	0	0	A
+7E1:388E	Lower adapted coupling point clutch 2 from kiss point adaptation	0	8	1.0	200.0	0.0	0	0	A
+7E1:388F	Upper adapted coupling point, clutch 1, from micro-slip adaptation	0	8	1.0	200.0	0.0	0	0	A
+7E1:3890	Upper adapted coupling point, clutch 2, from micro-slip adaptation	0	8	1.0	200.0	0.0	0	0	A
+7E1:38AA	Clutch 2 adaptation clutch end position open	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38AB	Clutch 2 adaptation clutch end position closed	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38AE	Clutch 1 adaptation basic characteristics point 0 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38AF	Clutch 1 adaptation basic characteristics point 1 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38B2	Centrifugal oil temperature	0	8	1.0	1.0	0.0	1	0	
+7E1:38BF	Transmission fluid temperature 2	0	16	1.0	1.0	0.0	1	0	°C
+7E1:38C0	Launch control counter, clutch 1	0	16	1.0	1.0	0.0	0	0	
+7E1:38EA	Clutch 2 actual pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:38EB	Clutch 1 actual pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:38EC	Clutch 1 commanded pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:38ED	Clutch 2 commanded pressure	0	16	1.0	100.0	0.0	1	1	bar
+7E1:38F1	Launch control counter, variant 2	0	16	1.0	1.0	0.0	0	0	
+7E1:38FA	Clutch 2 adaptation basic characteristics point 0 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38FB	Clutch 2 adaptation basic characteristics point 1 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38FC	Clutch 2 adaptation basic characteristics point 2 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38FD	Clutch 2 adaptation basic characteristics point 3 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38FE	Clutch 1 adaptation clutch end position open	0	16	1.0	100.0	0.0	1	1	mm
+7E1:38FF	Clutch 1 adaptation clutch end position closed	0	16	1.0	100.0	0.0	1	1	mm
+7E1:4E76	Aux. hydraulic pump, current	0	8	1.0	5.0	0.0	0	0	A
+7E1:51A6	Aux. hydraulic pump internal temperature	0	8	1.0	1.0	-40.0	0	0	°C
+7E1:51A7	Aux. hydraulic pump voltage	0	8	1.0	10.0	0.0	0	0	V
+7E1:7000	Clutch 1 adaptation basic characteristics point 2 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:7001	Clutch 1 adaptation basic characteristics point 3 position	0	16	1.0	100.0	0.0	1	1	mm
+7E1:704E	Transmission fluid temperature, calculated	0	8	1.0	1.0	-50.0	0	0	°C
+7E1:704F	Automatic transmission fluid temperature, lifetime max	0	8	1.0	1.0	-50.0	0	0	°C
+7E1:7050	Selected gear	0	8	1.0	1.0	-2.0	0	0	°C
+7E1:7051	Transmission fluid temperature, modeled maximum reached	0	8	1.0	1.0	-55.0	0	0	°C
+7E1:7053	Torque converter: torque loss	0	8	1.0	1.0	0.0	0	0	Nm
+7E1:7064	Engine torque	0	16	1.0	1.0	0.0	0	0	Nm
+7E1:7078	Torque converter lockup clutch status	0	8	1.0	1.0	0.0	0	0	
+7E1:7084	Fill pressure, clutch a	0	8	10.0	1.0	0.0	1	0	
+7E1:7085	Adaptation counter, clutch a	0	8	1.0	1.0	0.0	0	0	
+7E1:7086	Fast fill time, clutch a	0	8	2.0	1.0	0.0	1	0	ms
+7E1:7087	Adaptation counter, fast fill time, clutch a	0	8	1.0	1.0	0.0	0	0	
+7E1:7088	Fill pressure, clutch b	0	8	10.0	1.0	0.0	1	0	
+7E1:7089	Adaptation counter, clutch b	0	8	1.0	1.0	0.0	0	0	
+7E1:708A	Fast fill time, clutch b	0	8	2.0	1.0	0.0	1	0	ms
+7E1:708B	Adaptation counter, fast fill time, clutch b	0	8	1.0	1.0	0.0	0	0	
+7E1:708C	Fill pressure, clutch c	0	8	10.0	1.0	0.0	1	0	
+7E1:708D	Adaptation counter, clutch c	0	8	1.0	1.0	0.0	0	0	
+7E1:708E	Fast fill time, clutch c	0	8	2.0	1.0	0.0	1	0	ms
+7E1:708F	Adaptation counter, fast fill time, clutch c	0	8	1.0	1.0	0.0	0	0	
+7E1:7090	Fill pressure, clutch d	0	8	10.0	1.0	0.0	1	0	
+7E1:7091	Adaptation counter, clutch d	0	8	1.0	1.0	0.0	0	0	
+7E1:7092	Fast fill time, clutch d	0	8	2.0	1.0	0.0	1	0	ms
+7E1:7093	Adaptation counter, fast fill time, clutch d	0	8	1.0	1.0	0.0	0	0	
+7E1:7094	Fill pressure, clutch e	0	8	10.0	1.0	0.0	1	0	
+7E1:7095	Adaptation counter, clutch e	0	8	1.0	1.0	0.0	0	0	
+7E1:7096	Fast fill time, clutch e	0	8	2.0	1.0	0.0	1	0	ms
+7E1:7097	Adaptation counter, fast fill time, clutch e	0	8	1.0	1.0	0.0	0	0	
+7E1:70D1	Shift in progress, target gear	0	8	1.0	1.0	0.0	0	0	
+7E1:70D1	Shift in progress, selected gear	8	8	1.0	1.0	0.0	0	0	
+7E1:70D6	Aux. hydraulic pump RPM	0	8	32.0	1.0	0.0	0	0	rpm
+7E1:70E0	Input shaft speed 1	0	16	1.0	1.0	-1.0	1	0	rpm
+7E1:70E1	Input shaft speed 2	0	16	1.0	1.0	-1.0	1	0	rpm
+7E1:F40D	Vehicle speed	0	8	1.0	1.0	0.0	0	0	km/h
+7E1:F449	Accelerator pedal position	0	8	20.0	51.0	0.0	0	0	%

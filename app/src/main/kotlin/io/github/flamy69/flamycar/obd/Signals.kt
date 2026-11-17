@@ -3,8 +3,18 @@ package io.github.flamy69.flamycar.obd
 import androidx.annotation.StringRes
 import io.github.flamy69.flamycar.R
 
+/** The pages of the display, in their order. All but the first begin with their title. */
+enum class Page(@param:StringRes val title: Int) {
+    ENGINE(R.string.page_engine),
+    DETAILS(R.string.page_details),
+    CHASSIS(R.string.page_chassis),
+    ELECTRICS(R.string.page_electrics),
+    CLIMATE(R.string.page_climate),
+    TRIP(R.string.page_trip),
+}
+
 /**
- * A value the app can show. The order here is the order on screen.
+ * A value the app can show. The order here is the order on screen, [page] by page.
  *
  * [min] and [max] are the ends of the value when it is drawn as a bar, and [zero] is where the
  * bar starts. [quick] values change with every movement of a foot and are read every round
@@ -22,6 +32,7 @@ enum class Signal(
     val zero: Float = min,
     val coldBelow: Float? = null,
     val warnAbove: Float? = null,
+    val page: Page = Page.ENGINE,
 ) {
     BOOST(R.string.signal_boost, "bar", -1f, 1.6f, 2, -1.1f..3f, quick = true, zero = 0f),
     PEDAL(R.string.signal_pedal, "%", 0f, 100f, 0, 0f..100f, quick = true),
@@ -57,10 +68,82 @@ enum class Signal(
     // The two halves of the torque: how much of the reference, and the reference.
     TORQUE_PERCENT(R.string.signal_torque_percent, "%", -125f, 130f, 0, -125f..130f),
     TORQUE_REFERENCE(R.string.signal_torque_reference, "Nm", 0f, 1000f, 0, 1f..65535f),
+
+    // More of the engine, for those who want to know.
+    GEAR(R.string.signal_gear, "", 0f, 7f, 0, 0f..8f, page = Page.DETAILS),
+    OIL_LEVEL(R.string.signal_oil_level, "mm", 0f, 100f, 1, 0f..131f, page = Page.DETAILS),
+    FUEL_LOW(R.string.signal_fuel_low, "bar", 0f, 8f, 2, 0f..15f, page = Page.DETAILS),
+    FUEL_TEMP(R.string.signal_fuel_temp, "°C", -20f, 80f, 0, -40f..150f, page = Page.DETAILS),
+    CHARGE_AIR_TEMP(R.string.signal_charge_air_temp, "°C", -20f, 100f, 0, -40f..250f, page = Page.DETAILS),
+    RADIATOR_OUT(R.string.signal_radiator_out, "°C", 0f, 130f, 0, -40f..215f, page = Page.DETAILS),
+    TURBO_ACTUATOR(R.string.signal_turbo_actuator, "%", 0f, 100f, 0, -1f..101f, page = Page.DETAILS),
+    CAM_INTAKE(R.string.signal_cam_intake, "°", -10f, 60f, 1, -100f..100f, zero = 0f, page = Page.DETAILS),
+    CAM_EXHAUST(R.string.signal_cam_exhaust, "°", -10f, 60f, 1, -100f..100f, zero = 0f, page = Page.DETAILS),
+    KNOCK_1(R.string.signal_knock_1, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
+    KNOCK_2(R.string.signal_knock_2, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
+    KNOCK_3(R.string.signal_knock_3, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
+    KNOCK_4(R.string.signal_knock_4, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
+    MISFIRES(R.string.signal_misfires, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
+    FUEL_RATE(R.string.signal_fuel_rate, "l/h", 0f, 30f, 1, 0f..200f, page = Page.DETAILS),
+    FUEL_USED(R.string.signal_fuel_used, "l", 0f, 60f, 2, 0f..656f, page = Page.DETAILS),
+
+    // What the brakes, the steering and the sensors of the stability control know.
+    STEERING(R.string.signal_steering, "°", -540f, 540f, 0, -900f..900f, quick = true, zero = 0f, page = Page.CHASSIS),
+    BRAKE_PRESSURE(R.string.signal_brake_pressure, "bar", 0f, 150f, 1, -5f..300f, quick = true, page = Page.CHASSIS),
+    ACCEL_LONG(R.string.signal_accel_long, "m/s²", -10f, 10f, 1, -30f..30f, quick = true, zero = 0f, page = Page.CHASSIS),
+    ACCEL_LAT(R.string.signal_accel_lat, "m/s²", -10f, 10f, 1, -30f..30f, quick = true, zero = 0f, page = Page.CHASSIS),
+    WHEEL_FL(R.string.signal_wheel_fl, "km/h", 0f, 220f, 1, 0f..400f, quick = true, page = Page.CHASSIS),
+    WHEEL_FR(R.string.signal_wheel_fr, "km/h", 0f, 220f, 1, 0f..400f, quick = true, page = Page.CHASSIS),
+    WHEEL_RL(R.string.signal_wheel_rl, "km/h", 0f, 220f, 1, 0f..400f, quick = true, page = Page.CHASSIS),
+    WHEEL_RR(R.string.signal_wheel_rr, "km/h", 0f, 220f, 1, 0f..400f, quick = true, page = Page.CHASSIS),
+    BRAKE_TEMP_FL(R.string.signal_brake_temp_fl, "°C", 0f, 600f, 0, -50f..1500f, warnAbove = 500f, page = Page.CHASSIS),
+    BRAKE_TEMP_FR(R.string.signal_brake_temp_fr, "°C", 0f, 600f, 0, -50f..1500f, warnAbove = 500f, page = Page.CHASSIS),
+    BRAKE_TEMP_RL(R.string.signal_brake_temp_rl, "°C", 0f, 600f, 0, -50f..1500f, warnAbove = 500f, page = Page.CHASSIS),
+    BRAKE_TEMP_RR(R.string.signal_brake_temp_rr, "°C", 0f, 600f, 0, -50f..1500f, warnAbove = 500f, page = Page.CHASSIS),
+
+    // The battery, as the unit that looks after it sees it.
+    BATTERY_VOLTAGE(R.string.signal_battery_voltage, "V", 10f, 16f, 2, 5f..20f, page = Page.ELECTRICS),
+    BATTERY_CURRENT(R.string.signal_battery_current, "A", -100f, 100f, 1, -1500f..1500f, zero = 0f, page = Page.ELECTRICS),
+    BATTERY_SOC(R.string.signal_battery_soc, "%", 0f, 100f, 0, 0f..100f, page = Page.ELECTRICS),
+    BATTERY_TEMP(R.string.signal_battery_temp, "°C", -20f, 60f, 0, -40f..120f, page = Page.ELECTRICS),
+    BATTERY_CHARGE(R.string.signal_battery_charge, "Ah", 0f, 100f, 0, 0f..255f, page = Page.ELECTRICS),
+    BATTERY_REST(R.string.signal_battery_rest, "V", 10f, 16f, 1, 9f..20f, page = Page.ELECTRICS),
+    BATTERY_RESISTANCE(R.string.signal_battery_resistance, "mΩ", 0f, 20f, 1, 0f..51f, page = Page.ELECTRICS),
+    GENERATOR_VOLTAGE(R.string.signal_generator_voltage, "V", 10f, 16f, 1, 10f..20f, page = Page.ELECTRICS),
+    GENERATOR_TARGET(R.string.signal_generator_target, "V", 10f, 16f, 1, 10f..20f, page = Page.ELECTRICS),
+    GENERATOR_CURRENT(R.string.signal_generator_current, "A", 0f, 200f, 1, 0f..400f, page = Page.ELECTRICS),
+
+    CABIN_TEMP(R.string.signal_cabin_temp, "°C", 0f, 40f, 1, -40f..80f, page = Page.CLIMATE),
+    VENT_LEFT(R.string.signal_vent_left, "°C", 0f, 85f, 0, 0f..85f, page = Page.CLIMATE),
+    VENT_RIGHT(R.string.signal_vent_right, "°C", 0f, 85f, 0, 0f..85f, page = Page.CLIMATE),
+    EVAPORATOR(R.string.signal_evaporator, "°C", -10f, 40f, 1, -43f..43f, zero = 0f, page = Page.CLIMATE),
+    REFRIGERANT(R.string.signal_refrigerant, "bar", 0f, 30f, 1, 0f..51f, page = Page.CLIMATE),
+    COMPRESSOR_SPEED(R.string.signal_compressor_speed, "rpm", 0f, 9000f, 0, 0f..25500f, page = Page.CLIMATE),
+    COMPRESSOR_LOAD(R.string.signal_compressor_load, "Nm", 0f, 25f, 1, 0f..25.5f, page = Page.CLIMATE),
+    FAN(R.string.signal_fan, "%", 0f, 100f, 0, 0f..102f, page = Page.CLIMATE),
+    HUMIDITY(R.string.signal_humidity, "%", 0f, 100f, 0, 0f..100f, page = Page.CLIMATE),
+    WINDSHIELD_TEMP(R.string.signal_windshield_temp, "°C", -20f, 60f, 0, -39f..109f, zero = 0f, page = Page.CLIMATE),
+
+    // What the instrument cluster counts.
+    FUEL_LITERS(R.string.signal_fuel_liters, "l", 0f, 50f, 1, 0f..120f, page = Page.TRIP),
+    RANGE(R.string.signal_range, "km", 0f, 1000f, 0, 0f..3000f, page = Page.TRIP),
+    CONSUMPTION(R.string.signal_consumption, "l/100", 0f, 20f, 1, 0f..100f, page = Page.TRIP),
+    ODOMETER(R.string.signal_odometer, "km", 0f, 300000f, 0, 0f..2000000f, page = Page.TRIP),
 }
 
-/** Which control unit a request is meant for. */
-enum class Target { ENGINE, CLUSTER }
+/**
+ * Which control unit a request is meant for. The engine is found by asking; the others sit
+ * at the same addresses in every car of the Volkswagen group, behind the gateway that passes
+ * the requests on to them.
+ */
+enum class Target(val ecu: Ecu?) {
+    ENGINE(null),
+    CLUSTER(Ecu(0x714, 0x77E)),
+    BRAKES(Ecu(0x713, 0x77D)),
+    STEERING(Ecu(0x712, 0x77C)),
+    GATEWAY(Ecu(0x710, 0x77A)),
+    CLIMATE(Ecu(0x746, 0x7B0)),
+}
 
 /** One way of getting a value. */
 sealed interface Source
@@ -102,13 +185,17 @@ class Query(
 /** The voltage the adapter measures itself. */
 data object AdapterVoltage : Source
 
-/** A value worked out from others. */
-class Derived(val needs: Signal, val compute: (Map<Signal, Float>) -> Float?) : Source
+/** A value worked out from others: it takes [needs], and makes use of [also] where the car gives them. */
+class Derived(val needs: Signal, val also: List<Signal> = emptyList(), val compute: (Map<Signal, Float>) -> Float?) : Source
 
 private fun Byte.u(): Int = toInt() and 0xFF
 private fun ByteArray.u8(at: Int = 0): Float = this[at].u().toFloat()
 private fun ByteArray.u16(at: Int = 0): Float = ((this[at].u() shl 8) or this[at + 1].u()).toFloat()
-private fun ByteArray.s16(): Float = ((this[0].toInt() shl 8) or this[1].u()).toFloat()
+private fun ByteArray.s8(at: Int = 0): Float = this[at].toFloat()
+private fun ByteArray.s16(at: Int = 0): Float = ((this[at].toInt() shl 8) or this[at + 1].u()).toFloat()
+private fun ByteArray.u24(at: Int = 0): Float = ((this[at].u() shl 16) or (this[at + 1].u() shl 8) or this[at + 2].u()).toFloat()
+private fun ByteArray.u32(at: Int = 0): Float = ((this[at].u().toLong() shl 24) or u24(at + 1).toLong()).toFloat()
+private fun ByteArray.s32(at: Int = 0): Float = ((this[at].toInt() shl 24) or u24(at + 1).toInt()).toFloat()
 
 /**
  * The answers about a whole control loop begin with a byte of flags telling which of the
@@ -122,6 +209,14 @@ private fun standard(pid: Int, bytes: Int, multi: Boolean = false, decode: (Byte
 private fun engine(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) =
     Query(Target.ENGINE, 0x22, did, bytes, decode = decode)
 
+private fun unit(target: Target, did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) =
+    Query(target, 0x22, did, bytes, decode = decode)
+
+private fun brakes(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) = unit(Target.BRAKES, did, bytes, decode)
+private fun gateway(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) = unit(Target.GATEWAY, did, bytes, decode)
+private fun climate(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) = unit(Target.CLIMATE, did, bytes, decode)
+private fun cluster(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) = unit(Target.CLUSTER, did, bytes, decode)
+
 /** Tenths of a kelvin, the way the engine control units of the Volkswagen group give temperatures. */
 private val deciKelvin: (ByteArray) -> Float = { it.u16() / 10f - 273.1f }
 
@@ -133,7 +228,8 @@ private val deciKelvin: (ByteArray) -> Float = { it.u16() / 10f - 273.1f }
  * Škoda Octavia, VW Golf and their relatives). Which of them a particular engine knows differs,
  * so each is asked for once after connecting, and the first that gives a believable value is
  * used. Their numbers and scalings were looked up in the OBDb project (https://github.com/OBDb,
- * CC BY-SA 4.0), in its data for SEAT, Cupra, Volkswagen and Audi models.
+ * CC BY-SA 4.0), in its data for SEAT, Cupra, Volkswagen and Audi models. Nobody is known to
+ * have checked them on the engine this app was written for: what answers shows in the car.
  */
 val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.MAP to listOf(standard(0x0B, 1) { it.u8() / 100f }),
@@ -141,7 +237,7 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     // What the turbo adds on top of the air outside, measured in the intake manifold. Without
     // a barometer in the car, the pressure at sea level stands in for it.
     Signal.BOOST to listOf(
-        Derived(Signal.MAP) { values ->
+        Derived(Signal.MAP, also = listOf(Signal.BARO)) { values ->
             values[Signal.MAP]?.let { it - (values[Signal.BARO] ?: 1.013f) }
         },
     ),
@@ -170,13 +266,12 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
         // Hundredths of 18 degrees Fahrenheit above absolute zero.
         engine(0x15B7) { (it.u16() * 0.18f - 460f - 32f) / 1.8f },
         engine(0x40D5) { it.s16() / 10f },
-        engine(0x201A) { it.s16() / 10f },
         // One byte on some engines, two on others.
         engine(0x20A1, 1) { if (it.size >= 2) it.s16() / 10f else it.u8() - 40f },
         engine(0x1102, 1) { it.u8() - 40f },
-        // The instrument cluster has the oil temperature it shows as well (22 202F at 714),
-        // but hearing its answer takes changing what the adapter listens to, and the common
-        // clones do not find their way back from that.
+        // The last resort: the instrument cluster has the oil temperature it shows. Asking
+        // it means turning the adapter to another control unit and back each time.
+        cluster(0x202F, 1) { it.u8() - 58f },
     ),
     Signal.OIL_PRESSURE to listOf(
         // Tenths of a kilopascal.
@@ -205,7 +300,7 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.TORQUE_REFERENCE to listOf(standard(0x63, 2) { it.u16() }),
     Signal.TORQUE to listOf(
         // The standard way: the engine tells its torque as a share of a reference torque.
-        Derived(Signal.TORQUE_PERCENT) { values ->
+        Derived(Signal.TORQUE_PERCENT, also = listOf(Signal.TORQUE_REFERENCE)) { values ->
             val percent = values[Signal.TORQUE_PERCENT]
             val reference = values[Signal.TORQUE_REFERENCE]
             if (percent != null && reference != null) reference * percent / 100f else null
@@ -241,4 +336,90 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.RUNTIME to listOf(standard(0x1F, 2) { it.u16() / 60f }),
     Signal.MAF to listOf(standard(0x10, 2) { it.u16() / 100f }),
     Signal.TIMING to listOf(standard(0x0E, 1) { it.u8() / 2f - 64f }),
+
+    Signal.GEAR to listOf(engine(0x14CB, 1) { it.u8() }, engine(0x100D, 1) { it.s8() }, engine(0x15AA, 1) { it.u8() }),
+    Signal.OIL_LEVEL to listOf(
+        engine(0x11BC) { it.s16() / 250f },
+        engine(0x2006) { it.s16() * 0.06f },
+        engine(0x15A4) { it.u16() / 250f },
+    ),
+    // The pressure the pump in the tank feeds the high pressure pump with.
+    Signal.FUEL_LOW to listOf(engine(0x2025) { it.u16() / 1000f }, engine(0x11C8) { it.u16() / 1000f }),
+    Signal.FUEL_TEMP to listOf(engine(0x162D, decode = deciKelvin), engine(0x128A, 1) { it.u8() * 0.75f - 48f }),
+    // Behind the intercooler.
+    Signal.CHARGE_AIR_TEMP to listOf(engine(0x1628, decode = deciKelvin), engine(0x1798) { it.s16() / 10f - 273.1f }),
+    Signal.RADIATOR_OUT to listOf(
+        engine(0x1135, decode = deciKelvin),
+        engine(0x15CD) { it.s16() / 10f - 273.1f },
+        engine(0x202B) { it.s16() / 10f },
+    ),
+    Signal.TURBO_ACTUATOR to listOf(
+        engine(0x112C) { it.s16() / 100f },
+        engine(0x117E) { it.s16() / 100f },
+        engine(0x16EE) { it.s16() * 0.012207f },
+    ),
+    Signal.CAM_INTAKE to listOf(engine(0x136E) { it.s16() / 125f }, engine(0x201E) { it.s16() / 10f }),
+    Signal.CAM_EXHAUST to listOf(engine(0x136C) { it.s16() / 125f }, engine(0x201A) { it.s16() / 10f }),
+    // By how much the ignition of each cylinder was taken back because it knocked.
+    Signal.KNOCK_1 to listOf(engine(0x200A, 1) { it.u8() * 0.375f - 48f }),
+    Signal.KNOCK_2 to listOf(engine(0x200B, 1) { it.u8() * 0.375f - 48f }),
+    Signal.KNOCK_3 to listOf(engine(0x200C, 1) { it.u8() * 0.375f - 48f }),
+    Signal.KNOCK_4 to listOf(engine(0x200D, 1) { it.u8() * 0.375f - 48f }),
+    Signal.MISFIRES to listOf(engine(0x1146) { it.u16() }, engine(0x2904) { it.u16() }),
+    Signal.FUEL_RATE to listOf(engine(0x113F) { it.u16() / 100f }),
+    // Since the engine was started.
+    Signal.FUEL_USED to listOf(engine(0x1519) { it.u16() / 100f }),
+
+    Signal.STEERING to listOf(
+        unit(Target.STEERING, 0x1812) { it.s16() / 8f + 0.06f },
+        // The brakes know it too, far into a longer answer.
+        brakes(0x1804, 12) { it.s16(10) * 0.4375f },
+    ),
+    Signal.BRAKE_PRESSURE to listOf(
+        brakes(0x1816, 3) { it.s16(1) / 100f },
+        brakes(0x2B21) { it.s16() * 0.0152999f - 42.503f },
+        engine(0x18D0) { it.s16() / 100f },
+    ),
+    Signal.ACCEL_LONG to listOf(engine(0x1633) { it.s16() / 1000f }, engine(0x15CF) { it.s16() / 1000f }),
+    Signal.ACCEL_LAT to listOf(engine(0x1644) { it.s16() / 100f }),
+    Signal.WHEEL_FL to listOf(brakes(0x1800) { it.u16() / 10f }, brakes(0x2B1B) { it.u16() / 10f }),
+    Signal.WHEEL_FR to listOf(brakes(0x1801) { it.u16() / 10f }, brakes(0x2B1C) { it.u16() / 10f }),
+    Signal.WHEEL_RL to listOf(brakes(0x1802) { it.u16() / 10f }, brakes(0x2B1D) { it.u16() / 10f }),
+    Signal.WHEEL_RR to listOf(brakes(0x1803) { it.u16() / 10f }, brakes(0x2B1E) { it.u16() / 10f }),
+    // How hot the stability control reckons each brake disc to be; one answer holds all four.
+    Signal.BRAKE_TEMP_FL to listOf(brakes(0x180C, 9) { it.s16(1) / 2f }),
+    Signal.BRAKE_TEMP_FR to listOf(brakes(0x180C, 9) { it.s16(3) / 2f }),
+    Signal.BRAKE_TEMP_RL to listOf(brakes(0x180C, 9) { it.s16(5) / 2f }),
+    Signal.BRAKE_TEMP_RR to listOf(brakes(0x180C, 9) { it.s16(7) / 2f }),
+
+    Signal.BATTERY_VOLTAGE to listOf(gateway(0x2A07) { it.u16() / 1000f + 4f }),
+    Signal.BATTERY_CURRENT to listOf(
+        gateway(0x2A09, 4) { it.s32() / 1000f },
+        gateway(0x2A08, 3) { it.u24() / 1000f - 3000f },
+    ),
+    Signal.BATTERY_SOC to listOf(gateway(0x2A0C, 1) { it.u8() }),
+    Signal.BATTERY_TEMP to listOf(gateway(0x2A0B, 1) { it.u8() - 40f }),
+    Signal.BATTERY_CHARGE to listOf(gateway(0x2A0F, 1) { it.u8() }),
+    Signal.BATTERY_REST to listOf(gateway(0x2A10, 1) { it.u8() / 10f + 9f }),
+    Signal.BATTERY_RESISTANCE to listOf(gateway(0x2A0E, 1) { it.u8() * 0.2f }),
+    Signal.GENERATOR_VOLTAGE to listOf(gateway(0x4F00, 1) { it.u8() / 10f + 10.6f }),
+    Signal.GENERATOR_TARGET to listOf(gateway(0x2A00, 1) { it.u8() / 10f + 10.6f }),
+    Signal.GENERATOR_CURRENT to listOf(gateway(0x2A1C) { it.u16() / 10f + 9f }),
+
+    Signal.CABIN_TEMP to listOf(climate(0x2613) { it.s16() / 10f }, cluster(0x2613) { it.u16() / 10f }),
+    Signal.VENT_LEFT to listOf(climate(0x260C, 1) { it.u8() / 3f }),
+    Signal.VENT_RIGHT to listOf(climate(0x260D, 1) { it.u8() / 3f }),
+    Signal.EVAPORATOR to listOf(climate(0x2612, 1) { it.s8() / 3f }),
+    Signal.REFRIGERANT to listOf(climate(0x2605, 1) { it.u8() / 5f }),
+    Signal.COMPRESSOR_SPEED to listOf(climate(0x2603, 1) { it.u8() * 100f }),
+    Signal.COMPRESSOR_LOAD to listOf(climate(0x2604, 1) { it.u8() / 10f }),
+    Signal.FAN to listOf(climate(0x2606, 1) { it.u8() / 2.5f }),
+    // One answer: the temperature of the windscreen first, the humidity in its fifth byte.
+    Signal.HUMIDITY to listOf(climate(0x27C4, 5) { it.u8(4) / 2f }),
+    Signal.WINDSHIELD_TEMP to listOf(climate(0x27C4, 1) { it.u8() * 0.576f - 38.8f }),
+
+    Signal.FUEL_LITERS to listOf(cluster(0x229A) { it.u16() / 8f }, cluster(0x2206, 1) { it.u8() }),
+    Signal.RANGE to listOf(cluster(0x2294) { it.u16() }),
+    Signal.CONSUMPTION to listOf(cluster(0x2299) { it.u16() / 10f }),
+    Signal.ODOMETER to listOf(cluster(0x2203, 3) { it.u24() }, cluster(0x22B8, 4) { it.u32() / 1000f }),
 )
