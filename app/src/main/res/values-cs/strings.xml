@@ -2,6 +2,7 @@
 <resources>
     <string name="signal_boost">Tlak turba</string>
     <string name="signal_oil_temp">Teplota oleje</string>
+    <string name="signal_oil_pressure_target">Tlak oleje pož.</string>
     <string name="signal_oil_pressure">Tlak oleje</string>
     <string name="signal_pedal">Plyn</string>
     <string name="signal_brake">Brzda</string>
@@ -72,6 +73,8 @@
     <string name="survey_title">Průzkum motoru</string>
     <string name="survey_text">Zeptá se řídicí jednotky motoru na všechny hodnoty známé z aut koncernu Volkswagen a zapíše, co odpoví. Tak se najdou hodnoty, které nahoře chybí, třeba tlak oleje. Trvá to pár minut a budíky při tom stojí, takže to dělej na místě.\n\nUdělej jedno měření na volnoběh, druhé při držených asi 3000 otáčkách a pokud to jde, třetí se zahřátým motorem. Potom nasdílej záznam níže.</string>
     <string name="survey_start">Změřit</string>
+    <string name="survey_show">Ukázat, co se našlo</string>
+    <string name="survey_hide">Skrýt, co se našlo</string>
     <string name="survey_again">Změřit znovu</string>
     <string name="survey_progress">Dotazy: %1$d z %2$d</string>
     <string name="survey_readings">Hotových měření: %1$d</string>

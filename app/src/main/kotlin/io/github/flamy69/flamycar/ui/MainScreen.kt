@@ -305,6 +305,15 @@ private fun SurveyCard(obd: ObdManager, live: Boolean) {
                 OutlinedButton(onClick = obd::startSurvey, enabled = live) {
                     Text(stringResource(if (state.readings == 0) R.string.survey_start else R.string.survey_again))
                 }
+                if (state.summary.isNotEmpty()) {
+                    var shown by rememberSaveable { mutableStateOf(false) }
+                    TextButton(onClick = { shown = !shown }) {
+                        Text(stringResource(if (shown) R.string.survey_hide else R.string.survey_show))
+                    }
+                    if (shown) {
+                        Text(state.summary, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
+                    }
+                }
             }
         }
     }

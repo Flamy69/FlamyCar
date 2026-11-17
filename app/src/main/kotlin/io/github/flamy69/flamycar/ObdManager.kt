@@ -60,6 +60,8 @@ data class SurveyState(
     /** How many readings have been taken. */
     val readings: Int = 0,
     val problem: String? = null,
+    /** What was found, for reading on the phone. */
+    val summary: String = "",
 )
 
 class Readings(
@@ -132,7 +134,7 @@ class ObdManager(private val context: Context) : ObdSession.Events {
 
     override fun onSurveyDone(survey: Survey, problem: String?) {
         if (survey.readings > 0) save(surveyFile, survey.text())
-        _surveyState.value = SurveyState(readings = survey.readings, problem = problem)
+        _surveyState.value = SurveyState(readings = survey.readings, problem = problem, summary = survey.summary())
     }
 
     /**

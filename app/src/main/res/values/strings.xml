@@ -5,6 +5,7 @@
     <!-- Names of the values. They stand under the gauges, so the shorter the better. -->
     <string name="signal_boost">Boost</string>
     <string name="signal_oil_temp">Oil temperature</string>
+    <string name="signal_oil_pressure_target">Oil pressure asked</string>
     <string name="signal_oil_pressure">Oil pressure</string>
     <string name="signal_pedal">Accelerator</string>
     <string name="signal_brake">Brake</string>
@@ -77,6 +78,8 @@
     <string name="survey_title">Survey of the engine</string>
     <string name="survey_text">Asks the engine control unit for every value known from Volkswagen group cars and notes down what it answers. This is how values that are missing above, such as the oil pressure, get found. It takes a few minutes and the gauges stand still meanwhile, so do it parked.\n\nTake one reading with the engine idling, another while holding about 3000 rpm, and if you can a third with the engine warm. Then share the record below.</string>
     <string name="survey_start">Take a reading</string>
+    <string name="survey_show">Show what was found</string>
+    <string name="survey_hide">Hide what was found</string>
     <string name="survey_again">Take another reading</string>
     <string name="survey_progress">Asked: %1$d of %2$d</string>
     <string name="survey_readings">Readings taken: %1$d</string>

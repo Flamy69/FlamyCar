@@ -345,7 +345,7 @@ class ObdSessionTest {
         assertEquals(2, survey.readings)
         assertTrue(progress > 50)
         val lines = survey.text().lines()
-        assertTrue(lines[0], lines[0].contains("6 identifiers answered"))
+        assertTrue(lines[0], lines[0].contains("7 identifiers answered"))
         assertTrue(lines[1], lines[1].startsWith("#1: ") && lines[1].contains("RPM="))
         // Oil temperature, 11BE: two bytes at each of the two readings.
         val oil = lines.single { it.startsWith("11BE") }.split(" | ")

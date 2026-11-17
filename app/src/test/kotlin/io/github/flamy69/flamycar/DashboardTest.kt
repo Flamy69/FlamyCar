@@ -21,7 +21,7 @@ class DashboardTest {
     fun `the table begins with the oil and holds everything worth reading`() {
         val board = Dashboard.board(everything)
 
-        assertEquals(listOf(Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.COOLANT), board.rows.take(3))
+        assertEquals(listOf(Signal.OIL_TEMP, Signal.OIL_PRESSURE, Signal.OIL_PRESSURE_TARGET), board.rows.take(3))
         assertTrue(Signal.CHARGE in board.rows && Signal.TORQUE in board.rows && Signal.VOLTAGE in board.rows)
         // The ignition advance was asked to be left out; the halves of the torque are no reading.
         assertFalse(Signal.TIMING in board.rows)

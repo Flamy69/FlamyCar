@@ -1,0 +1,982 @@
+028D	Engine control module temperature	0	16	1.0	10.0	0.0	1	0	°C
+028D	Engine control module temperature	0	16	1.0	10.0	-273.1	0	0	°C
+0802	Gasoline particulate filter water load	0	8	100.0	255.0	0.0	0	0	%
+0802	Gasoline particulate filter water load	0	8	20.0	51.0	0.0	0	0	%
+0804	Gasoline particulate filter oil ash load calculated	0	8	100.0	255.0	0.0	0	0	%
+0804	Gasoline particulate filter oil ash load calculated	0	8	20.0	51.0	0.0	0	0	%
+0809	Diesel particulate filter regeneration status	0	16	1.0	1.0	0.0	0	0	
+080C	Post injection 2	0	16	1.0	10.0	0.0	0	0	
+080D	Diesel particulate filter regeneration level current	0	16	1.0	1.0	0.0	0	0	
+080E	Lambda value at DPF inlet	0	16	1.0	1000.0	0.0	1	0	
+081A	Post injection 1	0	16	1.0	10.0	0.0	0	0	
+081B	Post injection 3	0	16	1.0	10.0	0.0	0	0	
+0827	Gasoline particulate filter blockage ratio calculated absolute	0	8	100.0	255.0	0.0	0	0	
+0827	Gasoline particulate filter blockage ratio calculated absolute	0	8	20.0	51.0	0.0	0	0	
+0828	Gasoline particulate filter blockage ratio calculated relative	0	8	100.0	255.0	0.0	0	0	
+0828	Gasoline particulate filter blockage ratio calculated relative	0	8	20.0	51.0	0.0	0	0	
+0829	Gasoline particulate filter soot load calculated	0	8	100.0	255.0	0.0	0	0	%
+0829	Gasoline particulate filter soot load calculated	0	8	20.0	51.0	0.0	0	0	%
+082B	Gasoline particulate filter loading stage	0	8	1.0	1.0	0.0	0	0	
+082D	Exhaust gas temperature before gasoline particulate filter	0	16	1.0	10.0	-273.1	0	0	°C
+1000	Ambient temperature	0	8	3.0	4.0	-48.0	0	0	°C
+1001	Intake air temperature	0	8	3.0	4.0	-48.0	0	0	°C
+1002	A/C compressor torque, requested	0	16	1.0	10.0	0.0	1	0	Nm
+1004	Ambient temperature	0	16	1.0	128.0	0.0	1	0	°C
+1007	Camshaft start position	0	16	1.0	5.0	0.0	1	0	°
+1008	Fuel level	0	8	1.0	1.0	0.0	0	0	%
+100B	Engine radiator fan request	0	8	20.0	51.0	0.0	0	0	%
+100C	Fuel level variant	0	16	1.0	100.0	0.0	0	0	l
+100D	Current gear	0	8	1.0	1.0	0.0	1	0	
+1010	Engine torque	0	16	1.0	10.0	0.0	1	0	Nm
+1017	A/C refrigerant pressure	0	16	2.0	1.0	0.0	1	0	
+1017	Air conditioning compressor pressure	0	16	2.0	1.0	0.0	0	0	
+1018	Coolant fan, requested by A/C	0	16	12207.0	1000000.0	0.0	1	0	%
+101A	A/C compressor torque	0	16	1.0	10.0	0.0	1	0	Nm
+101B	Generator torque request	0	16	1.0	10.0	0.0	1	0	Nm
+101C	Generator load signal	0	16	1.0	100.0	0.0	1	0	%
+1023	Air conditioning compressor torque	0	16	1.0	10.0	0.0	1	0	Nm
+1024	Air mass meter 1	0	16	1000.0	10000.0	0.0	1	0	
+1026	Mass airflow sensor 1 bank 1 raw value	0	16	1000.0	10000.0	0.0	1	0	
+1028	Downshift point adaptation voltage	0	16	1.0	5.0	0.0	0	0	mV
+1029	Accelerator pedal release detection threshold voltage	0	16	1.0	5.0	0.0	0	0	mV
+102A	Accelerator pedal, sensor 1 voltage	0	16	1.0	5.0	0.0	0	0	mV
+102B	Accelerator pedal, sensor 2 voltage	0	16	1.0	5.0	0.0	0	0	mV
+102C	Coolant temperature at radiator outlet, actual value	0	16	1.0	10.0	-273.1	0	0	°C
+102E	Accelerator pedal sensor 2	0	16	1.0	5.0	0.0	1	0	mV
+1033	Generator load signal	0	16	1.0	100.0	0.0	1	0	%
+103C	Intake manifold pressure calculated	0	16	1.0	1.0	0.0	1	0	
+1040	Particulate filter differential pressure, filtered	0	16	1.0	4.0	-5000.0	0	0	
+1044	Diesel particulate filter surface temperature	0	16	1.0	10.0	-273.1	0	0	°C
+1047	Engine torque	0	16	1.0	10.0	0.0	1	0	Nm
+1048	Air conditioning compressor refrigerant pressure	0	16	2.0	1.0	0.0	1	0	
+104B	Air conditioning compressor torque	0	16	1.0	10.0	0.0	1	0	Nm
+104C	Air mass, specified value	0	16	1.0	10.0	0.0	1	0	
+1056	Charge air pressure, actual value	0	16	1.0	1.0	0.0	1	0	
+1057	Boost pressure	0	16	1.0	1000.0	0.0	0	0	bar
+1059	Accelerator pedal torque limit	0	16	1.0	10.0	0.0	1	0	Nm
+105A	Battery voltage	0	16	20.0	1.0	0.0	1	0	mV
+105A	Battery voltage	0	16	1.0	50.0	0.0	0	0	V
+105C	Generator load	0	16	1.0	100.0	0.0	0	0	%
+105C	Brake pressure	0	16	1.0	10.0	0.0	0	0	bar
+105D	Brake pedal position	0	16	12207.0	1000000.0	0.0	0	0	%
+105D	Brake pedal position	0	16	122.07	10000.0	0.0	0	0	%
+105E	Battery voltage variant	0	16	1.0	50.0	0.0	0	0	V
+1063	Engine outlet coolant temperature calculated	0	16	1.0	10.0	-273.1	0	0	°C
+1064	Coolant temperature at engine outlet, calculated	0	16	1.0	10.0	-273.1	0	0	°C
+1065	Cylinder head temperature	0	16	9.0	50.0	-460.0	0	0	°F
+1065	Cylinder head temperature	0	16	0.18	1.0	-460.0	0	0	°F
+1069	Engine start quantity	0	16	1.0	100.0	0.0	1	0	
+106B	Torque limit	0	16	1.0	10.0	0.0	1	0	Nm
+1077	Onboard electrical system power	0	16	4.0	1.0	0.0	0	0	W
+107D	Torque limitation	0	16	1.0	10.0	0.0	0	0	Nm
+108C	Odometer	0	32	1.0	1.0	0.0	0	0	km
+108F	Engine torque limitation	0	16	1.0	10.0	0.0	1	0	Nm
+1092	Camshaft speed	0	16	1.0	4.0	0.0	1	0	rpm
+1093	Camshaft adaptation intake, phase position	0	16	35999.0	1638350.0	0.0	1	0	°
+1097	Generator performance	0	16	94248.0	10000.0	0.0	1	0	W
+1097	Generator power	0	16	9.4247	1.0	0.0	0	0	W
+109B	Coolant temperature at radiator outlet 2	0	16	1.0	10.0	-273.1	0	0	°C
+109C	Radiator fan 2, commanded duty	0	16	1.0	100.0	0.0	1	0	%
+109E	Radiator fan 1, commanded duty	0	16	1.0	100.0	0.0	1	0	%
+10A0	Fuel flow	0	16	1.0	100.0	0.0	1	0	l
+10A2	Mileage with ECU installed	0	32	1.0	1000.0	0.0	0	0	km
+10A4	Injection speed injector 0	0	16	1.0	4.0	0.0	0	0	rpm
+10A5	Injection speed injector 1	0	16	1.0	4.0	0.0	0	0	rpm
+10A6	Injection speed injector 2	0	16	1.0	4.0	0.0	0	0	rpm
+10A7	Oil temperature	0	16	1.0	10.0	-273.1	0	0	°C
+10A8	Injection speed injector 3	0	16	1.0	4.0	0.0	0	0	rpm
+10BE	Requested torque, amount for auxiliary units	0	16	1.0	10.0	0.0	1	0	Nm
+10C2	Exhaust gas recirculation valve duty	0	16	1.0	100.0	0.0	1	0	%
+10CA	Acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+10D0	Injector 1 rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
+10D0	Injector 1 rail pressure calibration point 1	0	16	0.05	1000.0	0.0	1	0	ms
+10D1	Injector 3 rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
+10D1	Injector 3 rail pressure calibration point 1	0	16	0.05	1000.0	0.0	1	0	ms
+10D2	Injector 3 rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10D2	Injector 3 rail pressure calibration point 2	0	16	0.05	1000.0	0.0	1	0	ms
+10D3	Injector 2 rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
+10D3	Injector 2 rail pressure calibration point 1	0	16	0.05	1000.0	0.0	1	0	ms
+10D4	Injector 2, rail pressure calibration point 1	0	16	1.0	20000.0	0.0	1	0	ms
+10D5	Lambda, actual value	0	16	12207.0	50000000.0	0.0	1	0	
+10D6	Injector 1 rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10D6	Injector 1 rail pressure calibration point 2	0	16	0.05	1000.0	0.0	1	0	ms
+10D7	Injector 4, rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10D8	Injector 4 rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10D8	Injector 4 rail pressure calibration point 2	0	16	0.05	1000.0	0.0	1	0	ms
+10D9	Injector 2 rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10D9	Injector 2 rail pressure calibration point 2	0	16	0.05	1000.0	0.0	1	0	ms
+10DA	Injector 2, rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10DB	Injector 5, rail pressure calibration point 2	0	16	1.0	20000.0	0.0	1	0	ms
+10DC	Injector 1 rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
+10DC	Injector 1 rail pressure calibration point 3	0	16	0.05	1000.0	0.0	1	0	ms
+10DD	Injector 3 rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
+10DD	Injector 3 rail pressure calibration point 3	0	16	0.05	1000.0	0.0	1	0	ms
+10DE	Injector 4 rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
+10DE	Injector 4 rail pressure calibration point 3	0	16	0.05	1000.0	0.0	1	0	ms
+10DF	Injector 2 rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
+10DF	Injector 2 rail pressure calibration point 3	0	16	0.05	1000.0	0.0	1	0	ms
+10E0	Odometer	0	32	1.0	1.0	0.0	0	0	km
+10E1	Injector 5, rail pressure calibration point 3	0	16	1.0	20000.0	0.0	1	0	ms
+10E2	Wear index	0	16	1.0	1.0	0.0	1	0	meters
+10E3	Torque reduction due to exhaust temperature	0	16	1.0	10000.0	0.0	1	0	
+10E4	Regulation factor total	0	16	1.0	10000.0	0.0	1	0	%
+10E5	Ignition timing angle retard, cylinder 4	0	16	75.0	100.0	0.0	1	0	°
+10E5	Knock retard 2,, variant 1	0	8	0.75	1.0	0.0	1	0	°
+10E6	Knock retard 2	0	8	3.0	4.0	0.0	1	0	°
+10E7	Knock retard 4	0	8	3.0	4.0	0.0	1	0	°
+10E9	Maximum filling correction factor from knock control	0	16	3.0	100000.0	0.0	0	0	
+10EA	Open cam shaft angle at quantity control valve	0	16	1.0	10.0	0.0	1	0	°
+10EA	Open cam shaft angle at quantity control valve	0	16	1000.0	10000.0	0.0	1	0	°
+10EB	Crankshaft rotation angle when closing the quantity control valve	0	16	1.0	10.0	0.0	1	0	°
+10EC	Valve timing, the difference between the, actual and the set angle	0	16	1.0	64.0	0.0	1	0	°
+10EC	Valve timing, the difference between the, actual and the set angle	0	16	156.25	10000.0	0.0	1	0	°
+10F1	Diesel particulate filter differential pressure offset	0	16	1.0	1.0	0.0	1	0	
+10F2	Sum of misfires counter	0	16	1.0	1.0	0.0	0	0	
+10F3	Oil level, last valid dynamic value	0	16	1.0	16.0	-127.0	0	0	mm
+10F4	Misfires per 1000 revolutions, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+10F5	Misfires, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+10F6	Misfires per 1000 revolutions, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+10F7	Misfires, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+10F8	Misfires, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+10F9	Diesel particulate filter outlet temperature	0	16	1.0	10.0	-273.1	0	0	°C
+10F9	Exhaust gas temperature sensor 4	0	16	1.0	10.0	-273.1	1	0	°C
+10FA	Misfires, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+10FB	Exhaust gas temperature sensor 1	0	16	1.0	10.0	-273.1	1	0	°C
+10FF	Injection amount deviation cylinder 1	0	16	1.0	100.0	0.0	1	0	
+1100	Injection amount deviation cylinder 3	0	16	1.0	100.0	0.0	1	0	
+1102	Engine oil temperature	0	8	1.0	1.0	-40.0	0	0	°C
+1104	Injection amount deviation cylinder 4	0	16	1.0	100.0	0.0	1	0	
+1105	Injection amount deviation cylinder 2	0	16	1.0	100.0	0.0	1	0	
+1106	Injection amount deviation cylinder 2	0	16	1.0	100.0	0.0	1	0	
+1107	Injection amount deviation cylinder 5	0	16	1.0	100.0	0.0	1	0	
+1108	Charge pressure control specified value	0	16	20.0	13107.0	0.0	0	0	%
+1109	Fuel pump specified value	0	16	20.0	13107.0	0.0	0	0	%
+110A	Mass flow through throttle valve	0	16	1.0	10.0	0.0	0	0	
+110E	Long term fuel trim at idle	0	16	1.0	20.0	0.0	1	0	%
+1111	Radiator outlet coolant temperature commanded	0	16	1.0	10.0	-273.1	0	0	°C
+1114	Coolant fan 2 duty cycle	0	16	1.0	100.0	0.0	1	0	%
+1116	Coolant fan 1 duty cycle	0	16	1.0	100.0	0.0	1	0	%
+1117	Coolant fan 1 activation, $1117	0	16	1.0	100.0	0.0	1	0	%
+1118	Boost pressure, target	0	8	10.0	1.0	0.0	0	0	
+111A	Fuel flow rate	0	16	1.0	100.0	0.0	1	0	l
+111B	High fuel pressure, target	0	16	1.0	2000.0	0.0	0	0	
+111C	Fuel temperature	0	16	1.0	10.0	-273.1	0	0	°C
+111E	Boost pressure, actual	0	16	2.0	25.0	0.0	0	0	
+111F	Preheat time	0	16	100.0	1.0	0.0	1	0	ms
+1123	Ambient temperature	0	16	1.0	10.0	-273.1	0	0	°C
+1124	Camshaft speed	0	16	2500.0	10000.0	0.0	0	0	rpm
+1124	Camshaft speed	0	16	1.0	4.0	0.0	0	0	rpm
+1125	Camshaft adaptation, intake bank 1, phase position	0	16	1.0	50.0	0.0	1	0	°
+1125	Camshaft adaptation, intake bank 1, phase position	0	16	219.73	10000.0	0.0	1	0	°
+1126	Knock sensor voltage, cylinder 1	0	16	21333.0	4369000.0	0.0	0	0	V
+1127	Knock sensor voltage, cylinder 3	0	16	21333.0	4369000.0	0.0	0	0	V
+1128	Camshaft adaptation, exhaust bank 1, phase position	0	16	1.0	50.0	0.0	1	0	°
+1128	Camshaft adaptation, exhaust bank 1, phase position	0	16	219.73	10000.0	0.0	1	0	°
+1129	Compression test cylinder 1	0	16	1.0	2.0	0.0	1	0	rpm
+112A	Compression test cylinder 2	0	16	1.0	2.0	0.0	1	0	rpm
+112B	Compression test cylinder 3	0	16	1.0	2.0	0.0	1	0	rpm
+112C	Turbine actuator 1 bank 1: activation	0	16	1.0	100.0	0.0	1	0	%
+112C	Compression test cylinder 4	0	16	1.0	2.0	0.0	1	0	rpm
+112C	Turbine actuator 1 bank 1: activation	0	16	0.01	1.0	0.0	1	0	%
+112D	SEG_AD_MMV_ER, 1	0	16	78123.0	327670000.0	0.0	1	0	%
+112D	Spark efficiency deviation at part load	0	8	78.1	100.0	0.0	0	0	%
+112E	SEG_AD_MMV_ER, 2	0	16	78123.0	327670000.0	0.0	1	0	%
+112F	SEG_AD_MMV_ER, 3	0	16	78123.0	327670000.0	0.0	1	0	%
+1130	Coolant fan 1, activation	0	16	100.0	10000.0	0.0	1	0	%
+1130	Coolant fan 1, commanded duty	0	16	1.0	100.0	0.0	0	0	%
+1131	Post-injection 3 start position	0	16	1.0	50.0	0.0	1	0	°
+1132	SEG_AD_MMV_ER_MID, 0	0	16	78123.0	327670000.0	0.0	1	0	%
+1133	SEG_AD_MMV_ER_MID, 1	0	16	78123.0	327670000.0	0.0	1	0	%
+1134	SEG_AD_MMV_ER_MID, 2	0	16	78123.0	327670000.0	0.0	1	0	%
+1135	Coolant temperature at radiator outlet	0	16	1.0	10.0	-273.1	0	0	°C
+1136	Height correction	0	16	6.10348e-05	1.0	0.0	0	0	
+1137	Fuel part from EVAP system	0	8	781.0	100000.0	0.0	1	0	
+1138	SEG_AD_MMV_ER_H, 0	0	16	78123.0	327670000.0	0.0	1	0	%
+1139	Mean injection quantity	0	16	1.0	100.0	0.0	1	0	
+1139	Mean injection quantity	0	16	0.01	1.0	0.0	1	0	
+113A	SEG_AD_MMV_ER_H, 2	0	16	78123.0	327670000.0	0.0	1	0	%
+113A	Long term throttle adaptation to MAF sensor	0	16	6.10351e-05	1.0	0.0	0	0	%
+113B	SEG_AD_MMV_ER_H, 3	0	16	78123.0	327670000.0	0.0	1	0	%
+113D	Oxygen sensor 1 bank 1 lambda value	0	16	1.0	100.0	0.0	1	0	
+113E	SEG_AD_MMV_ER_L, 0	0	16	78123.0	327670000.0	0.0	1	0	%
+113F	Fuel consumption	0	16	1.0	100.0	0.0	0	0	l
+1140	SEG_AD_MMV_ER_L, 2	0	16	78123.0	327670000.0	0.0	1	0	%
+1141	SEG_AD_MMV_ER_L, 3	0	16	78123.0	327670000.0	0.0	1	0	%
+1146	Misfires total	0	16	1.0	1.0	0.0	0	0	
+1147	Misfires / 1000 revolutions, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+1148	Fuel metering valve position	0	16	1.0	100.0	0.0	1	0	%
+1149	Boost pressure commanded	0	16	1.0	1.0	0.0	1	0	
+1149	Misfires / 1000 revolutions, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+114A	Misfires / 1000 revolutions, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+114B	Misfires per 1000 revolutions 2	0	16	1.0	1.0	0.0	0	0	
+114C	Misfires per 1000 revolutions 4	0	16	1.0	1.0	0.0	0	0	
+114E	Soot mass measured	0	16	1.0	100.0	0.0	1	0	
+114F	Misfires, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+114F	Soot mass calculated	0	16	1.0	100.0	0.0	0	0	
+1150	Misfires, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+1151	Misfires, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+1152	Misfires, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+1153	Diesel particulate filter oil ash volume	0	16	1.0	100.0	0.0	1	0	l
+1153	Elector motor 1 torque	0	16	1.0	32.0	0.0	1	0	Nm
+1154	Elector motor 2 torque	0	16	1.0	32.0	0.0	1	0	Nm
+1155	Elector motor 3 torque	0	16	1.0	32.0	0.0	1	0	Nm
+1156	Distance since last regeneration	0	32	1.0	1000.0	0.0	0	0	km
+1158	Maximum discharge current	0	16	1.0	10.0	0.0	1	0	A
+1159	Maximum charge current	0	16	1.0	10.0	0.0	1	0	A
+115A	Particle filter, fuel consumption since last regeneration	0	16	1.0	100.0	0.0	1	0	l
+115B	Particle filter, field regeneration request status	0	8	1.0	1.0	0.0	0	0	
+115C	Service regeneration status	0	8	1.0	1.0	0.0	0	0	
+115E	Time since last regeneration	0	32	1.0	10066666667.0	0.0	0	0	min
+1160	Odometer, high resolution	0	32	1.0	1000.0	0.0	0	0	km
+1160	Odometer, high resolution	0	32	1.0	1.0	0.0	0	0	meters
+1161	Engine RPM at idle required	0	16	1.0	2.0	0.0	1	0	rpm
+1164	Service regeneration current duration	0	32	0.0001666667	1.0	0.0	0	0	min
+1164	Service regeneration value, two-byte reply, raw count	0	16	1.0	1.0	0.0	0	0	
+1165	HV battery temperature load	0	16	1.0	100.0	0.0	0	0	%
+1169	High pressure fuel pressure actual	0	16	100.0	1.0	0.0	1	0	
+116A	High pressure fuel pressure commanded	0	16	100.0	1.0	0.0	1	0	
+1175	Integrated mass of air since engine start	0	16	8889.0	25000.0	0.0	0	0	
+1177	Temperature at air conditioner heat exchanger output	0	16	1.0	10.0	-273.1	0	0	°C
+117D	N_32	0	8	32.0	1.0	0.0	0	0	rpm
+117E	Turbine actuator 1 bank 1 activation	0	16	1.0	100.0	0.0	1	0	%
+1181	Charge adjuster output stage	0	16	1.0	100.0	0.0	1	0	%
+1184	PSN_EDGE_REL_AD_CAM_SAVE_EX_1	0	16	1.0	16.0	0.0	1	0	°
+1185	PSN_EDGE_REL_AD_CAM_SAVE_EX_2	0	16	1.0	16.0	0.0	1	0	°
+1186	PSN_EDGE_REL_AD_CAM_SAVE_IN_1	0	16	1.0	16.0	0.0	1	0	°
+1187	Acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+1187	Acceleration	0	16	0.001	1.0	0.0	1	0	metersPerSecondSquared
+1189	Intake camshaft signal edge position adapted edge 2	0	16	1.0	16.0	-32.0	0	0	°
+118A	Intake camshaft signal edge position adapted edge 3	0	16	1.0	16.0	-32.0	0	0	°
+118B	Intake camshaft signal edge position adapted edge 4	0	16	1.0	16.0	-32.0	0	0	°
+118C	Intake camshaft signal edge position adapted edge 5	0	16	1.0	16.0	-32.0	0	0	°
+118D	Intake camshaft signal edge position adapted edge 6	0	16	1.0	16.0	-32.0	0	0	°
+118E	Intake camshaft signal edge position adapted edge 7	0	16	1.0	16.0	-32.0	0	0	°
+118F	Intake camshaft signal edge position adapted edge 8	0	16	1.0	16.0	-32.0	0	0	°
+119D	Inlet flaps - actual value	0	16	20.0	13107.0	0.0	0	0	%
+11A0	Inlet flaps - requested value	0	16	20.0	13107.0	0.0	0	0	%
+11A3	Ea888b boost pressure regulator, commanded	0	8	20.0	51.0	0.0	0	0	%
+11A3	Ea888b boost pressure regulator, commanded	0	8	100.0	255.0	0.0	0	0	%
+11A4	Fuel pump, commanded duty	0	16	0.0015258743	1.0	0.0	0	0	%
+11A6	Accelerator pedal limit	0	16	1.0	10.0	0.0	1	0	Nm
+11A9	High pressure exhaust gas recirculation actuator, actual unconditioned voltage	0	16	1.0	5.0	0.0	1	0	mV
+11AB	Intake model air mass flow filtered value	0	16	1.0	10.0	0.0	0	0	
+11AC	Mass air flow through throttle	0	16	1.0	10.0	0.0	0	0	
+11AD	Mass air flow, commanded	0	16	1.0	10.0	0.0	0	0	
+11B2	Exhaust gas temperature sensor 3	0	16	1.0	10.0	-273.1	0	0	°C
+11B2	Exhaust gas temperature sensor 3	0	16	1.0	10.0	-273.1	1	0	°C
+11B5	Coolant temperature at radiator outlet	0	16	1.0	10.0	-273.1	0	0	°C
+11B8	Air leakage	0	16	1.0	10.0	0.0	0	0	
+11B9	Oil pressure valve switch, control	0	8	1.0	1.0	0.0	0	0	
+11BA	Oil level	0	16	1.0	2500.0	0.0	0	0	cm
+11BB	Oil level, critical	0	16	1.0	2500.0	0.0	0	0	cm
+11BC	Engine oil level	0	16	1.0	250.0	0.0	1	0	mm
+11BD	Critical engine oil level	0	16	1.0	250.0	0.0	1	0	mm
+11BD	Oil level warning threshold	0	16	1.0	2500.0	0.0	0	0	cm
+11BD	Engine oil temperature, engine control module	0	16	1.0	10.0	-273.1	0	0	°C
+11BE	Oil temperature variant	0	16	1.0	10.0	-273.1	0	0	°C
+11BF	Fuel pressure regulator position	0	16	1.0	100.0	0.0	1	0	%
+11C1	Particle filter, field regeneration lock status	0	8	1.0	1.0	0.0	0	0	
+11C4	Oil level, maximum	0	16	1.0	250.0	0.0	0	0	cm
+11C5	Oil level, minimum	0	16	1.0	250.0	0.0	0	0	cm
+11C8	Low fuel pressure, actual	0	16	1.0	10.0	0.0	0	0	kPa
+11C9	Fuel pump adaptation	0	16	1.0	10.0	0.0	1	0	kPa
+11C9	Fuel pump adaptation	0	16	1.0	10.0	0.0	0	0	kPa
+11CC	Boost regulator feedback	0	16	1.0	100.0	0.0	1	0	%
+11CC	Boost regulator feedback	0	16	0.01	1.0	0.0	1	0	%
+11CD	TCO_1_SYS	0	8	1.0	1.0	-40.0	0	0	°C
+11CD	TCO_1_SYS	0	16	1.0	256.0	0.0	0	0	°C
+11CE	Low fuel pressure, commanded	0	16	1.0	10.0	0.0	0	0	kPa
+11CF	Brake booster pressure	0	16	19531.0	500000.0	0.0	0	0	
+11D0	TCO_1_ST	0	8	1.0	1.0	-40.0	0	0	°C
+11D1	Brake booster raw pressure	0	16	1.0	1.0	0.0	0	0	
+11D2	High pressure control, adaptation	0	16	1.0	2000.0	0.0	1	0	
+11D4	Turbocharger inlet pressure corrected value	0	16	5.0	64.0	0.0	0	0	
+11D4	Turbocharger inlet pressure corrected value	0	16	0.078125	1.0	0.0	0	0	
+11D5	High fuel pressure, regulation error	0	16	1.0	2000.0	0.0	1	0	
+11D7	High fuel pressure, commanded	0	16	1.0	2000.0	0.0	0	0	
+11DA	Intake manifold pressure, corrected	0	16	5.0	64.0	0.0	0	0	
+11DA	Intake manifold pressure, corrected	0	16	0.078125	1.0	0.0	0	0	
+11DC	Manifold absolute pressure, raw value	0	16	5.0	64.0	0.0	0	0	
+11DC	Intake manifold pressure raw value	0	8	781.25	10000.0	0.0	0	0	
+11DD	Intake manifold pressure, commanded	0	16	5.0	64.0	0.0	0	0	
+11DD	Intake manifold pressure, commanded	0	16	0.078125	1.0	0.0	0	0	
+11DF	Powertrain overall gear ratio	0	16	1.0	100.0	0.0	0	0	
+11E0	Commanded crankshaft torque	0	16	1.0	10.0	0.0	1	0	Nm
+11E6	Diesel particulate filter exhaust gas flow volume	0	16	1000.0	10000.0	0.0	1	0	
+11EE	Pressure before throttle valve - actual value	0	16	5.0	64.0	0.0	0	0	
+11EF	Pressure before throttle valve - sensor measured	0	16	21333.0	546125.0	0.0	0	0	
+11F0	Boost pressure, actual	0	16	1.0	128.0	0.0	0	0	kPa
+11F1	Transmission input shaft speed	0	16	1.0	2.0	0.0	1	0	rpm
+11F2	Main injection start position	0	16	1.0	50.0	0.0	1	0	°
+11F3	Post-injection 2 start position	0	16	1.0	50.0	0.0	1	0	°
+11F4	Post-injection 1 start position	0	16	1.0	50.0	0.0	1	0	°
+11F6	Field limit value	0	16	1.0	100.0	0.0	0	0	
+11FF	Ea888b boost pressure control, adaptation value 0	0	8	281.0	100.0	0.0	1	0	
+1200	Ea888b boost pressure control, adaptation value 1	0	8	281.0	100.0	0.0	1	0	
+1201	Ea888b boost pressure control, adaptation value 2	0	8	281.0	100.0	0.0	1	0	
+1202	Ea888b boost pressure control, adaptation value 3	0	8	281.0	100.0	0.0	1	0	
+120E	Knock sensor, cylinder 1	0	32	0.0076294	10000.0	0.0	0	0	
+120E	Knock sensor, cylinder 1	0	16	0.0048489933	1.0	0.0	0	0	V
+120F	Knock sensor, cylinder 3	0	32	0.0076294	10000.0	0.0	0	0	
+120F	Knock sensor, cylinder 3	0	16	0.0048489933	1.0	0.0	0	0	V
+1210	Knock sensor, cylinder 4	0	32	0.0076294	10000.0	0.0	0	0	
+1210	Knock sensor, cylinder 4	0	16	0.0048489933	1.0	0.0	0	0	V
+1211	Knock sensor, cylinder 2	0	32	0.0076294	10000.0	0.0	0	0	
+1211	Knock sensor, cylinder 2	0	16	0.0048489933	1.0	0.0	0	0	V
+1212	Knock sensor, cylinder 2	0	32	7.62e-07	1.0	0.0	0	0	
+1213	Environment data camshaft input 1	0	8	1.0	1.0	0.0	0	0	
+1216	Relative load value	0	16	0.0234403081	1.0	0.0	0	0	
+1219	Boost regulation duty, commanded value	0	16	0.0234384354	1.0	0.0	0	0	%
+121A	Pilot injection 3, activation duration	0	16	1.0	2500.0	0.0	1	0	ms
+121B	Post-injection 2, activation duration	0	16	1.0	2500.0	0.0	1	0	ms
+121C	Air filling	0	16	11719.0	500000.0	0.0	0	0	%
+121D	Pilot injection 3, activation start	0	16	1.0	50.0	0.0	1	0	°
+121E	Fuel pressure regulator valve: specified value rail pressure	0	16	100.0	1.0	0.0	1	0	
+121F	High fuel pressure control deviation	0	16	100.0	1.0	0.0	1	0	
+1221	Accelerator pedal sensor 1	0	16	1.0	5.0	0.0	1	0	mV
+1222	Torque loss adaptation, A/C compressor + gear engaged	0	16	1.0	10.0	0.0	1	0	Nm
+1223	Torque loss adaptation, A/C compressor	0	16	1.0	10.0	0.0	1	0	Nm
+1224	Torque loss adaptation, gear engaged	0	16	1.0	10.0	0.0	1	0	Nm
+1225	Torque loss adaptation at idle	0	16	1.0	10.0	0.0	1	0	Nm
+1230	Maximum oil level for the service interval	0	16	1.0	250.0	0.0	0	0	mm
+1231	Minimum oil level for the service interval	0	16	1.0	250.0	0.0	0	0	mm
+123C	Oil last dynamic measurement	0	16	1.0	250.0	0.0	0	0	mm
+123F	Oil dynamic average measurement	0	16	1.0	250.0	0.0	0	0	mm
+1272	Rear cat converter temperature, main catalytic converter model value	0	16	1.0	10.0	-273.1	1	0	°C
+1272	EGT after catalyst, modeled	0	16	1.0	10.0	-273.1	0	0	°C
+127B	Variable valve timing, intake, bank 1, regulation	0	16	0.0030517549	1.0	0.0	0	0	%
+127B	Camshaft adjustment, exhaust, activation	0	16	100.0	65535.0	0.0	0	0	%
+127D	Variable valve timing, intake, bank 1, switch on	0	16	0.0030517549	1.0	0.0	0	0	%
+1282	Exhaust gas temperature before catalyst	0	16	1.0	50.0	-193.93	0	0	°C
+128A	Fuel temperature	0	8	0.75	1.0	-48.0	0	0	°C
+128C	Avg. injection time	0	32	1.0	2500.0	0.0	0	0	ms
+128C	Avg. injection time	0	32	4.0	10000.0	0.0	0	0	ms
+1290	Oxygen sensor 1 bank 1 ceramic temperature	0	16	234.37	10000.0	-273.15	0	0	°C
+1291	Coolant temperature at engine start	0	16	1.0	10.0	-273.1	1	0	°C
+1291	Coolant at engine start	0	16	1.0	10.0	-273.1	0	0	°C
+1298	Cat. temperature, bank 1	0	16	1.0	16.0	-273.15	0	0	°C
+1299	Cat. temperature, bank 2	0	16	1.0	16.0	-273.15	0	0	°C
+12B0	Acceleration	0	16	10.0	10000.0	0.0	1	0	metersPerSecondSquared
+12C7	Pilot injection 2, activation start	0	16	1.0	50.0	0.0	1	0	°
+12C8	Pilot injection 1, activation start	0	16	1.0	50.0	0.0	1	0	°
+12CB	Service limit value	0	16	1.0	100.0	0.0	0	0	
+12FC	Throttle valve adapter position	0	16	1.0	100.0	0.0	1	0	%
+12FE	Intake camshaft adaptation unit 1 phase length	0	16	1.0	50.0	0.0	1	0	°
+1301	Smoke limit	0	16	1.0	10.0	0.0	1	0	Nm
+130D	Fuel mass request, integral controller	0	16	10597.0	500000.0	0.0	1	0	
+1312	Fuel mass request, proportional controller	0	16	10597.0	500000.0	0.0	1	0	
+1313	Exhaust gas recirculation valve 2 bank 1 mass flow	0	16	1000.0	10000.0	0.0	1	0	
+1314	Mean engine air mass	0	16	1.0	32.0	0.0	0	0	
+1314	Mean engine air mass	0	16	0.03125	1.0	0.0	0	0	
+1334	High pressure EGR actuator, activation	0	16	1.0	100.0	0.0	1	0	%
+133B	Camshaft speed	0	16	0.3	1.0	0.0	1	0	rpm
+133F	Torque reduction request from ESP	0	32	1.0	10.0	0.0	1	0	Nm
+1340	Torque increase request from ESP	0	32	1.0	10.0	0.0	1	0	Nm
+1341	Camshaft end position	0	16	1.0	5.0	0.0	1	0	°
+1347	Regeneration duration	0	32	1.0	1.0	0.0	0	0	min
+1354	Soot index	0	16	1.0	1.0	0.0	1	0	meters
+1356	Charge limit overcharge protection	0	16	1.0	100.0	0.0	1	0	
+136C	Camshaft adjustment, exhaust bank 1, actual value	0	16	1.0	125.0	0.0	1	0	°
+136D	Camshaft adjustment, exhaust bank 2, actual value	0	16	1.0	64.0	0.0	1	0	°
+136E	Camshaft adjustment, intake bank 1, actual value	0	16	1.0	125.0	0.0	1	0	°
+136E	Camshaft adjustment, intake bank 1, actual value	0	16	78.125	10000.0	0.0	1	0	°
+1371	Camshaft adjustment, exhaust bank 1, specified value	0	16	1.0	125.0	0.0	1	0	°
+1372	Camshaft adjustment, exhaust bank 2, specified value	0	16	1.0	125.0	0.0	1	0	°
+1373	Camshaft adjustment, intake bank 1, specified value	0	16	1.0	125.0	0.0	1	0	°
+137A	Ignition angle current cylinder	0	8	0.375	1.0	-35.625	0	0	Nm
+1385	Camshaft position, deviation from the base position	0	16	0.021973	1.0	0.0	1	0	°
+138A	IGA_IGC, 0	0	8	1499.0	4000.0	-35.625	0	0	°
+138B	IGA_IGC, 1	0	8	1499.0	4000.0	-35.625	0	0	°
+138C	IGA_IGC, 2	0	8	1499.0	4000.0	-35.625	0	0	°
+138D	IGA_IGC, 3	0	8	1499.0	4000.0	-35.625	0	0	°
+139C	Exhaust gas temperature before the front catalytic converter, model value	0	16	1.0	10.0	-273.1	1	0	°C
+139C	EGT at lambda sensor 1, modeled	0	16	1.0	10.0	-273.1	0	0	°C
+13A0	Coolant temperature modeled value	0	16	1.0	10.0	-273.1	1	0	°C
+13A0	Coolant temperature modeled value	0	8	0.75	1.0	-48.0	0	0	°C
+13A1	TI_MES4_PLS_1, 1	0	16	1.0	250.0	0.0	0	0	ms
+13A2	TI_MES4_PLS_1, 2	0	16	1.0	250.0	0.0	0	0	ms
+13A3	TI_MES4_PLS_1, 3	0	16	1.0	250.0	0.0	0	0	ms
+13A4	TI_MES4_PLS_2, 0	0	16	1.0	250.0	0.0	0	0	ms
+13A5	TI_MES4_PLS_2, 1	0	16	1.0	250.0	0.0	0	0	ms
+13A6	TI_MES4_PLS_2, 2	0	16	1.0	250.0	0.0	0	0	ms
+13A7	TI_MES4_PLS_2, 3	0	16	1.0	250.0	0.0	0	0	ms
+13A8	TI_MES4_PLS_3, 0	0	16	1.0	250.0	0.0	0	0	ms
+13A9	TI_MES4_PLS_3, 1	0	16	1.0	250.0	0.0	0	0	ms
+13AA	TI_MES4_PLS_3, 2	0	16	1.0	250.0	0.0	0	0	ms
+13AB	TI_MES4_PLS_3, 3	0	16	1.0	250.0	0.0	0	0	ms
+13AC	TI_1_MPI, 0	0	16	1.0	250.0	0.0	0	0	ms
+13AD	TI_1_MPI, 1	0	16	1.0	250.0	0.0	0	0	ms
+13AE	TI_1_MPI, 2	0	16	1.0	250.0	0.0	0	0	ms
+13AF	TI_1_MPI, 3	0	16	1.0	250.0	0.0	0	0	ms
+13B8	Oil pressure switch valve activation	0	8	1.0	1.0	0.0	0	0	
+13CD	Mass air flow rate	0	16	1.0	32.0	0.0	0	0	
+13F2	IGA_CYL_KNK, 0	0	8	3.0	8.0	-48.0	0	0	°
+13F2	IGA_CYL_KNK, 0, raw	0	32	1.0	1.0	0.0	0	0	
+13F3	IGA_CYL_KNK, 1	0	8	3.0	8.0	-48.0	0	0	°
+13F3	Engine control module value 13F3, raw 32-bit	0	32	1.0	1.0	0.0	0	0	
+13F4	IGA_CYL_KNK, 2	0	8	3.0	8.0	-48.0	0	0	°
+13F5	IGA_CYL_KNK, 3	0	8	3.0	8.0	-48.0	0	0	°
+13F5	Engine control module value 13F5, raw 32-bit	0	32	1.0	1.0	0.0	0	0	
+13F6	NL_PRE, 0	0	16	38147.0	500000000.0	0.0	0	0	V
+13F7	NL_PRE, 1	0	16	38147.0	500000000.0	0.0	0	0	V
+13F8	NL_PRE, 2	0	16	38147.0	500000000.0	0.0	0	0	V
+13F9	NL_PRE, 3	0	16	38147.0	500000000.0	0.0	0	0	V
+13FA	Knock sensor voltage:, cylinder 3	0	16	7.6294e-05	1.0	0.0	0	0	V
+13FB	Knock sensor voltage:, cylinder 6	0	16	7.6294e-05	1.0	0.0	0	0	V
+13FC	Knock sensor voltage:, cylinder 2	0	16	7.6294e-05	1.0	0.0	0	0	V
+13FD	Knock sensor voltage:, cylinder 5	0	16	7.6294e-05	1.0	0.0	0	0	V
+1421	Exhaust temperature before the catalyst, modeled	0	16	1.0	10.0	-273.1	0	0	°C
+146D	Injector 7: rail pressure calibration point 1	0	16	1.0	20.0	0.0	1	0	
+146D	Injector 7: rail pressure calibration point 1	0	16	0.05	1.0	0.0	1	0	
+146E	Injector 2: rail pressure calibration point 1	0	16	1.0	20.0	0.0	1	0	
+146E	Injector 2: rail pressure calibration point 1	0	16	0.05	1.0	0.0	1	0	
+1473	Injector 7: rail pressure calibration point 2	0	16	1.0	20.0	0.0	1	0	
+1473	Injector 7: rail pressure calibration point 2	0	16	0.05	1.0	0.0	1	0	
+1474	Injector 2: rail pressure calibration point 2	0	16	1.0	20.0	0.0	1	0	
+1474	Injector 2: rail pressure calibration point 2	0	16	0.05	1.0	0.0	1	0	
+1479	Injector 7: rail pressure calibration point 3	0	16	1.0	20.0	0.0	1	0	
+1479	Injector 7: rail pressure calibration point 3	0	16	0.05	1.0	0.0	1	0	
+147A	Injector 2: rail pressure calibration point 3	0	16	1.0	20.0	0.0	1	0	
+147A	Injector 2: rail pressure calibration point 3	0	16	0.05	1.0	0.0	1	0	
+147D	Drive motor current	0	16	1.0	32.0	0.0	1	0	A
+147E	Misfires counter:, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+147F	Drive motor torque	0	16	1.0	3.0	0.0	1	0	Nm
+1480	Misfires counter:, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+1481	Misfires counter:, cylinder 6	0	16	1.0	1.0	0.0	0	0	
+1482	Misfires counter:, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+1483	Misfires counter:, cylinder 5	0	16	1.0	1.0	0.0	0	0	
+1484	Misfires per 1000 rpm:, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+1485	Misfires per 1000 rpm:, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+1486	Misfires per 1000 rpm:, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+1487	Misfires per 1000 rpm:, cylinder 6	0	16	1.0	1.0	0.0	0	0	
+1488	Electric additional coolant pump control, high circle	0	16	12207.0	1000000.0	0.0	1	0	%
+1489	Misfires per 1000 rpm:, cylinder 5	0	16	1.0	1.0	0.0	0	0	
+148B	Misfires per 1000 rpm, all cylinders	0	16	1.0	1.0	0.0	0	0	
+148D	CTR_MIS_DC_MMV_CYL_SAE, 0	0	16	1.0	1.0	0.0	0	0	
+148E	CTR_MIS_DC_MMV_CYL_SAE, 1	0	16	1.0	1.0	0.0	0	0	
+148F	CTR_MIS_DC_MMV_CYL_SAE, 2	0	16	1.0	1.0	0.0	0	0	
+1490	Brake booster low pressure, actual	0	16	39063.0	1000000.0	0.0	0	0	
+1490	Brake booster, actual vacuum	0	16	390.62	10000.0	0.0	1	0	
+149A	Drive motor speed	0	16	1.0	4.0	0.0	0	0	rpm
+149E	Intake air temperature in intake manifold	0	8	0.75	1.0	-48.0	0	0	°C
+14A1	Rated drive torque	0	32	1.0	10.0	0.0	1	0	Nm
+14B4	Fuel level input, v1	0	16	1.0	100.0	0.0	0	0	l
+14BE	Exhaust gas temperature sensor 3	0	16	1.0	10.0	-273.1	0	0	°C
+14C7	Pilot injection 1 start position	0	16	1.0	50.0	0.0	1	0	°
+14C8	Pilot injection 2 start	0	16	1.0	50.0	0.0	1	0	°
+14CB	Gear	0	8	1.0	1.0	0.0	0	0	
+14CC	Post-injection 1 duration	0	16	0.4	1000.0	0.0	1	0	ms
+14CD	Post-injection 2 duration	0	16	0.4	1000.0	0.0	1	0	ms
+14CE	Post-injection 3 activation duration	0	16	0.4	1000.0	0.0	1	0	ms
+14CF	Main injection duration	0	16	0.4	1000.0	0.0	1	0	ms
+14D0	Pilot injection 1 duration	0	16	0.4	1000.0	0.0	1	0	ms
+14D1	Pilot injection 2 duration	0	16	0.4	1000.0	0.0	1	0	ms
+14F5	Differential pressure	0	16	1.0	1.0	0.0	1	0	
+14F7	Exhaust gas temperature sensor 2	0	16	1.0	10.0	-273.1	1	0	°C
+14F8	Ambient air temperature, v1	0	16	0.18	1.0	-460.0	0	0	°F
+14F9	Main cat oxygen storage capacity age correction factor	0	16	2.0	65535.0	0.0	0	0	
+14F9	Main catalyst aging factor	0	16	0.30517586	100000.0	0.0	0	0	
+1502	HV battery maximum power	0	16	4.0	1.0	0.0	0	0	W
+1503	Engine oil pressure	0	16	1.0	416.0	0.0	0	0	psi
+1504	Engine oil level	0	16	1.0	1.0	0.0	0	0	mm
+1507	Cat. converter oxygen storage capacity measured	0	16	1000.0	10000.0	0.0	0	0	
+1509	Ambient air pressure	0	16	39.0	1000.0	0.0	0	0	
+1509	Ambient air pressure	0	16	1.0	250.0	0.0	0	0	
+1511	Coolant temperature, maximum value	0	8	3.0	4.0	-48.0	0	0	°C
+1511	Coolant temperature, maximum value	0	8	0.75	1.0	-48.0	0	0	°C
+1512	Coolant temperature, minimum value	0	8	3.0	4.0	-48.0	0	0	°C
+1512	Coolant temperature, minimum value	0	8	0.75	1.0	-48.0	0	0	°C
+1513	Coolant temperature linear	0	16	29297.0	10000000.0	-48.0	0	0	°C
+1513	Coolant temperature linear	0	16	29.297	10000.0	-48.0	0	0	°C
+1515	Catalyst temperature, calculated	0	8	5.0	1.0	-50.0	0	0	°C
+1519	Fuel consumption - actual drive cycle	0	16	1.0	100.0	0.0	0	0	l
+1526	Calculated nitrogen oxide concentration behind turbocharger	0	16	1.0	1.0	0.0	1	0	
+155A	Engine torque	0	16	1.0	32.0	0.0	1	0	Nm
+155B	Spark efficiency deviation at idle, maximum	0	8	1.0	1.0	0.0	0	0	%
+155C	Spark efficiency deviation at part load, maximum	0	8	1.0	1.0	0.0	0	0	%
+156F	Exhaust gas temperature sensor 3, bank 2	0	16	1.0	10.0	-273.1	0	0	°C
+1587	DC to DC converter high-voltage side voltage	0	16	1.0	32.0	0.0	0	0	V
+159F	High fuel pressure, actual	0	16	1.0	2000.0	0.0	0	0	
+15A4	Oil level, static measured	0	16	1.0	250.0	0.0	0	0	mm
+15AA	Selected gear	0	8	1.0	1.0	0.0	0	0	
+15B7	Engine oil sump temperature	0	16	9.0	50.0	-460.0	0	0	°F
+15B7	Engine oil sump temperature	0	16	0.18	1.0	-460.0	0	0	°F
+15B8	Oil level, last dynamic value	0	16	1.0	250.0	0.0	0	0	mm
+15B9	Oil level, average dynamic value	0	16	1.0	250.0	0.0	0	0	mm
+15BD	Oil pressure sensor-piston cooling nozzle switch, status	0	8	1.0	1.0	0.0	0	0	
+15C0	Intake air temperature raw value	0	16	1.0	10.0	-273.1	0	0	°C
+15C0	Intake air temperature in intake manifold raw value	0	8	0.75	1.0	-48.0	0	0	°C
+15C1	Intake air temperature before throttle valve, raw value	0	8	3.0	4.0	-48.0	0	0	°C
+15C1	Intake air temperature before throttle valve, raw value	0	8	75.0	100.0	-48.0	0	0	°C
+15C7	Air conditioning compressor pressure, linear raw value	0	16	2.0	1.0	0.0	0	0	
+15CA	Generator load normalized value	0	16	1.0	100.0	0.0	1	0	%
+15CB	Result of crankcase ventilation test, successful	0	16	1.0	1.0	0.0	0	0	
+15CC	Result of crankcase ventilation test, fail	0	16	1.0	1.0	0.0	0	0	
+15CD	Coolant temperature at radiator outlet v.1	0	16	1.0	10.0	-273.1	1	0	°C
+15CF	Longitudinal acceleration, raw	0	16	10.0	10000.0	0.0	1	0	metersPerSecondSquared
+15CF	Longitudinal acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+15D0	Yaw acceleration, raw value	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+15D1	Vehicle lateral acceleration, raw value	0	16	100.0	10000.0	0.0	1	0	gravity
+15D1	Lateral acceleration, raw value	0	16	1.0	100.0	0.0	1	0	metersPerSecondSquared
+15D4	Lambda output value	0	16	199997.0	6553500000.0	0.0	0	0	
+15E7	Effective injection duration	0	32	1.0	1000.0	0.0	0	0	ms
+1610	Requested brake torque, auxiliary system	0	32	1.0	10.0	0.0	1	0	Nm
+1626	Radiator output coolant temp: actual	0	16	1.0	10.0	-273.1	0	0	°C
+1628	Intercooler air output temperature	0	16	1.0	10.0	-273.1	0	0	°C
+162D	Fuel temperature	0	16	1.0	10.0	-273.1	0	0	°C
+162D	Engine read 162D, raw count	0	32	1.0	1.0	0.0	0	0	
+162F	Particulate filter air pressure sensor raw value	0	16	1.0	1.0	0.0	1	0	
+1631	Pilot injection 3 start	0	16	21973.0	1000000.0	0.0	1	0	°
+1632	Engine oil temperature measured value	0	16	1.0	10.0	-273.1	0	0	°C
+1633	Longitudinal acceleration	0	16	1.0	1000.0	0.0	1	0	metersPerSecondSquared
+163B	Post injection 2: quantity specified value	0	16	1.0	100.0	0.0	0	0	
+163C	Post injection 1: quantity specified value	0	16	1.0	100.0	0.0	0	0	
+1644	Lateral acceleration	0	16	1.0	100.0	0.0	1	0	metersPerSecondSquared
+166D	Exhaust gas temperature sensor 4	0	16	1.0	10.0	-273.1	0	0	°C
+166E	Exhaust gas temperature, sensor 4, bank 2	0	16	1.0	10.0	-273.1	0	0	°C
+166F	Exhaust gas temperature sensor 1	0	16	1.0	10.0	-273.1	0	0	°C
+1670	Exhaust gas temperature sensor 1, bank 2	0	16	1.0	10.0	-273.1	0	0	°C
+167D	Post injection 3: quantity specified value	0	16	1.0	100.0	0.0	0	0	
+167E	Coolant circulation pump, control	0	16	1.0	100.0	0.0	0	0	%
+167F	Heater circulation pump, nominal value	0	16	1.0	100.0	0.0	0	0	%
+16A9	Odometer, alternate	0	32	1.0	1.0	0.0	0	0	km
+16BA	Valve lift system, valve lift, intake	0	8	1.0	1.0	0.0	0	0	
+16BB	Valve lift system, valve lift, exhaust	0	8	1.0	1.0	0.0	0	0	
+16BE	Valve lift system, result of last switch, intake	0	8	1.0	1.0	0.0	0	0	
+16C5	Throttle regulator nominal value	0	16	1.0	128.0	0.0	0	0	%
+16EC	Charge pressure regulator, lower threshold adaptation	0	16	1.0	5.0	0.0	1	0	mV
+16ED	Charge pressure regulator, upper threshold adaptation	0	16	1.0	5.0	0.0	1	0	mV
+16EE	Boost pressure actuator, commanded duty	0	16	0.0122068184	1.0	0.0	1	0	%
+16F3	Crankshaft speed	0	16	1.0	2.0	0.0	0	0	rpm
+16F4	Piston cooling nozzles, control	0	8	1.0	1.0	0.0	0	0	
+1710	Fuel mix correction coefficient	0	16	0.0030518	1.0	-273.1	0	0	
+1711	Ratio between evaporated fuel mass from engine oil and base fuel mass needed, actual	0	8	781.0	100000.0	0.0	0	0	
+1712	Ratio between evaporated fuel mass from engine oil and base fuel mass needed, maximum	0	8	83.0	10625.0	0.0	0	0	
+1713	Total mass of gasoline and ethyl alcohol in oil	0	16	0.021333	1.0	0.0	0	0	
+1715	Early ignition counter, total, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+1716	Early ignition counter, total, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+1717	Early ignition counter, total, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+1718	Early ignition counter, total, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+171A	Basic correction factor:, cylinder 1, filtered	0	16	7999.0	65535000.0	0.0	0	0	
+171A	Basic correction factor:, cylinder 1, filtered	0	16	7.999	65535.0	0.0	0	0	
+171B	Basic correction factor:, cylinder 3, filtered	0	16	7999.0	65535000.0	0.0	0	0	
+171B	Basic correction factor:, cylinder 3, filtered	0	16	7.999	65535.0	0.0	0	0	
+171C	Basic correction factor:, cylinder 4, filtered	0	16	7999.0	65535000.0	0.0	0	0	
+171C	Basic correction factor:, cylinder 4, filtered	0	16	7.999	65535.0	0.0	0	0	
+171D	Basic correction factor:, cylinder 2, filtered	0	16	7999.0	65535000.0	0.0	0	0	
+171D	Basic correction factor:, cylinder 2, filtered	0	16	7.999	65535.0	0.0	0	0	
+1722	Early ignition counter, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+1723	Early ignition counter, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+1724	Early ignition counter, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+1725	Early ignition counter, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+173A	Intake camshaft signal edge position adapted value edge 1	0	16	1.0	16.0	-32.0	0	0	°
+1740	Intake camshaft, adaptation sensor tolerance	0	16	0.021973	1.0	0.0	1	0	°
+1743	Integrated mass of air since the first engine start	0	16	8889.0	25000.0	0.0	0	0	
+174A	Exhaust camshaft, adaptation bias	0	16	0.021973	1.0	0.0	1	0	°
+174B	Intake camshaft, adaptation bias	0	16	0.021973	1.0	0.0	1	0	°
+1755	Exhaust camshaft, adaptation sensor tolerance	0	16	0.021973	1.0	0.0	1	0	°
+1779	Long term fuel trim direct injection at load	0	16	199997.0	6553500000.0	0.0	0	0	
+177B	Long term fuel trim port injection at load	0	16	199997.0	6553500000.0	0.0	0	0	
+177D	Oil pressure, actual value	0	16	1.0	10.0	0.0	1	0	kPa
+177E	Long term fuel trim at idle, direct injection	0	16	3.0	64.0	0.0	1	0	%
+1780	Long term fuel trim at idle, port injection	0	16	3.0	64.0	0.0	1	0	%
+178C	Oil ash residue	0	16	1.0	10.0	0.0	0	0	
+1793	Oil ash limit	0	16	1.0	100.0	0.0	1	0	
+1798	Charge air temp at the turbocharger outlet, calculated	0	16	1000.0	10000.0	-273.1	1	0	°C
+179C	Oil temp 2	0	16	1.0	10.0	-273.1	0	0	°C
+179E	Engine oil temperature, pulse sensor	0	16	1.0	10.0	-273.1	0	0	°C
+17F4	Low pressure EGR closing	0	16	-25.0	2048.0	100.0	0	0	%
+1800	Intake phase deviation, actual value	0	16	1.0	16.0	0.0	1	0	°
+180A	Fuel rate difference, injector/sensor	0	16	19531.0	5000000.0	0.0	1	0	l
+1813	Exhaust gas recirculation valve 1, B1, mass current: specified value	0	16	1000.0	10000.0	0.0	1	0	
+1814	Exhaust gas recirculation valve 2, B1, mass current: specified value	0	16	1000.0	10000.0	0.0	1	0	
+181A	Boost press before throttle: calculated actual value	0	16	2500.0	1.0	0.0	1	0	
+18BB	Diesel particulate filter unburned fuel calculated	0	16	1.0	1000.0	0.0	1	0	
+18CC	Reducing agent pump, differential speed calculated	0	16	1.0	2.0	0.0	1	0	rpm
+18D0	Brake pressure	0	16	1.0	100.0	0.0	1	0	
+195D	Brake pressure	0	16	1.0	100.0	0.0	1	0	
+197C	Fuel filter: water level sensor 1	0	8	1.0	1.0	0.0	0	0	
+1A6C	Reducing agent tank volume, act. value filtered	0	16	1.0	500.0	0.0	0	0	l
+1AB8	Fuel pressure, low actual	0	16	1.0	10.0	0.0	1	0	kPa
+1ABA	Diesel particulate filter, distance since last regeneration	0	16	1.0	10.0	0.0	0	0	km
+1ABB	Diesel particulate filter, charge limit for service regeneration while driving	0	16	100.0	10000.0	0.0	0	0	
+1ABC	Diesel particulate filter, charge limit over-charge	0	16	100.0	10000.0	0.0	1	0	
+1ABD	Diesel particulate filter oil ash mass	0	32	0.0011921	10000.0	0.0	0	0	
+1ABE	Diesel particulate filter soot mass measured	0	16	100.0	10000.0	0.0	1	0	
+1ABF	Diesel particulate filter ash load limit	0	16	78.125	10000.0	0.0	0	0	
+1AC0	Diesel particulate filter regeneration time counter	0	16	6400.0	10000.0	0.0	0	0	s
+1AC1	Diesel particulate filter fuel consumption since last regeneration	0	16	100.0	10000.0	0.0	0	0	l
+1AC2	Diesel particulate filter field regeneration request	0	8	1.0	1.0	0.0	0	0	
+1AC3	Diesel particulate filter time since last regeneration	0	16	127.998	65535.0	0.0	0	0	h
+1AC4	Diesel particulate filter service regeneration current duration	0	16	6400.0	10000.0	0.0	0	0	s
+1AC5	Diesel particulate filter statistics regeneration request	0	8	1.0	1.0	0.0	0	0	
+1AC7	Diesel particulate filter statistics exhaust temperature regulation average value	0	8	1.98	127.0	0.0	1	0	
+1AC8	Diesel particulate filter statistics regeneration blocked status	0	8	1.0	1.0	0.0	0	0	
+1AC9	Diesel particulate filter statistics number of interrupted regenerations	0	8	1.0	1.0	0.0	0	0	
+1ACA	Diesel particulate filter statistics error status	0	8	1.0	1.0	0.0	0	0	
+1ACB	Diesel particulate filter statistics route in charge cycle	0	8	800.0	100.0	0.0	0	0	km
+1ACC	Diesel particulate filter statistics average drive cycle time during charge cycle	0	8	1600.0	100.0	0.0	0	0	s
+1ACD	Diesel particulate filter statistics regeneration time	0	8	6400.0	100.0	0.0	0	0	s
+1ACE	Diesel particulate filter statistics regeneration time slice not possible in charge cycle	0	8	0.498	255.0	0.0	0	0	
+1AD2	Diesel particulate filter regeneration release requirement	0	8	1.0	1.0	0.0	0	0	
+1AD3	Diesel particulate filter regeneration level current	0	8	1.0	1.0	0.0	0	0	
+1AD4	Diesel particulate filter regeneration status	0	16	1.0	1.0	0.0	0	0	
+1AD5	Diesel particulate filter inlet lambda value	0	16	10.0	10000.0	0.0	1	0	
+1AD7	Exhaust temperature control downstream oxidation catalyst filtered model error	0	16	1.0	10.0	-273.1	0	0	°C
+1AF9	Oil level method 1	0	16	1.0	10.0	0.0	1	0	%
+1AFA	Oil level method 2	0	16	1.0	10.0	0.0	1	0	%
+1AFB	Oil level method 3	0	16	1.0	10.0	0.0	1	0	%
+1B02	Oil pressure sensor, raw value	0	16	1.0	1.0	0.0	0	0	
+1B04	Oil pressure, actual value	0	16	1.0	1.0	0.0	1	0	
+1B0E	Charge air pressure, actual value	0	16	5.0	64.0	0.0	0	0	
+1B11	Charge air pressure actuator position digit.value	0	16	1.0	1.0	0.0	0	0	
+2000	Fuel injector time deviation, cylinder 1	0	16	1.0	1.0	0.0	1	0	
+2002	Engine torque	0	16	1.0	10.0	0.0	1	0	Nm
+2003	Avg. injection time	0	8	1.0	10.0	0.0	0	0	ms
+2004	Ignition angle current cylinder, actual value	0	16	1.0	100.0	0.0	1	0	°
+2005	Brake booster pressure	0	16	1.0	1000.0	0.0	0	0	bar
+2006	Oil fill level	0	16	0.06	1.0	0.0	1	0	mm
+2007	Oil warning threshold	0	16	1.0	1.0	0.0	1	0	mm
+200A	Timing angle retardation cylinder 1	0	8	0.375	1.0	-48.0	0	0	°
+200B	Timing angle retardation cylinder 2	0	8	0.375	1.0	-48.0	0	0	°
+200C	Timing angle retardation cylinder 3	0	8	0.375	1.0	-48.0	0	0	°
+200D	Timing angle retardation cylinder 4	0	8	0.375	1.0	-48.0	0	0	°
+2017	Air conditioning compressor torque	0	16	1.0	100.0	0.0	1	0	Nm
+2019	Camshaft adjustment, exhaust, specified value	0	16	1.0	10.0	0.0	1	0	°
+201A	Camshaft adjustment, exhaust, actual value	0	16	1.0	10.0	0.0	1	0	°
+201D	Camshaft adjustment, intake, specified value	0	16	1.0	10.0	0.0	1	0	°
+201E	Camshaft adjustment, intake, actual value	0	16	1.0	10.0	0.0	1	0	°
+2021	Camshaft adaptation intake bank 1, phase position	0	16	1.0	10.0	0.0	1	0	°
+2023	Camshaft adaptation exhaust bank 1, phase position	0	16	1.0	10.0	0.0	1	0	°
+2025	Fuel low pressure, actual value	0	16	1.0	1000.0	0.0	0	0	bar
+2027	Fuel high pressure, actual value	0	16	1.0	10.0	0.0	0	0	bar
+2028	Activation of fuel pump electronics	0	16	1.0	100.0	0.0	0	0	%
+2029	Charge air pressure: specified	0	16	0.08	1.0	0.0	0	0	
+202A	Charge air pressure: actual	0	16	0.08	1.0	0.0	0	0	
+202B	Coolant temperature at radiator outlet, actual value	0	16	1.0	10.0	0.0	1	0	°C
+202C	Coolant temperature at radiator outlet, specified value	0	16	1.0	10.0	0.0	1	0	°C
+202E	Coolant temperature difference between engine and radiator	0	16	1.0	10.0	0.0	1	0	°C
+202F	Engine oil temperature	0	16	1.0	10.0	-273.1	0	0	°C
+2032	Mean engine air mass	0	16	1.0	1.0	0.0	0	0	
+2037	Engine air mass, specified value	0	16	1.0	1.0	0.0	0	0	
+203E	Fuel temperature	0	16	1.0	10.0	0.0	1	0	°C
+203F	Torque limitation	0	16	1.0	10.0	0.0	0	0	Nm
+2046	Injection amount deviation cylinder 1	0	16	0.00036623	1.0	0.0	1	0	
+2047	Injection amount deviation cylinder 2	0	16	0.00036623	1.0	0.0	1	0	
+2048	Injection amount deviation cylinder 3	0	16	0.00036623	1.0	0.0	1	0	
+2049	Injection amount deviation cylinder 4	0	16	0.00036623	1.0	0.0	1	0	
+204A	Injection quantity deviation, cylinder 2	0	16	1.0	100.0	0.0	1	0	
+204B	Injection quantity deviation, cylinder 5	0	16	1.0	100.0	0.0	1	0	
+204C	Fuel rate	0	16	1.0	100.0	0.0	0	0	l
+2050	Generator load signal	0	16	1.0	100.0	0.0	0	0	%
+2055	Coolant fan 1, activation	0	16	1.0	100.0	0.0	0	0	%
+2056	Coolant fan 2, activation	0	16	1.0	100.0	0.0	0	0	%
+205D	Post injection 1	0	16	1.0	1000.0	0.0	0	0	ms
+205F	Post injection 2	0	16	1.0	1000.0	0.0	0	0	ms
+2061	Accelerator pedal position sensor 1	0	16	1.0	1000.0	0.0	0	0	V
+2062	Accelerator pedal position sensor 2	0	16	1.0	1000.0	0.0	0	0	V
+2065	Charge air pressure actuator, acknowledgment	0	16	1.0	1000.0	0.0	0	0	V
+2069	Intake manifold runner control, activation	0	16	1.0	100.0	0.0	0	0	%
+206A	Intake manifold runner control, acknowledgment	0	16	1.0	100.0	0.0	0	0	%
+206E	Crankshaft speed, RPM	0	16	1.0	1.0	0.0	0	0	rpm
+207B	Fuel injector time deviation, cylinder 2	0	16	1.0	1.0	0.0	1	0	
+207D	Diesel particulate filter, service regeneration, current duration	0	16	1.0	1.0	0.0	0	0	s
+2084	Diesel particulate filter differential pressure	0	8	20.0	1.0	0.0	0	0	
+2085	Diesel particulate filter differential pressure offset, raw count	0	16	1.0	1.0	0.0	1	0	
+2087	Field regeneration request status	0	8	1.0	1.0	0.0	0	0	
+2087	Diesel particulate filter regeneration request status	0	16	1.0	1.0	0.0	0	0	
+2088	Diesel particulate filter, fuel consumption since last regeneration	0	8	1.0	8.0	0.0	0	0	
+2089	Time since last regeneration	0	16	1.0	1.0	0.0	0	0	min
+2089	Diesel particulate filter time since last regeneration	0	16	19531.0	10000000.0	0.0	0	0	h
+208A	Oil ash residue	0	32	3.052e-07	1.0	0.0	0	0	
+208B	Soot mass calculated	0	16	1.0	100.0	0.0	1	0	
+208B	Gasoline particulate filter soot mass calculated	0	16	1.0	1.0	0.0	0	0	
+208C	Soot mass measured	0	16	1.0	256.0	-128.0	0	0	
+208C	Diesel particulate filter soot measured	0	16	1.0	100.0	0.0	1	0	
+208D	Distance since last regeneration	0	16	1.0	10.0	0.0	0	0	km
+208D	Gasoline particulate filter distance since last regeneration	0	32	1.0	1000.0	0.0	0	0	km
+2097	Mean injection quantity	0	16	1.0	1.0	0.0	0	0	
+209A	Fuel metering valve	0	16	1.0	100.0	0.0	0	0	%
+209B	Torque request, sum of auxiliary aggregate	0	16	1.0	10.0	0.0	0	0	Nm
+209C	Engine drag torque	0	16	1.0	10.0	0.0	0	0	Nm
+20A0	Torque limitation, clutch protection	0	16	1.0	10.0	0.0	0	0	Nm
+20A1	Calculated oil temperature	0	16	1.0	10.0	0.0	1	0	°C
+20A1	Calculated oil temperature	0	8	1.0	1.0	-40.0	0	0	°C
+20A2	Oil pressure switch activation, high pressure	0	8	1.0	1.0	0.0	0	0	
+20A3	Oil pressure switch for high pressure, closed	6	1	1.0	1.0	0.0	0	0	on/off
+20A3	Oil pressure switch for low pressure, closed	7	1	1.0	1.0	0.0	0	0	on/off
+20BB	Fuel high pressure, control deviation	0	16	1.0	10.0	0.0	1	0	bar
+20C0	Post injection 3	0	16	1.0	1000.0	0.0	0	0	ms
+20C2	Wear index %, 0=new engine	0	16	20.0	13107.0	0.0	0	0	%
+20D8	Fuel consumption since last DPF regeneration	0	16	1.0	100.0	0.0	0	0	l
+20DA	Service limit	0	16	1.0	100.0	0.0	1	0	
+2100	Fuel injector time deviation, cylinder 3	0	16	1.0	1.0	0.0	1	0	
+2101	Fuel injector time deviation, cylinder 4	0	16	1.0	1.0	0.0	1	0	
+2122	Torque loss adaptation	0	16	1.0	10.0	0.0	1	0	Nm
+2139	Gasoline particulate filter water mass	0	16	2000.0	10000.0	0.0	0	0	
+2139	Gasoline particulate filter water mass	0	16	1.0	5.0	0.0	0	0	
+21C1	Fuel injector time deviation, cylinder 2	0	16	1.0	1.0	0.0	1	0	
+2206	Fuel level	0	8	1.0	1.0	0.0	0	0	l
+24B2	Gasoline particulate filter high level moisture build-up	0	16	2000.0	10000.0	0.0	0	0	
+24B2	Gasoline particulate filter high level moisture build-up	0	16	1.0	5.0	0.0	0	0	
+24B3	Gasoline particulate filter high level of soot build-up	0	16	1.0	1.0	0.0	0	0	
+24B4	Gasoline particulate filter maximum soot build-up reached	0	16	1.0	1.0	0.0	0	0	
+24B5	Gasoline particulate filter maximum ash build-up reached	0	8	2.0	1.0	0.0	0	0	
+24FC	Fuel tank fill level	0	16	1000.0	10000.0	0.0	0	0	l
+24FC	Fuel level input, variant 2	0	16	1.0	10.0	0.0	0	0	l
+25CD	Oil p	0	16	1.0	10.0	0.0	1	0	kPa
+25CF	Oil pressure target	0	16	1.0	10.0	0.0	1	0	kPa
+25D0	Oil pressure control valve activation pulse duty factor	0	16	1.0	100.0	0.0	1	0	%
+2609	Diesel particulate filter soot mass calculated	0	16	100.0	10000.0	0.0	1	0	
+2682	Coolant shut-off valve, closed	0	8	1.0	1.0	0.0	1	0	
+269A	Diesel particulate filter diff pressure: raw value 1	0	16	1.0	1.0	0.0	1	0	
+269B	Diesel particulate filter diff pressure: raw value 2	0	16	1.0	1.0	0.0	1	0	
+276D	Coolant circulation pump, activation	0	16	1.0	100.0	0.0	0	0	%
+2904	Misfires total	0	16	1.0	1.0	0.0	0	0	
+2910	Diesel particulate filter, service regeneration while driving	0	8	1.0	1.0	0.0	0	0	
+291D	Misfires/1000 rpm, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+291E	Misfires/1000 rpm, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+291F	Misfires/1000 rpm, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+2920	Misfires/1000 rpm, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+2926	Test of catalytic converter, measured value	0	16	1.0	1000.0	0.0	0	0	
+2927	Test of catalytic converter status, canceled	0	8	1.0	1.0	0.0	0	0	
+2929	Adaptation of loss torque	0	16	1.0	10.0	0.0	1	0	Nm
+292B	Adaptation of throttle valve	0	8	1.0	1.0	0.0	0	0	
+2930	Camshaft adjustment intake bank 1, activation %	0	16	1.0	100.0	0.0	0	0	%
+2932	Fuel low pressure, specified value	0	16	1.0	1000.0	0.0	0	0	bar
+2935	Coolant temperature at engine start	0	16	1.0	10.0	0.0	1	0	°C
+293B	Fuel high pressure, specified value	0	16	1.0	10.0	0.0	0	0	bar
+293E	Charge pressure control adaptation higher than max. threshold	0	16	1.0	100.0	0.0	0	0	%
+293F	Charge pressure control adaptation lower than min. threshold	0	16	1.0	100.0	0.0	0	0	%
+2949	Average ignition timing angle delay adjustment	0	16	1.0	100.0	0.0	1	0	°
+294A	Dynamic average of ignition angle delay adjustment	0	16	1.0	100.0	0.0	1	0	°
+295A	Odometer	0	24	1.0	1.0	0.0	0	0	km
+295A	Odometer (alternative)	0	32	1.0	1.0	0.0	0	0	km
+295B	Odometer with ECU installed	0	24	1.0	1.0	0.0	0	0	meters
+295C	Load shift flaps, actual value	0	8	1.0	1.0	0.0	0	0	
+295D	Load shift flaps, specified value	0	8	1.0	1.0	0.0	0	0	
+2966	Misfires, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+2967	Misfires, cylinder 3	0	16	1.0	1.0	0.0	0	0	
+2968	Misfires, cylinder 4	0	16	1.0	1.0	0.0	0	0	
+2969	Misfires, cylinder 2	0	16	1.0	1.0	0.0	0	0	
+296F	Exhaust gas temperature before catalytic converter	0	16	1.0	10.0	0.0	1	0	°C
+2976	Exhaust gas temperature sensor 1	0	16	1.0	10.0	0.0	1	0	°C
+297B	Diesel particulate filter input gas temperature	0	8	4.0	1.0	-20.0	0	0	°C
+297D	Diesel particulate filter output gas temperature	0	8	4.0	1.0	-20.0	0	0	°C
+2998	Manual engine starts counter	0	16	1.0	1.0	0.0	0	0	
+2999	Automatic engine starts counter	0	16	1.0	1.0	0.0	0	0	
+299B	Compression test, cylinder 1	0	16	1.0	1.0	0.0	1	0	rpm
+299C	Compression test, cylinder 2	0	16	1.0	1.0	0.0	1	0	rpm
+299D	Compression test, cylinder 3	0	16	1.0	1.0	0.0	1	0	rpm
+299E	Compression test, cylinder 4	0	16	1.0	1.0	0.0	1	0	rpm
+29B1	Remaining distance until reducing agent deficiency	0	32	1.0	20.0	0.0	0	0	km
+29C7	Charge pressure sensor, unconditioned voltage	0	16	1.0	1000.0	0.0	0	0	V
+29D1	Air mass, actual value, mg/stroke	0	16	1.0	100.0	0.0	1	0	
+29D4	Driver torque requested #1	0	16	1.0	10.0	0.0	0	0	Nm
+29F7	Diesel particulate filter regeneration, cancel conditions	0	16	1.0	1.0	0.0	0	0	
+2AE1	Exhaust gas recirculation 2: filter press loss, modeled	0	16	1.0	10.0	-500.0	1	0	
+2AE2	Exhaust gas recirculation 2: filter press loss, simulated	0	16	1.0	10.0	-500.0	1	0	
+2AE3	EGT after catalyst, model bank b	0	16	0.023438	1.0	-273.15	0	0	°C
+2AE9	Exhaust gas temperature - calculated after catalyst	0	16	293.0	12500.0	-273.15	0	0	°C
+2AF9	Gasoline particulate filter blockage rate threshold calculated	0	16	7.8125	10000.0	0.0	0	0	
+2AF9	Gasoline particulate filter blockage rate threshold calculated	0	16	1.0	1280.0	0.0	0	0	
+2AFB	Gasoline particulate filter blockage rate calculated	0	16	7.8125	10000.0	0.0	0	0	
+2AFB	Gasoline particulate filter blockage rate calculated	0	16	1.0	1280.0	0.0	0	0	
+2BC0	Engine protection, torque limit	0	16	1.0	10.0	0.0	1	0	Nm
+2CD8	Oil pressure valve for piston cooling nozzles, control switch button ratio	0	16	1.0	100.0	0.0	1	0	%
+3804	Accelerator pedal position	0	16	1.0	100.0	0.0	0	0	%
+381D	Oil pressure, actual value	0	16	1.0	10.0	0.0	1	0	kPa
+392A	Temperature sensor for engine temperature management	0	16	1.0	10.0	0.0	1	0	°C
+393C	Knock sensor 1 test	0	1	1.0	1.0	0.0	0	0	on/off
+393C	Knock sensor 2 test	1	1	1.0	1.0	0.0	0	0	on/off
+393C	Knock sensor 3 test	2	1	1.0	1.0	0.0	0	0	on/off
+393C	Knock sensor 4 test	3	1	1.0	1.0	0.0	0	0	on/off
+393C	Camshaft adjustment intake test bank 1	4	1	1.0	1.0	0.0	0	0	on/off
+393C	Camshaft adjustment outlet test bank 1	6	1	1.0	1.0	0.0	0	0	on/off
+394F	Mass air flow over throttle valve	0	16	1.0	1.0	0.0	0	0	
+395E	Brake system vacuum pump active	0	8	1.0	1.0	0.0	0	0	
+3960	Knock sensor, cylinder 1	0	16	1.0	1000.0	0.0	0	0	V
+3961	Knock sensor, cylinder 2	0	16	1.0	1000.0	0.0	0	0	V
+3962	Knock sensor, cylinder 3	0	16	1.0	1000.0	0.0	0	0	V
+3963	Knock sensor, cylinder 4	0	16	1.0	1000.0	0.0	0	0	V
+3996	Mixture adaptation factor at partial load	0	16	1.0	100.0	0.0	1	0	%
+3997	Mixture adaptation factor at idle speed	0	16	1.0	100.0	0.0	1	0	%
+3999	Relay for reserve coolant pump status	0	8	1.0	1.0	0.0	0	0	
+399F	Counter of fuel entry in oil	0	16	1.0	1.0	0.0	0	0	
+39A2	Charge pressure actuator, actual position	0	16	0.012207	1.0	0.0	0	0	%
+39A2	Charge pressure actuator, actual position	0	16	1.0	100.0	0.0	0	0	%
+39A3	Charge pressure actuator, specified position	0	16	1.0	100.0	0.0	0	0	%
+39A4	Charge pressure actuator, specified value	0	16	0.012207	1.0	0.0	0	0	%
+39A4	Charge pressure actuator, specified value	0	16	1.0	100.0	0.0	0	0	%
+39A5	Charge pressure actuator, adaptation for lower stop	0	16	1.0	5.0	0.0	1	0	mV
+39A6	Charge pressure actuator, adaptation for upper stop	0	16	1.0	5.0	0.0	1	0	mV
+39A9	Oxygen control, adaptation value at part. load	0	16	1.0	100.0	0.0	1	0	%
+39BC	Mixture variation in adapted part load range 1	0	16	1.0	100.0	0.0	0	0	%
+39E9	Sensor for particle filter differential pressure, raw value	0	16	1.0	1.0	0.0	1	0	
+39F9	Regeneration duration	0	16	1.0	60.0	0.0	0	0	min
+39F9	Diesel particulate filter counter for regeneration time	0	16	16.0	25.0	0.0	0	0	s
+39FB	Bypass valve high pressure turbine inlet, target value	0	16	25.0	2048.0	0.0	1	0	%
+39FB	Bypass valve high pressure turbine inlet, target value	0	16	100.0	8192.0	0.0	1	0	%
+39FC	Bypass valve high pressure turbine inlet, actual value	0	16	25.0	2048.0	0.0	1	0	%
+39FC	Bypass valve high pressure turbine inlet, actual value	0	16	100.0	8192.0	0.0	1	0	%
+39FD	Bypass valve high pressure turbine inlet, offset closed	0	16	0.012207	1.0	0.0	1	0	%
+39FE	Bypass valve high pressure turbine inlet, offset open	0	16	0.012207	1.0	0.0	1	0	%
+39FF	Bypass valve high pressure turbine inlet, activation	0	16	1.0	100.0	0.0	1	0	%
+3D01	Bypass valve high pressure turbine inlet, raw voltage	0	16	1.0	5.0	0.0	0	0	mV
+3D73	Engine temperature control actuator	0	16	1.0	100.0	0.0	0	0	%
+3D74	Transmission coolant valve, open	0	8	1.0	1.0	0.0	0	0	
+3D77	Charge pressure actuator, maximum sensor voltage	0	16	1.0	100.0	0.0	1	0	mV
+3D7E	Exhaust gas jet volume in particle filter	0	16	100.0	1.0	0.0	1	0	l
+3D7F	Diesel particulate filter surface gas temperature	0	16	1.0	10.0	0.0	0	0	°C
+3D7F	Simulated DPF temperature	0	16	1.0	10.0	-273.1	1	0	°C
+3DF8	Electric motor RPM	0	16	1.0	2.0	0.0	1	0	rpm
+3E70	Intake manifold pressure raw value	0	16	1.0	1000.0	0.0	0	0	bar
+3EA6	Charge pressure control valve position, target value	0	16	1.0	100.0	0.0	0	0	%
+3EA7	Charge pressure control valve position, actual value	0	16	1.0	100.0	0.0	0	0	%
+3EA8	Charge pressure control valve sensor voltage	0	16	15259.0	100000000.0	0.0	0	0	V
+3EA9	Charge pressure control valve activation pulse duty factor	0	16	1.0	100.0	0.0	1	0	%
+3EAB	Charge pressure control valve voltage, position closed	0	16	15259.0	100000000.0	0.0	0	0	V
+3EAC	Charge pressure control valve voltage, position opened	0	16	15259.0	100000000.0	0.0	0	0	V
+3EDE	Current gear	0	8	1.0	1.0	1.0	0	0	
+3F41	Adaptation val.cylinder1 slow diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F42	Adaptation val.cylinder3 slow diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F43	Adaptation val.cylinder4 slow diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F44	Adaptation val.cylinder2 slow diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F45	Adaptation val.cylinder1 fast diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F46	Adaptation val.cylinder3 fast diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F47	Adaptation val.cylinder4 fast diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F48	Adaptation val.cylinder2 fast diagnosis	0	16	1.0	1000.0	0.0	0	0	
+3F4F	Correction factor of oil temperature for engine protection	0	16	12207.0	100000000.0	0.0	0	0	
+3F68	Secondary air injection sensor 1	0	16	1.0	1000.0	0.0	0	0	bar
+3FE4	Engine temperature management actuator, specified value	0	16	12207.0	1000000.0	0.0	1	0	%
+4056	Idle speed specified rpm	0	16	1.0	1.0	0.0	0	0	rpm
+406B	Low press. EGR closing	0	16	1.0	100.0	0.0	0	0	%
+406C	Oil ash residue	0	16	1.0	100.0	0.0	0	0	
+40CE	Oil level, static measurement	0	16	1.0	16.0	-127.0	0	0	mm
+40D5	Engine oil temperature sensor 2	0	16	1.0	10.0	0.0	1	0	°C
+40E2	Temperature sensor for engine temperature management, target value	0	16	1.0	10.0	0.0	1	0	°C
+40E4	Temperature sensor for engine temperature management voltage	0	16	1.0	1000.0	0.0	0	0	V
+412A	Air conditioning refrigerant pressure	0	16	2.0	1.0	0.0	1	0	
+414E	Long-term adaptation of intake manifold injection	0	16	1.0	100.0	0.0	1	0	%
+414F	Long-term adaptation of intake manifold injection at idle	0	16	1.0	100.0	0.0	1	0	
+417B	Timing deviation after chain replacement, intake bank 1	0	16	1.0	100.0	0.0	1	0	°
+417D	Timing deviation after chain replacement, exhaust bank 1	0	16	1.0	100.0	0.0	1	0	°
+417F	Timing deviation after other repairs, intake bank 1	0	16	1.0	100.0	0.0	1	0	°
+4181	Timing deviation after other repairs, intake bank 1	0	16	1.0	100.0	0.0	1	0	°
+4183	Timing deviation current value intake bank 1	0	16	1.0	100.0	0.0	1	0	°
+4185	Timing deviation current value exhaust bank 1	0	16	1.0	100.0	0.0	1	0	°
+4187	Chain elongation, no of valid initial values, intake bank 1	0	8	1.0	1.0	0.0	0	0	
+4189	Chain elongation, no of valid initial values, exhaust bank 1	0	8	1.0	1.0	0.0	0	0	
+4267	Direct injections counter	0	32	1.0	1.0	0.0	0	0	
+4268	Port injection injections counter	0	32	1.0	1.0	0.0	0	0	
+426B	Misfires per 1000 revolutions, cylinder 1, port injection	0	16	1.0	1.0	0.0	0	0	
+426C	Misfires per 1000 revolutions, cylinder 2, port injection	0	16	1.0	1.0	0.0	0	0	
+426D	Misfires per 1000 revolutions, cylinder 3, port injection	0	16	1.0	1.0	0.0	0	0	
+426E	Misfires per 1000 revolutions, cylinder 4, port injection	0	16	1.0	1.0	0.0	0	0	
+4270	Oil pressure switch for piston-cooling jets, closed	0	8	1.0	1.0	0.0	0	0	
+4286	Piston-cooling jets, activation	0	8	1.0	1.0	0.0	0	0	
+430E	Number of injections	0	16	1.0	1.0	0.0	0	0	
+432B	Charge pressure before throttle valve, calculated actual value	0	16	1.0	4.0	0.0	1	0	
+432F	Cylinder charge specified value	0	16	1.0	10.0	0.0	1	0	
+4336	Heater support pump, specified value	0	16	1.0	100.0	0.0	0	0	%
+4366	Nox sulfur charge	0	16	1.0	100.0	0.0	0	0	
+4367	Cylinder charge, actual value	0	16	1.0	10.0	0.0	1	0	
+437C	Engine torque	0	16	1.0	10.0	0.0	1	0	Nm
+437E	Lost torque adaptation driving mode	0	16	1.0	10.0	0.0	1	0	Nm
+437F	Lost torque adaptation A/C + driving mode	0	16	1.0	10.0	0.0	1	0	Nm
+4380	Driver torque requested #2	0	16	1.0	10.0	0.0	0	0	Nm
+4381	Long term fuel trim at idle	0	16	1.0	100.0	0.0	1	0	
+4384	High pressure regulation, adaptation value	0	16	1.0	100.0	0.0	1	0	
+43BC	Diesel particulate filter, differential pressure sensor 1 bank 1, raw value 1	0	16	1.0	1.0	0.0	1	0	
+43BF	Diesel particulate filter, differential pressure sensor 1 bank 1, raw value 2	0	16	1.0	1.0	0.0	1	0	
+43C0	Diesel particulate filter differential pressure sensor temperature	0	16	19531.0	1000000.0	-50.0	1	0	°C
+4417	Thermostat, commanded	0	16	12207.0	1000000.0	0.0	0	0	%
+4417	Thermostat, commanded	0	16	122.07	10000.0	0.0	0	0	%
+4418	Thermostat, actual	0	16	12207.0	1000000.0	0.0	0	0	%
+4418	Thermostat, actual	0	16	122.07	10000.0	0.0	0	0	%
+4419	Engine temperature management actuator, raw value	0	16	1.0	1.0	0.0	0	0	
+441A	Engine temperature management actuator, duty cycle activation	0	16	1.0	100.0	0.0	1	0	%
+441C	Engine temperature management actuator, stop open	0	16	1.0	1.0	0.0	0	0	
+441D	Engine temperature management actuator, after-run stop	0	16	1.0	1.0	0.0	0	0	
+445A	Charge air cooler inlet, pressure sensor 1 bank 1 raw value	0	16	1.0	5.0	0.0	0	0	
+4460	High fuel pressure, actual value	0	16	100.0	1.0	0.0	1	0	
+4490	Coolant temperature at engine outlet, calculated	0	16	1.0	10.0	-273.1	1	0	°C
+4493	Diesel particulate filter, differential pressure sensor, voltage	0	16	1.0	1000.0	0.0	0	0	V
+4494	Diesel particulate filter air pressure sensor raw value	0	16	1.0	1.0	0.0	1	0	
+449A	Diesel particulate filter output temperature raw value	0	16	1.0	10.0	-273.1	1	0	°C
+449B	Diesel particulate filter input gas temperature	0	16	1.0	10.0	0.0	0	0	°C
+449B	Diesel particulate filter input temperature raw value	0	16	1.0	10.0	-273.1	1	0	°C
+44A3	Diesel particulate filter, differential pressure sensor, dynamic offset	0	16	1.0	10.0	0.0	1	0	
+44B2	Diesel particulate filter, differential pressure sensor, adapted value	0	16	1.0	10.0	0.0	1	0	
+44BB	Error counter bad fuel	0	32	1.0	1.0	0.0	0	0	
+44F5	Diesel particulate filter cleaning deviation reaction time	0	16	1.0	1000.0	0.0	1	0	
+44F8	Diesel particulate filter exhaust temperature	0	16	1.0	10.0	-273.1	1	0	°C
+44F9	Diesel particulate filter exhaust speed	0	16	1.0	50.0	0.0	1	0	
+44FA	Diesel particulate filter heat voltage	0	16	1.0	100.0	0.0	1	0	V
+44FB	Diesel particulate filter surface temperature	0	16	1.0	16.0	-273.15	1	0	°C
+4649	Maximum ECU temperature	0	16	1.0	10.0	-273.1	0	0	°C
+46B1	Engine compartment temperature raw value	0	16	1.0	10.0	-273.1	1	0	°C
+46D4	Particle sensor, time in op.mode measurement	0	16	1.0	10.0	0.0	1	0	s
+46E1	Compressor speed	0	16	1.0	1.0	0.0	1	0	rpm
+4E48	Early ignition counter for oxygen shift, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+4E48	Early ignition counter for oxygen shift, cylinder 2	16	16	1.0	1.0	0.0	0	0	
+4E48	Early ignition counter for oxygen shift, cylinder 3	32	16	1.0	1.0	0.0	0	0	
+4E48	Early ignition counter for oxygen shift, cylinder 4	48	16	1.0	1.0	0.0	0	0	
+4E49	Early ignition counter, cylinder suppress early ignition, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+4E49	Early ignition counter, cylinder suppress early ignition, cylinder 2	16	16	1.0	1.0	0.0	0	0	
+4E49	Early ignition counter, cylinder suppress early ignition, cylinder 3	32	16	1.0	1.0	0.0	0	0	
+4E49	Early ignition counter, cylinder suppress early ignition, cylinder 4	48	16	1.0	1.0	0.0	0	0	
+4E4A	Early ignition counter for toque reduction, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+4E4A	Early ignition counter for toque reduction, cylinder 2	16	16	1.0	1.0	0.0	0	0	
+4E4A	Early ignition counter for toque reduction, cylinder 3	32	16	1.0	1.0	0.0	0	0	
+4E4A	Early ignition counter for toque reduction, cylinder 4	48	16	1.0	1.0	0.0	0	0	
+4E4B	Early ignition counter, cylinder suppress glow ignition, cylinder 1	0	16	1.0	1.0	0.0	0	0	
+4E4B	Early ignition counter, cylinder suppress glow ignition, cylinder 2	16	16	1.0	1.0	0.0	0	0	
+4E4B	Early ignition counter, cylinder suppress glow ignition, cylinder 3	32	16	1.0	1.0	0.0	0	0	
+4E4B	Early ignition counter, cylinder suppress glow ignition, cylinder 4	48	16	1.0	1.0	0.0	0	0	
+4E51	Oil level test method 1	0	16	1.0	100.0	0.0	1	0	%
+4E52	Oil level test method 2	0	16	1.0	100.0	0.0	1	0	%
+4E53	Oil level test method 3	0	16	1.0	100.0	0.0	1	0	%
+4E70	Knock sensors average voltage bank 1, variant 2	0	16	1.0	1000.0	0.0	0	0	V
+4F3F	Odometer at oxidation catalytic converter replacement	0	32	1.0	1.0	0.0	0	0	km
+4F41	Odometer at SCR catalytic converter replacement	0	32	1.0	1.0	0.0	0	0	km
+4F70	Oil pressure target	0	16	1.0	10.0	0.0	1	0	kPa
+4F97	Oil pressure control valve, activation pulse duty factor	0	16	1.0	100.0	0.0	1	0	%
+4FBE	Oil pressure sensor raw value	0	16	1.0	1.0	0.0	1	0	
+4FF5	Camshaft adaptation, intake deviation	0	16	1.0	128.0	0.0	1	0	°
+5149	Chain elongation outlet, mileage at last adaptation	0	24	1.0	1.0	0.0	0	0	km
+516C	Chain elongation inlet, mileage at last adaptation	0	24	1.0	1.0	0.0	0	0	km
+519E	Mileage of SCR catalytic converter	0	16	10.0	1.0	0.0	0	0	km
+51A0	Mileage of oxidation catalytic converter	0	16	10.0	1.0	0.0	0	0	km
+51D4	Cylinder block temperature sensor	0	16	1.0	10.0	-273.1	1	0	°C
+51D6	Fuel consumption per driving cycle	0	16	1.0	100.0	0.0	0	0	l
+51D8	Tank fill level diagnostic reference value	0	16	1.0	10.0	0.0	0	0	l
+523B	Camshaft adaptation, counter due to knock	0	16	1.0	1.0	0.0	0	0	
+5847	Cylinder 1 internal torque	0	16	1.0	10.0	0.0	1	0	Nm
+5849	Cylinder 2 internal torque	0	16	1.0	10.0	0.0	1	0	Nm
+584B	Cylinder 3 internal torque	0	16	1.0	10.0	0.0	1	0	Nm
+584D	Cylinder 4 internal torque	0	16	1.0	10.0	0.0	1	0	Nm
+5851	Service limit	0	16	1.0	100.0	0.0	1	0	
+58D1	Engine oil level current value	64	16	1.0	100.0	0.0	1	0	%
+F406	Short term fuel trim bank 1	0	8	25.0	32.0	-100.0	0	0	%
+F407	Long term fuel trim bank 1	0	8	25.0	32.0	-100.0	0	0	%
+F40C	Engine RPM	0	16	1.0	4.0	0.0	0	0	rpm
+F40D	Vehicle speed	0	8	1.0	1.0	0.0	0	0	km/h
+F41F	Time since engine start	0	16	1.0	1.0	0.0	0	0	s
+F421	Distance traveled while mil was activated	0	16	1.0	1.0	0.0	0	0	km
+F42C	High press EGR closing v2	0	8	1.0	1.0	0.0	1	0	%
+F42F	Fuel level input %	0	8	20.0	51.0	0.0	0	0	%
+F42F	Fuel level input %	0	8	100.0	255.0	0.0	0	0	%
+F430	Number of warm-ups since diagnostic trouble codes cleared	0	8	1.0	1.0	0.0	0	0	
+F431	Distance traveled since diagnostic trouble codes cleared	0	16	1.0	1.0	0.0	0	0	km
+F433	Barometric pressure	0	8	1.0	1.0	0.0	0	0	kPa
+F43C	Exhaust gas temperature	0	16	1.0	10.0	-40.0	0	0	°C
+F442	Control module voltage	0	16	1.0	1000.0	0.0	0	0	V
+F446	Ambient air temperature	0	8	1.0	1.0	-40.0	0	0	°C
+F449	Accelerator pedal position 1	0	8	20.0	51.0	0.0	0	0	%
+F449	Accelerator position 1	0	8	100.0	255.0	0.0	0	0	%
+F44A	Accelerator pedal position 2	0	8	20.0	51.0	0.0	0	0	%
+F44A	Accelerator position 2	0	8	100.0	255.0	0.0	0	0	%
+F45B	HV battery remaining charge	0	8	1.0	2.55	0.0	0	0	%
+F469	High press EGR closing v1	8	8	1.0	1.0	0.0	1	0	%
+FE47	Charge air pressure, specified value	0	8	2.0	1.0	0.0	0	0	kPa

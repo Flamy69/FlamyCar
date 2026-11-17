@@ -285,6 +285,7 @@ class SimulatedCar(
             0x105D -> word(if (throttle == 0f && rpm > 1500) 35f / 0.012207f else 0f)
             0x11BE -> word((oil + 273.1f) * 10)
             0x177D -> word((120 + rpm / 6000 * 330) * 10)
+            0x4F70 -> word((130 + rpm / 6000 * 320) * 10)
             0x139C -> word((380 + load * 480 + 273.1f) * 10)
             0x1010 -> word(load * 200 * 10)
             else -> null

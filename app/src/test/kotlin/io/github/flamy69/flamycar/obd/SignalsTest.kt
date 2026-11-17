@@ -34,6 +34,23 @@ class SignalsTest {
     }
 
     @Test
+    fun `the identifiers of the survey come with what they are known to hold`() {
+        // 0x0E9B = 3739 -> 373.9 K -> 100.8 °C
+        assertEquals("Oil temperature variant = 100.80 °C", Meanings.describe(0x11BE, bytes(0x0E, 0x9B)))
+        assertEquals("Oil pressure target = 340 kPa", Meanings.describe(0x4F70, bytes(0x0D, 0x48)))
+        // Two switches in the bits of one byte.
+        assertEquals(2, Meanings.of(0x20A3).size)
+        assertTrue(Meanings.describe(0x20A3, bytes(0x01)).endsWith("low pressure, closed = 1 on/off"))
+        assertEquals("", Meanings.describe(0x7700, bytes(1, 2)))
+        assertEquals("Oil temperature variant = ?", Meanings.describe(0x11BE, bytes(0x0E)))
+
+        val survey = Survey()
+        survey.add("idling", mapOf(0x11BE to bytes(0x0E, 0x9B), 0x7700 to bytes(1, 2)))
+        assertTrue(survey.text(), survey.text().contains("11BE | 0E 9B  # Oil temperature variant = 100.80 °C"))
+        assertEquals("11BE  Oil temperature variant = 100.80 °C\n7700  01 02", survey.summary())
+    }
+
+    @Test
     fun `signed values go below zero`() {
         // Engine braking: 0xFF38 = -200 -> -20 Nm
         assertEquals(-20f, query(Signal.TORQUE, 0x1010).read(bytes(0x62, 0x10, 0x10, 0xFF, 0x38))!!, 0.001f)

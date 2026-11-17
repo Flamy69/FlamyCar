@@ -28,6 +28,7 @@ enum class Signal(
     BRAKE(R.string.signal_brake, "%", 0f, 100f, 0, 0f..100f, quick = true),
     OIL_TEMP(R.string.signal_oil_temp, "°C", 0f, 150f, 0, -40f..200f, coldBelow = 70f, warnAbove = 130f),
     OIL_PRESSURE(R.string.signal_oil_pressure, "bar", 0f, 6f, 2, 0f..12f),
+    OIL_PRESSURE_TARGET(R.string.signal_oil_pressure_target, "bar", 0f, 6f, 2, 0f..12f),
     COOLANT(R.string.signal_coolant, "°C", 0f, 130f, 0, -40f..215f, coldBelow = 60f, warnAbove = 110f),
     INTAKE_TEMP(R.string.signal_intake_temp, "°C", -20f, 80f, 0, -40f..215f, zero = 0f, warnAbove = 60f),
     EXHAUST_TEMP(R.string.signal_exhaust_temp, "°C", 0f, 1000f, 0, -40f..1300f, warnAbove = 950f),
@@ -184,6 +185,11 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
         engine(0x381D) { it.s16() / 1000f },
         // 1/416 psi.
         engine(0x1503) { it.u16() / 416f * 0.0689476f },
+    ),
+    // What the engine wants from its oil pump, which it controls; tenths of a kilopascal.
+    Signal.OIL_PRESSURE_TARGET to listOf(
+        engine(0x4F70) { it.s16() / 1000f },
+        engine(0x25CF) { it.s16() / 1000f },
     ),
     Signal.COOLANT to listOf(standard(0x05, 1) { it.u8() - 40f }),
     Signal.INTAKE_TEMP to listOf(standard(0x0F, 1) { it.u8() - 40f }),

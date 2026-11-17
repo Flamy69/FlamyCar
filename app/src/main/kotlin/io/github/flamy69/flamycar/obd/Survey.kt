@@ -50,12 +50,24 @@ class Survey {
         }
     }
 
+    /**
+     * What each identifier said the last time it answered, in words where somebody knows what
+     * it holds, for reading on the phone.
+     */
+    fun summary(): String = answers.entries.joinToString("\n") { (did, column) ->
+        val answer = column.lastOrNull { it != null }
+        val meaning = answer?.let { Meanings.describe(did, it) }.orEmpty()
+        String.format(Locale.ROOT, "%04X  ", did) + meaning.ifEmpty { answer?.toHex() ?: "-" }
+    }
+
     fun text(): String = buildString {
         appendLine("Survey of the engine control unit: ${answers.size} identifiers answered")
         conditions.forEachIndexed { index, condition -> appendLine("#${index + 1}: $condition") }
         for ((did, column) in answers) {
             append(String.format(Locale.ROOT, "%04X", did))
             for (answer in column) append(" | ").append(answer?.toHex() ?: "-")
+            val meaning = column.lastOrNull { it != null }?.let { Meanings.describe(did, it) }.orEmpty()
+            if (meaning.isNotEmpty()) append("  # ").append(meaning)
             appendLine()
         }
         if (notes.isNotEmpty()) {
