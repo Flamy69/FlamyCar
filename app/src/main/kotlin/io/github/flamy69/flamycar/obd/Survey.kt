@@ -20,13 +20,27 @@ class Survey {
     /** The answers of each identifier that ever answered, one for every reading. */
     private val answers = LinkedHashMap<Int, ArrayList<ByteArray?>>()
 
+    /** What an adapter that garbles long requests did with a number of them. */
+    val notes = ArrayList<String>()
+
+    // Whether the whole list has been asked for, which takes an adapter that can.
+    private var complete = false
+
     val readings: Int get() = conditions.size
 
-    /** The identifiers to ask for in the next reading. */
-    fun targets(): List<Int> = if (conditions.isEmpty()) (CANDIDATES + EXTRA).distinct() else answers.keys.toList()
+    /**
+     * The identifiers to ask for in the next reading. An adapter that spoils the third byte of
+     * a request ([limited]) reaches only those that end in a zero.
+     */
+    fun targets(limited: Boolean = false): List<Int> = when {
+        limited -> if (conditions.isEmpty()) REACHABLE else answers.keys.toList()
+        !complete -> ((CANDIDATES + EXTRA).toList() + answers.keys).distinct()
+        else -> answers.keys.toList()
+    }
 
     /** Notes down a finished reading: [found] holds the identifiers that answered. */
-    fun add(condition: String, found: Map<Int, ByteArray>) {
+    fun add(condition: String, found: Map<Int, ByteArray>, limited: Boolean = false) {
+        if (!limited) complete = true
         val before = conditions.size
         conditions += condition
         for (did in found.keys) answers.getOrPut(did) { ArrayList() }
@@ -44,6 +58,10 @@ class Survey {
             for (answer in column) append(" | ").append(answer?.toHex() ?: "-")
             appendLine()
         }
+        if (notes.isNotEmpty()) {
+            appendLine("What the adapter does with requests:")
+            notes.forEach(::appendLine)
+        }
     }
 
     companion object {
@@ -53,6 +71,8 @@ class Survey {
          * there while not offering them as standard values.
          */
         private val EXTRA = intArrayOf(0xF45C, 0xF45A)
+
+        private val REACHABLE = List(256) { it shl 8 }
 
         /**
          * Identifiers that engine control units of Volkswagen group cars are known to answer:

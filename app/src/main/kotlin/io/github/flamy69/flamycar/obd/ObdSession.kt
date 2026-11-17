@@ -341,11 +341,14 @@ class ObdSession(
      * notes down which answered. False when the car went silent meanwhile.
      */
     private fun takeSurvey(): Boolean {
-        if (!longRequestsWork) {
-            events.onSurveyDone(survey, "this adapter garbles the requests it takes")
-            return true
+        // An adapter that garbles long requests is put through its paces instead, and asked
+        // for what it can reach all the same.
+        val limited = !longRequestsWork
+        if (limited && survey.notes.isEmpty() && !experiment()) {
+            events.onSurveyDone(survey, "the car stopped answering")
+            return false
         }
-        val targets = survey.targets()
+        val targets = survey.targets(limited)
         val condition = listOf(Signal.RPM, Signal.COOLANT, Signal.MAP, Signal.SPEED, Signal.PEDAL, Signal.VOLTAGE)
             .mapNotNull { signal -> values[signal]?.let { "$signal=" + "%.2f".format(Locale.ROOT, it) } }
             .joinToString(" ")
@@ -368,9 +371,38 @@ class ObdSession(
                 else -> Unit
             }
         }
-        survey.add(condition.ifEmpty { "no values" }, found)
+        survey.add(condition.ifEmpty { "no values" } + if (limited) " (only what this adapter reaches)" else "", found, limited)
         events.onSurveyDone(survey, null)
         return true
+    }
+
+    /**
+     * Gives the adapter requests in a number of shapes and notes down what the engine made of
+     * each, to see which bytes get through. False when the car went silent meanwhile.
+     */
+    private fun experiment(): Boolean {
+        val ecu = engine ?: return true
+        var setup: String? = null
+        elm.request(ecu, "0100")
+        for ((needs, command) in TRIALS) {
+            if (!running()) break
+            try {
+                if (needs != null && needs != setup) {
+                    survey.notes += "$needs -> " + elm.trial(needs)
+                    setup = needs
+                }
+                survey.notes += "$command -> " + elm.trial(command)
+            } catch (_: ElmException) {
+                survey.notes += "$command -> the adapter hung"
+                elm.reset()
+                if (elm.connect() !is Answer.Replies) return false
+                elm.request(ecu, "0100")
+                setup = null
+            }
+        }
+        // Back to a state that is known.
+        elm.reset()
+        return elm.connect() is Answer.Replies
     }
 
     /** True when the value was read, false when not, null when the bus is gone. */
@@ -473,5 +505,25 @@ class ObdSession(
         private const val CHECK = "22F40C"
         private const val CHECK_ANSWER = "62 F4 0C"
         private const val SILENT = "no answer"
+
+        // What an adapter that garbles long requests is tried with: a setting it needs, if
+        // any, and the request. The answers repeat what the engine was asked, which tells
+        // which bytes arrived.
+        private val TRIALS = listOf(
+            null to "010C0D05", // three standard values at once
+            null to "22F400F40C", // two identifiers at once
+            null to "22F40C00",
+            null to "22 F4 0C",
+            null to "22F40C2",
+            "ATAL" to "22F40C",
+            "ATAL" to "22F400F40C",
+            "ATCAF0" to "02010C",
+            "ATCAF0" to "0322F400",
+            "ATCAF0" to "0322F40C00",
+            "ATCAF0" to "02010C00000000",
+            "ATCAF0" to "0322F40C000000",
+            "ATCAF1" to "22F40C", // whether anything of the frames above stayed behind
+            "ATV1" to "22F40C",
+        )
     }
 }

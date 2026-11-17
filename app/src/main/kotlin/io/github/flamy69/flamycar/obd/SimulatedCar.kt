@@ -32,9 +32,10 @@ class SimulatedCar(
 
     /**
      * The fault of many clones: of a request longer than two bytes, everything after the second
-     * byte arrives as zeros. [LongFault.PLAIN] clones still pass on a frame made by hand.
+     * byte arrives as zeros. [LongFault.PLAIN] clones still pass on a frame made by hand;
+     * [LongFault.THIRD] ones spoil the third byte only.
      */
-    enum class LongFault { NONE, PLAIN, ALWAYS }
+    enum class LongFault { NONE, PLAIN, THIRD, ALWAYS }
 
     var longFault = LongFault.NONE
 
@@ -160,6 +161,7 @@ class SimulatedCar(
         if (longFault == LongFault.ALWAYS || (longFault == LongFault.PLAIN && formatting)) {
             for (i in 2 until request.size) request[i] = 0
         }
+        if (longFault == LongFault.THIRD && request.size > 2) request[2] = 0
         val frames = ArrayList<String>()
         fun reply(from: Int, data: ByteArray?) {
             // Units outside the range of the engine and gearbox are heard only when let through.
@@ -206,11 +208,16 @@ class SimulatedCar(
             val data = standard(pid) ?: return null
             return byteArrayOf(0x41, pid.toByte()) + data
         }
-        if (service == 0x22 && request.size == 3) {
-            val did = ((request[1].toInt() and 0xFF) shl 8) or (request[2].toInt() and 0xFF)
-            val data = manufacturer(did)
-                ?: return byteArrayOf(0x7F, 0x22, 0x31) // request out of range
-            return byteArrayOf(0x62, request[1], request[2]) + data
+        if (service == 0x22 && request.size >= 3 && request.size % 2 == 1) {
+            // One identifier, or several of them, answered one after the other.
+            var answer = byteArrayOf(0x62)
+            for (i in 1 until request.size step 2) {
+                val did = ((request[i].toInt() and 0xFF) shl 8) or (request[i + 1].toInt() and 0xFF)
+                val data = manufacturer(did)
+                    ?: return byteArrayOf(0x7F, 0x22, 0x31) // request out of range
+                answer += byteArrayOf(request[i], request[i + 1]) + data
+            }
+            return answer
         }
         return null
     }
@@ -273,6 +280,7 @@ class SimulatedCar(
         val load = (manifold / 2.2f).coerceIn(0f, 1f)
         return when (did) {
             0xF400 -> byteArrayOf(0xBE.toByte(), 0x3E, 0xA8.toByte(), 0x13)
+            0x7700 -> ByteArray(13) { (it + 1).toByte() }
             0xF40C -> word(rpm * 4)
             0x105D -> word(if (throttle == 0f && rpm > 1500) 35f / 0.012207f else 0f)
             0x11BE -> word((oil + 273.1f) * 10)

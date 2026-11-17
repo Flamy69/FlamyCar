@@ -162,7 +162,7 @@ class ObdSessionTest {
         bench.session.run()
 
         val info = bench.info!!
-        assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00, as short hand-made frames: no answer)"))
+        assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00, behind another identifier: 7F 22 31, as short hand-made frames: no answer)"))
         assertTrue(info.longRequests)
         assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
         assertNotNull(bench.latest(Signal.OIL_TEMP))
@@ -171,6 +171,56 @@ class ObdSessionTest {
         assertNotNull(bench.latest(Signal.RPM))
         assertTrue("032211BE00000000" in bench.car.log)
         assertTrue("ATCAF1" in bench.car.log)
+    }
+
+    @Test
+    fun `a clone that spoils the third byte is given an identifier it cannot spoil in front`() {
+        val bench = Bench { longFault = SimulatedCar.LongFault.THIRD }
+
+        bench.session.run()
+
+        val info = bench.info!!
+        assertTrue(info.report, info.report.contains("Long requests: pass behind another identifier (as they are: 62 F4 00)"))
+        assertTrue(info.longRequests)
+        assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
+        assertEquals(28f, bench.seen.first { Signal.OIL_TEMP in it }.getValue(Signal.OIL_TEMP), 3f)
+        assertNotNull(bench.latest(Signal.OIL_PRESSURE))
+        assertTrue("22F40011BE" in bench.car.log)
+    }
+
+    @Test
+    fun `an adapter that garbles long requests is tried out and asked for what it reaches`() {
+        val bench = Bench(stopAfter = 30) {
+            longFault = SimulatedCar.LongFault.ALWAYS
+            hangsOnWholeFrames = true
+        }
+        var done: Survey? = null
+        val session = ObdSession(
+            elm = Elm327(bench.car),
+            events = object : ObdSession.Events by bench {
+                override fun onSurveyDone(survey: Survey, problem: String?) {
+                    assertNull(problem)
+                    done = survey
+                }
+            },
+            running = { bench.rounds < 30 },
+            pause = { bench.rounds++ },
+            avoid = setOf(LongRequests.RAW),
+        )
+        bench.afterRound = { if (bench.seen.size == 5) session.requestSurvey() }
+
+        session.run()
+
+        val text = done!!.text()
+        assertTrue(text, text.contains("2 identifiers answered"))
+        assertTrue(text, text.contains("(only what this adapter reaches)"))
+        // The answer that takes several frames is there whole.
+        assertTrue(text, text.lines().any { it.startsWith("7700 | 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D") })
+        assertTrue(text, text.contains("22F400F40C -> "))
+        assertTrue(text, text.contains("ATCAF0 -> OK"))
+        // The values go on being read afterwards.
+        assertTrue(bench.seen.size > 6)
+        assertNotNull(bench.latest(Signal.RPM))
     }
 
     @Test

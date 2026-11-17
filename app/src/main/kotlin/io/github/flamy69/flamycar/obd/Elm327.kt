@@ -14,10 +14,13 @@ data class Ecu(val tx: Int, val rx: Int) {
  * How a request of more than two bytes is handed to the adapter. Some clones lose everything
  * after the second byte of a request given as it is; they may still pass on a whole CAN frame
  * that was put together for them: [SHORT] with only the bytes that count, [RAW] filled up to
- * the eight bytes that cars expect. In the order in which they are worth trying.
+ * the eight bytes that cars expect. A clone that spoils the third byte alone can be given an
+ * identifier whose third byte it cannot spoil, with the wanted one behind it ([PAIRED]). In
+ * the order in which they are worth trying.
  */
 enum class LongRequests(val title: String) {
     PLAIN("as they are"),
+    PAIRED("behind another identifier"),
     SHORT("as short hand-made frames"),
     RAW("as hand-made frames"),
 }
@@ -148,13 +151,15 @@ class Elm327(
         // standard two bytes lose the rest of a longer request over it, and a long answer in
         // several frames would be cut off after the first.
         val long = hex.length > 4
-        val raw = long && longRequests != LongRequests.PLAIN
+        val paired = long && longRequests == LongRequests.PAIRED && hex.length == 6 && hex.startsWith("22")
+        val raw = long && (longRequests == LongRequests.SHORT || longRequests == LongRequests.RAW)
         if (raw == formatting) {
             if (!ok(exchange(if (raw) "ATCAF0" else "ATCAF1", AT_TIMEOUT))) return Answer.Refused
             formatting = !raw
         }
         // A frame put together by hand: the number of bytes, the bytes, and padding up to eight.
         val text = when {
+            paired -> "22" + ANCHOR + hex.substring(2)
             !raw -> hex
             longRequests == LongRequests.RAW -> "%02X".format(hex.length / 2) + hex.padEnd(14, '0')
             else -> "%02X".format(hex.length / 2) + hex
@@ -167,12 +172,31 @@ class Elm327(
             lines = exchange(text, REQUEST_TIMEOUT)
         }
 
-        val replies = CanFrames.assemble(lines, idDigits)
+        var replies = CanFrames.assemble(lines, idDigits)
+        if (paired) replies = replies.map(::unpaired)
         if (replies.isNotEmpty()) return Answer.Replies(replies)
         busProblem(lines)?.let { return Answer.NoBus(it) }
         if (lines.any { it == "?" }) return Answer.Refused
         return Answer.Silence
     }
+
+    /**
+     * An answer to two identifiers at once begins with the one put in front, which is the list
+     * of standard values and always four bytes long. Without it the answer reads like one to
+     * the wanted identifier alone.
+     */
+    private fun unpaired(reply: EcuReply): EcuReply {
+        val data = reply.data
+        val lead = 3 + ANCHOR_BYTES
+        val led = data.size > lead && data[0] == 0x62.toByte() && data[1] == 0xF4.toByte() && data[2] == 0x00.toByte()
+        return if (led) EcuReply(reply.ecu, byteArrayOf(0x62) + data.copyOfRange(lead, data.size)) else reply
+    }
+
+    /**
+     * Sends a command as it is and returns what came back, for finding out what an adapter
+     * does with it. Leaves the adapter in a state that only [reset] puts right.
+     */
+    fun trial(command: String): String = exchange(command, REQUEST_TIMEOUT).joinToString(" | ")
 
     /** The voltage the adapter measures on its own supply pin, i.e. of the car battery. */
     fun voltage(): Float? =
@@ -253,6 +277,10 @@ class Elm327(
     companion object {
         /** The address every emission-related control unit listens to, and where they answer. */
         private val BROADCAST = Ecu(0x7DF, 0x7E8)
+
+        // The identifier under which engines keep the list of their standard values.
+        private const val ANCHOR = "F400"
+        private const val ANCHOR_BYTES = 4
 
         private const val AT_TIMEOUT = 2_000L
         private const val RESET_TIMEOUT = 5_000L
