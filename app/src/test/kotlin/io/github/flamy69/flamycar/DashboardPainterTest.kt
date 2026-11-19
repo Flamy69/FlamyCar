@@ -54,7 +54,7 @@ class DashboardPainterTest {
             Signal.FUEL_TRIM_SHORT to 2.3f, Signal.FUEL_TRIM_LONG to -3.1f, Signal.VOLTAGE to 14.2f,
             Signal.SPEED to 96f, Signal.AMBIENT to 9f, Signal.FUEL_LEVEL to 62f, Signal.RUNTIME to 23f,
             Signal.MAF to 78.4f,
-            Signal.GEAR to 3f, Signal.OIL_LEVEL to 61.2f, Signal.KNOCK_3 to -1.5f, Signal.FUEL_RATE to 14.6f,
+            Signal.GEAR to 3f, Signal.OIL_LEVEL to 6.03f, Signal.KNOCK_3 to 0.4f, Signal.FUEL_RATE to 14.6f,
             Signal.STEERING to -38f, Signal.BRAKE_PRESSURE to 0f, Signal.ACCEL_LONG to 2.6f, Signal.ACCEL_LAT to -1.1f,
             Signal.WHEEL_FL to 96.2f, Signal.WHEEL_FR to 96.4f, Signal.WHEEL_RL to 95.9f, Signal.WHEEL_RR to 96.1f,
             Signal.BRAKE_TEMP_FL to 155f, Signal.BRAKE_TEMP_FR to 159f, Signal.BRAKE_TEMP_RL to 70f, Signal.BRAKE_TEMP_RR to 72f,

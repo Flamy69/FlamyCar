@@ -51,7 +51,10 @@
     <string name="signal_knock_2">Klepání válec 2</string>
     <string name="signal_knock_3">Klepání válec 3</string>
     <string name="signal_knock_4">Klepání válec 4</string>
-    <string name="signal_misfires">Vynechání zážehu</string>
+    <string name="signal_misfires_1">Vynechání válec 1</string>
+    <string name="signal_misfires_2">Vynechání válec 2</string>
+    <string name="signal_misfires_3">Vynechání válec 3</string>
+    <string name="signal_misfires_4">Vynechání válec 4</string>
     <string name="signal_fuel_rate">Spotřeba</string>
     <string name="signal_fuel_used">Spotřebováno</string>
     <string name="signal_steering">Natočení volantu</string>

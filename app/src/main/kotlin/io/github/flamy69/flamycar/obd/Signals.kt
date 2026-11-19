@@ -71,7 +71,7 @@ enum class Signal(
 
     // More of the engine, for those who want to know.
     GEAR(R.string.signal_gear, "", 0f, 7f, 0, 0f..8f, page = Page.DETAILS),
-    OIL_LEVEL(R.string.signal_oil_level, "mm", 0f, 100f, 1, 0f..131f, page = Page.DETAILS),
+    OIL_LEVEL(R.string.signal_oil_level, "cm", 0f, 10f, 2, 0f..15f, page = Page.DETAILS),
     FUEL_LOW(R.string.signal_fuel_low, "bar", 0f, 8f, 2, 0f..15f, page = Page.DETAILS),
     FUEL_TEMP(R.string.signal_fuel_temp, "°C", -20f, 80f, 0, -40f..150f, page = Page.DETAILS),
     CHARGE_AIR_TEMP(R.string.signal_charge_air_temp, "°C", -20f, 100f, 0, -40f..250f, page = Page.DETAILS),
@@ -79,11 +79,14 @@ enum class Signal(
     TURBO_ACTUATOR(R.string.signal_turbo_actuator, "%", 0f, 100f, 0, -1f..101f, page = Page.DETAILS),
     CAM_INTAKE(R.string.signal_cam_intake, "°", -10f, 60f, 1, -100f..100f, zero = 0f, page = Page.DETAILS),
     CAM_EXHAUST(R.string.signal_cam_exhaust, "°", -10f, 60f, 1, -100f..100f, zero = 0f, page = Page.DETAILS),
-    KNOCK_1(R.string.signal_knock_1, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
-    KNOCK_2(R.string.signal_knock_2, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
-    KNOCK_3(R.string.signal_knock_3, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
-    KNOCK_4(R.string.signal_knock_4, "°", -12f, 0f, 1, -48f..48f, zero = 0f, page = Page.DETAILS),
-    MISFIRES(R.string.signal_misfires, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
+    KNOCK_1(R.string.signal_knock_1, "V", 0f, 5f, 2, 0f..10f, page = Page.DETAILS),
+    KNOCK_2(R.string.signal_knock_2, "V", 0f, 5f, 2, 0f..10f, page = Page.DETAILS),
+    KNOCK_3(R.string.signal_knock_3, "V", 0f, 5f, 2, 0f..10f, page = Page.DETAILS),
+    KNOCK_4(R.string.signal_knock_4, "V", 0f, 5f, 2, 0f..10f, page = Page.DETAILS),
+    MISFIRES_1(R.string.signal_misfires_1, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
+    MISFIRES_2(R.string.signal_misfires_2, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
+    MISFIRES_3(R.string.signal_misfires_3, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
+    MISFIRES_4(R.string.signal_misfires_4, "", 0f, 100f, 0, 0f..65535f, page = Page.DETAILS),
     FUEL_RATE(R.string.signal_fuel_rate, "l/h", 0f, 30f, 1, 0f..200f, page = Page.DETAILS),
     FUEL_USED(R.string.signal_fuel_used, "l", 0f, 60f, 2, 0f..656f, page = Page.DETAILS),
 
@@ -220,6 +223,9 @@ private fun cluster(did: Int, bytes: Int = 2, decode: (ByteArray) -> Float) = un
 /** Tenths of a kelvin, the way the engine control units of the Volkswagen group give temperatures. */
 private val deciKelvin: (ByteArray) -> Float = { it.u16() / 10f - 273.1f }
 
+/** Volts per bit of a knock-sensor reading: the survey's 16-bit formula. */
+private const val KNOCK_VOLT = 0.0048489933f
+
 /**
  * Where each value can come from, the preferred source first.
  *
@@ -228,8 +234,9 @@ private val deciKelvin: (ByteArray) -> Float = { it.u16() / 10f - 273.1f }
  * Škoda Octavia, VW Golf and their relatives). Which of them a particular engine knows differs,
  * so each is asked for once after connecting, and the first that gives a believable value is
  * used. Their numbers and scalings were looked up in the OBDb project (https://github.com/OBDb,
- * CC BY-SA 4.0), in its data for SEAT, Cupra, Volkswagen and Audi models. Nobody is known to
- * have checked them on the engine this app was written for: what answers shows in the car.
+ * CC BY-SA 4.0), in its data for SEAT, Cupra, Volkswagen and Audi models, then checked on one
+ * car: an identifier that answered out of range, and a formula that produced an impossible
+ * value, is not asked.
  */
 val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.MAP to listOf(standard(0x0B, 1) { it.u8() / 100f }),
@@ -247,52 +254,27 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
         standard(0x5A, 1) { it.u8() * 100f / 255f },
         // The sensor rests at about 14.5 % and ends at about 80 %; stretched to 0 to 100.
         standard(0x49, 1) { ((it.u8() * 100f / 255f - 14.5f) / 0.655f).coerceIn(0f, 100f) },
-        engine(0x3804) { it.u16() / 100f },
-    ),
-    Signal.BRAKE to listOf(
-        engine(0x105D) { it.u16() * 0.012207f },
     ),
     Signal.OIL_TEMP to listOf(
         standard(0x5C, 1) { it.u8() - 40f },
-        // The same standard value, kept among the identifiers of the manufacturer.
-        engine(0xF45C, 1) { it.u8() - 40f },
-        engine(0x11BE, decode = deciKelvin),
-        engine(0x202F, decode = deciKelvin),
-        engine(0x179C, decode = deciKelvin),
-        engine(0x1632, decode = deciKelvin),
-        engine(0x10A7, decode = deciKelvin),
-        engine(0x179E, decode = deciKelvin),
+        // 0B 0D was 9.8 °C, in step with the air outside and with the cluster.
         engine(0x11BD, decode = deciKelvin),
-        // Hundredths of 18 degrees Fahrenheit above absolute zero.
+        // Same family, a fraction of a degree lower. The Fahrenheit label some lists give
+        // this is that Celsius value converted.
         engine(0x15B7) { (it.u16() * 0.18f - 460f - 32f) / 1.8f },
-        engine(0x40D5) { it.s16() / 10f },
-        // One byte on some engines, two on others.
-        engine(0x20A1, 1) { if (it.size >= 2) it.s16() / 10f else it.u8() - 40f },
-        engine(0x1102, 1) { it.u8() - 40f },
         // The last resort: the instrument cluster has the oil temperature it shows. Asking
         // it means turning the adapter to another control unit and back each time.
         cluster(0x202F, 1) { it.u8() - 58f },
     ),
     Signal.OIL_PRESSURE to listOf(
-        // Tenths of a kilopascal.
+        // Tenths of a kilopascal. 09 EB was 2.54 bar.
         engine(0x177D) { it.s16() / 1000f },
-        engine(0x25CD) { it.s16() / 1000f },
-        engine(0x381D) { it.s16() / 1000f },
-        // 1/416 psi.
-        engine(0x1503) { it.u16() / 416f * 0.0689476f },
-    ),
-    // What the engine wants from its oil pump, which it controls; tenths of a kilopascal.
-    Signal.OIL_PRESSURE_TARGET to listOf(
-        engine(0x4F70) { it.s16() / 1000f },
-        engine(0x25CF) { it.s16() / 1000f },
     ),
     Signal.COOLANT to listOf(standard(0x05, 1) { it.u8() - 40f }),
     Signal.INTAKE_TEMP to listOf(standard(0x0F, 1) { it.u8() - 40f }),
     Signal.EXHAUST_TEMP to listOf(
-        engine(0x10FB) { it.s16() / 10f - 273.1f },
-        // Not measured but worked out by the engine control unit.
+        // Not measured but worked out by the engine control unit. 13 A6 was 229.9 °C.
         engine(0x139C) { it.s16() / 10f - 273.1f },
-        engine(0x1421, decode = deciKelvin),
     ),
     Signal.CATALYST_TEMP to listOf(standard(0x3C, 2) { it.u16() / 10f - 40f }),
     Signal.RPM to listOf(standard(0x0C, 2) { it.u16() / 4f }),
@@ -305,15 +287,16 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
             val reference = values[Signal.TORQUE_REFERENCE]
             if (percent != null && reference != null) reference * percent / 100f else null
         },
+        // A direct reading, tenths of a newton metre: 01 00 was 25.6 Nm. Used when the two
+        // standard halves are not both there.
         engine(0x1010) { it.s16() / 10f },
-        engine(0x1047) { it.s16() / 10f },
-        engine(0x2002) { it.s16() / 10f },
     ),
     Signal.LOAD to listOf(standard(0x04, 1) { it.u8() * 100f / 255f }),
     Signal.THROTTLE to listOf(standard(0x11, 1) { it.u8() * 100f / 255f }),
     // The pressure the turbo makes, measured before the throttle, and what the engine asked
     // for: an answer of ten bytes, of which the second pair is the wish and the third the
-    // fact, both in steps of 1/32 kPa.
+    // fact, both in steps of 1/32 kPa. This car's frame (02 00 00 0C 09 …) sets only the bit
+    // for the pressure that is there, 0.96 bar, and the wish is not reported.
     Signal.CHARGE to listOf(standard(0x70, 5, multi = true) { it.flagged(1) { it.u16(3) / 3200f } }),
     Signal.CHARGE_TARGET to listOf(standard(0x70, 5, multi = true) { it.flagged(0) { it.u16(1) / 3200f } }),
     Signal.FUEL_RAIL to listOf(
@@ -337,76 +320,61 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.MAF to listOf(standard(0x10, 2) { it.u16() / 100f }),
     Signal.TIMING to listOf(standard(0x0E, 1) { it.u8() / 2f - 64f }),
 
-    Signal.GEAR to listOf(engine(0x14CB, 1) { it.u8() }, engine(0x100D, 1) { it.s8() }, engine(0x15AA, 1) { it.u8() }),
-    Signal.OIL_LEVEL to listOf(
-        engine(0x11BC) { it.s16() / 250f },
-        engine(0x2006) { it.s16() * 0.06f },
-        engine(0x15A4) { it.u16() / 250f },
-    ),
-    // The pressure the pump in the tank feeds the high pressure pump with.
-    Signal.FUEL_LOW to listOf(engine(0x2025) { it.u16() / 1000f }, engine(0x11C8) { it.u16() / 1000f }),
-    Signal.FUEL_TEMP to listOf(engine(0x162D, decode = deciKelvin), engine(0x128A, 1) { it.u8() * 0.75f - 48f }),
-    // Behind the intercooler.
-    Signal.CHARGE_AIR_TEMP to listOf(engine(0x1628, decode = deciKelvin), engine(0x1798) { it.s16() / 10f - 273.1f }),
-    Signal.RADIATOR_OUT to listOf(
-        engine(0x1135, decode = deciKelvin),
-        engine(0x15CD) { it.s16() / 10f - 273.1f },
-        engine(0x202B) { it.s16() / 10f },
-    ),
-    Signal.TURBO_ACTUATOR to listOf(
-        engine(0x112C) { it.s16() / 100f },
-        engine(0x117E) { it.s16() / 100f },
-        engine(0x16EE) { it.s16() * 0.012207f },
-    ),
-    Signal.CAM_INTAKE to listOf(engine(0x136E) { it.s16() / 125f }, engine(0x201E) { it.s16() / 10f }),
-    Signal.CAM_EXHAUST to listOf(engine(0x136C) { it.s16() / 125f }, engine(0x201A) { it.s16() / 10f }),
-    // By how much the ignition of each cylinder was taken back because it knocked.
-    Signal.KNOCK_1 to listOf(engine(0x200A, 1) { it.u8() * 0.375f - 48f }),
-    Signal.KNOCK_2 to listOf(engine(0x200B, 1) { it.u8() * 0.375f - 48f }),
-    Signal.KNOCK_3 to listOf(engine(0x200C, 1) { it.u8() * 0.375f - 48f }),
-    Signal.KNOCK_4 to listOf(engine(0x200D, 1) { it.u8() * 0.375f - 48f }),
-    Signal.MISFIRES to listOf(engine(0x1146) { it.u16() }, engine(0x2904) { it.u16() }),
+    // 14CB read 0 while the car was in neutral, which is the gear that was engaged.
+    // 15AA answered 01 DD. The only known reading of those bytes is selected gear 1, so it
+    // is not the engaged gear and is not asked.
+    Signal.GEAR to listOf(engine(0x14CB, 1) { it.u8() }),
+    // 3A E3 is 6.03 cm. 11BD is the oil temperature, not another level.
+    Signal.OIL_LEVEL to listOf(engine(0x11BA) { it.u16() / 2500f }),
+    // 0x4D is 9.75 °C and 0x5F is 23.25 °C. The all-zero answer of 162D is not a temperature.
+    Signal.FUEL_TEMP to listOf(engine(0x128A, 1) { it.u8() * 0.75f - 48f }),
+    // 0E 6B was 96 °C. 15CD stayed near the air outside and is not this outlet.
+    Signal.RADIATOR_OUT to listOf(engine(0x1135, decode = deciKelvin)),
+    Signal.TURBO_ACTUATOR to listOf(engine(0x16EE) { it.s16() * 0.012207f }),
+    Signal.CAM_INTAKE to listOf(engine(0x136E) { it.s16() / 125f }),
+    Signal.CAM_EXHAUST to listOf(engine(0x136C) { it.s16() / 125f }),
+    // Knock-sensor voltage. The survey's cylinder order is 1, 3, 4, 2.
+    Signal.KNOCK_1 to listOf(engine(0x120E) { it.u16() * KNOCK_VOLT }),
+    Signal.KNOCK_2 to listOf(engine(0x1211) { it.u16() * KNOCK_VOLT }),
+    Signal.KNOCK_3 to listOf(engine(0x120F) { it.u16() * KNOCK_VOLT }),
+    Signal.KNOCK_4 to listOf(engine(0x1210) { it.u16() * KNOCK_VOLT }),
+    // Misfires per 1000 rpm, in that same cylinder order.
+    Signal.MISFIRES_1 to listOf(engine(0x291D) { it.u16() }),
+    Signal.MISFIRES_2 to listOf(engine(0x2920) { it.u16() }),
+    Signal.MISFIRES_3 to listOf(engine(0x291E) { it.u16() }),
+    Signal.MISFIRES_4 to listOf(engine(0x291F) { it.u16() }),
     Signal.FUEL_RATE to listOf(engine(0x113F) { it.u16() / 100f }),
-    // Since the engine was started.
-    Signal.FUEL_USED to listOf(engine(0x1519) { it.u16() / 100f }),
 
     Signal.STEERING to listOf(
         unit(Target.STEERING, 0x1812) { it.s16() / 8f + 0.06f },
         // The brakes know it too, far into a longer answer.
         brakes(0x1804, 12) { it.s16(10) * 0.4375f },
     ),
-    Signal.BRAKE_PRESSURE to listOf(
-        brakes(0x1816, 3) { it.s16(1) / 100f },
-        brakes(0x2B21) { it.s16() * 0.0152999f - 42.503f },
-        engine(0x18D0) { it.s16() / 100f },
-    ),
+    Signal.BRAKE_PRESSURE to listOf(brakes(0x1816, 3) { it.s16(1) / 100f }),
     Signal.ACCEL_LONG to listOf(engine(0x1633) { it.s16() / 1000f }, engine(0x15CF) { it.s16() / 1000f }),
     Signal.ACCEL_LAT to listOf(engine(0x1644) { it.s16() / 100f }),
-    Signal.WHEEL_FL to listOf(brakes(0x1800) { it.u16() / 10f }, brakes(0x2B1B) { it.u16() / 10f }),
-    Signal.WHEEL_FR to listOf(brakes(0x1801) { it.u16() / 10f }, brakes(0x2B1C) { it.u16() / 10f }),
-    Signal.WHEEL_RL to listOf(brakes(0x1802) { it.u16() / 10f }, brakes(0x2B1D) { it.u16() / 10f }),
-    Signal.WHEEL_RR to listOf(brakes(0x1803) { it.u16() / 10f }, brakes(0x2B1E) { it.u16() / 10f }),
-    // How hot the stability control reckons each brake disc to be; one answer holds all four.
+    Signal.WHEEL_FL to listOf(brakes(0x1800) { it.u16() / 10f }),
+    Signal.WHEEL_FR to listOf(brakes(0x1801) { it.u16() / 10f }),
+    Signal.WHEEL_RL to listOf(brakes(0x1802) { it.u16() / 10f }),
+    Signal.WHEEL_RR to listOf(brakes(0x1803) { it.u16() / 10f }),
+    // One answer holds all four discs. After a flag byte, each corner is its own
+    // half-degree count: 0x20 is 16 °C and 0x14 is 10 °C. They are not copies of the first.
     Signal.BRAKE_TEMP_FL to listOf(brakes(0x180C, 9) { it.s16(1) / 2f }),
     Signal.BRAKE_TEMP_FR to listOf(brakes(0x180C, 9) { it.s16(3) / 2f }),
     Signal.BRAKE_TEMP_RL to listOf(brakes(0x180C, 9) { it.s16(5) / 2f }),
     Signal.BRAKE_TEMP_RR to listOf(brakes(0x180C, 9) { it.s16(7) / 2f }),
 
     Signal.BATTERY_VOLTAGE to listOf(gateway(0x2A07) { it.u16() / 1000f + 4f }),
-    Signal.BATTERY_CURRENT to listOf(
-        gateway(0x2A09, 4) { it.s32() / 1000f },
-        gateway(0x2A08, 3) { it.u24() / 1000f - 3000f },
-    ),
+    Signal.BATTERY_CURRENT to listOf(gateway(0x2A09, 4) { it.s32() / 1000f }),
     Signal.BATTERY_SOC to listOf(gateway(0x2A0C, 1) { it.u8() }),
     Signal.BATTERY_TEMP to listOf(gateway(0x2A0B, 1) { it.u8() - 40f }),
     Signal.BATTERY_CHARGE to listOf(gateway(0x2A0F, 1) { it.u8() }),
     Signal.BATTERY_REST to listOf(gateway(0x2A10, 1) { it.u8() / 10f + 9f }),
     Signal.BATTERY_RESISTANCE to listOf(gateway(0x2A0E, 1) { it.u8() * 0.2f }),
-    Signal.GENERATOR_VOLTAGE to listOf(gateway(0x4F00, 1) { it.u8() / 10f + 10.6f }),
     Signal.GENERATOR_TARGET to listOf(gateway(0x2A00, 1) { it.u8() / 10f + 10.6f }),
     Signal.GENERATOR_CURRENT to listOf(gateway(0x2A1C) { it.u16() / 10f + 9f }),
 
-    Signal.CABIN_TEMP to listOf(climate(0x2613) { it.s16() / 10f }, cluster(0x2613) { it.u16() / 10f }),
+    Signal.CABIN_TEMP to listOf(climate(0x2613) { it.s16() / 10f }),
     Signal.VENT_LEFT to listOf(climate(0x260C, 1) { it.u8() / 3f }),
     Signal.VENT_RIGHT to listOf(climate(0x260D, 1) { it.u8() / 3f }),
     Signal.EVAPORATOR to listOf(climate(0x2612, 1) { it.s8() / 3f }),
@@ -418,8 +386,8 @@ val CATALOG: Map<Signal, List<Source>> = linkedMapOf(
     Signal.HUMIDITY to listOf(climate(0x27C4, 5) { it.u8(4) / 2f }),
     Signal.WINDSHIELD_TEMP to listOf(climate(0x27C4, 1) { it.u8() * 0.576f - 38.8f }),
 
-    Signal.FUEL_LITERS to listOf(cluster(0x229A) { it.u16() / 8f }, cluster(0x2206, 1) { it.u8() }),
-    Signal.RANGE to listOf(cluster(0x2294) { it.u16() }),
-    Signal.CONSUMPTION to listOf(cluster(0x2299) { it.u16() / 10f }),
+    // The cluster does not serve litres. The engine does: 14B4 was 22 l, 24FC was 21 l.
+    Signal.FUEL_LITERS to listOf(engine(0x14B4) { it.u16() / 100f }, engine(0x24FC) { it.u16() / 10f }),
+    // Whole kilometres. A 16-bit reading of the same bytes (3 160 km) is wrong; 01 3C 82 is 81 026 km.
     Signal.ODOMETER to listOf(cluster(0x2203, 3) { it.u24() }, cluster(0x22B8, 4) { it.u32() / 1000f }),
 )

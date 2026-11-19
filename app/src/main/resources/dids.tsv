@@ -270,10 +270,7 @@
 11BA	Oil level	0	16	1.0	2500.0	0.0	0	0	cm
 11BB	Oil level, critical	0	16	1.0	2500.0	0.0	0	0	cm
 11BC	Engine oil level	0	16	1.0	250.0	0.0	1	0	mm
-11BD	Critical engine oil level	0	16	1.0	250.0	0.0	1	0	mm
-11BD	Oil level warning threshold	0	16	1.0	2500.0	0.0	0	0	cm
 11BD	Engine oil temperature, engine control module	0	16	1.0	10.0	-273.1	0	0	°C
-11BE	Oil temperature variant	0	16	1.0	10.0	-273.1	0	0	°C
 11BF	Fuel pressure regulator position	0	16	1.0	100.0	0.0	1	0	%
 11C1	Particle filter, field regeneration lock status	0	8	1.0	1.0	0.0	0	0	
 11C4	Oil level, maximum	0	16	1.0	250.0	0.0	0	0	cm
@@ -499,8 +496,7 @@
 159F	High fuel pressure, actual	0	16	1.0	2000.0	0.0	0	0	
 15A4	Oil level, static measured	0	16	1.0	250.0	0.0	0	0	mm
 15AA	Selected gear	0	8	1.0	1.0	0.0	0	0	
-15B7	Engine oil sump temperature	0	16	9.0	50.0	-460.0	0	0	°F
-15B7	Engine oil sump temperature	0	16	0.18	1.0	-460.0	0	0	°F
+15B7	Engine oil sump temperature	0	16	0.1	1.0	-273.3333333333333	0	0	°C
 15B8	Oil level, last dynamic value	0	16	1.0	250.0	0.0	0	0	mm
 15B9	Oil level, average dynamic value	0	16	1.0	250.0	0.0	0	0	mm
 15BD	Oil pressure sensor-piston cooling nozzle switch, status	0	8	1.0	1.0	0.0	0	0	
@@ -523,7 +519,6 @@
 1610	Requested brake torque, auxiliary system	0	32	1.0	10.0	0.0	1	0	Nm
 1626	Radiator output coolant temp: actual	0	16	1.0	10.0	-273.1	0	0	°C
 1628	Intercooler air output temperature	0	16	1.0	10.0	-273.1	0	0	°C
-162D	Fuel temperature	0	16	1.0	10.0	-273.1	0	0	°C
 162D	Engine read 162D, raw count	0	32	1.0	1.0	0.0	0	0	
 162F	Particulate filter air pressure sensor raw value	0	16	1.0	1.0	0.0	1	0	
 1631	Pilot injection 3 start	0	16	21973.0	1000000.0	0.0	1	0	°
@@ -1066,7 +1061,6 @@ FE47	Charge air pressure, specified value	0	8	2.0	1.0	0.0	0	0	kPa
 712:1806	Steering wheel torque sensor 2	0	16	0.004395	1.0	0.06	1	0	°
 712:1812	Steering wheel angle	0	16	1.0	8.0	0.06	1	0	°
 712:1812	Steering wheel angle	0	16	1.0	8.0	0.0	1	0	°
-712:1812	Steering wheel angle	0	16	1.0	8.0	-750.0	0	0	°
 713:03E8	Front left wheel speed	0	16	1.0	10.0	0.0	0	0	km/h
 713:03E8	Front right wheel speed	16	16	1.0	10.0	0.0	0	0	km/h
 713:03E8	Rear left wheel speed	32	16	1.0	10.0	0.0	0	0	km/h
@@ -1125,7 +1119,6 @@ FE47	Charge air pressure, specified value	0	8	2.0	1.0	0.0	0	0	kPa
 714:1014	Ambient air temperature	0	8	0.5	1.0	-50.0	0	0	°C
 714:202F	Engine oil temperature	0	8	1.0	1.0	-58.0	0	0	°C
 714:2203	Odometer	0	24	1.0	1.0	0.0	0	0	km
-714:2203	Odometer	0	16	10.0	1.0	0.0	0	0	km
 714:2206	Fuel level	0	8	1.0	1.0	0.0	0	0	l
 714:220C	Outside temperature	0	8	1.0	2.0	-50.0	0	0	°C
 714:2211	Charge air pressure	0	8	100.0	255.0	0.0	0	0	%
@@ -1133,7 +1126,6 @@ FE47	Charge air pressure, specified value	0	8	2.0	1.0	0.0	0	0	kPa
 714:2294	Distance to empty	0	16	1.0	1.0	0.0	0	0	km
 714:2299	Fuel consumption, average	0	16	1.0	10.0	0.0	0	0	l
 714:229A	Fuel level input	0	16	1.0	8.0	0.0	0	0	l
-714:22B0	Fuel volume	336	16	1.0	10.0	0.0	0	0	l
 714:22B8	Odometer, mileage, HR	0	32	1.0	1000.0	0.0	0	0	km
 714:22E0	Range remaining, displayed	0	16	1.0	1.0	0.0	0	0	km
 714:2613	Cabin temperature	0	16	1.0	10.0	0.0	0	0	°C

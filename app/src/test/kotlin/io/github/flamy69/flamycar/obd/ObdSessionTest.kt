@@ -103,10 +103,10 @@ class ObdSessionTest {
         bench.session.run()
 
         val oil = bench.info!!.signals.getValue(Signal.OIL_TEMP) as Query
-        assertEquals(0x11BE, oil.id)
+        assertEquals(0x11BD, oil.id)
         assertEquals(Target.ENGINE, oil.target)
         // The ones that were refused are in the report all the same.
-        assertTrue(bench.info!!.report.lines().any { it.contains("22 202F @7E0") && it.contains("7F 22 31") })
+        assertTrue(bench.info!!.report.lines().any { it.contains("22 15B7 @7E0") && it.contains("7F 22 31") })
     }
 
     @Test
@@ -155,7 +155,7 @@ class ObdSessionTest {
 
         assertTrue(bench.info!!.report.contains("Long requests: pass as they are"))
         assertTrue(bench.info!!.longRequests)
-        assertTrue("2211BE" in bench.car.log)
+        assertTrue("2211BD" in bench.car.log)
         assertFalse(bench.car.log.any { it.startsWith("22") && it.length % 2 == 1 })
     }
 
@@ -168,12 +168,12 @@ class ObdSessionTest {
         val info = bench.info!!
         assertTrue(info.report, info.report.contains("Long requests: pass as hand-made frames (as they are: 62 F4 00, behind another identifier: 7F 22 31, as short hand-made frames: no answer)"))
         assertTrue(info.longRequests)
-        assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
+        assertEquals(0x11BD, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
         assertNotNull(bench.latest(Signal.OIL_TEMP))
         assertNotNull(bench.latest(Signal.OIL_PRESSURE))
         // The standard values go on as before, in between.
         assertNotNull(bench.latest(Signal.RPM))
-        assertTrue("032211BE00000000" in bench.car.log)
+        assertTrue("032211BD00000000" in bench.car.log)
         assertTrue("ATCAF1" in bench.car.log)
     }
 
@@ -186,10 +186,10 @@ class ObdSessionTest {
         val info = bench.info!!
         assertTrue(info.report, info.report.contains("Long requests: pass behind another identifier (as they are: 62 F4 00)"))
         assertTrue(info.longRequests)
-        assertEquals(0x11BE, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
+        assertEquals(0x11BD, (info.signals.getValue(Signal.OIL_TEMP) as Query).id)
         assertEquals(28f, bench.seen.first { Signal.OIL_TEMP in it }.getValue(Signal.OIL_TEMP), 3f)
         assertNotNull(bench.latest(Signal.OIL_PRESSURE))
-        assertTrue("22F40011BE" in bench.car.log)
+        assertTrue("22F40011BD" in bench.car.log)
     }
 
     @Test
@@ -241,7 +241,7 @@ class ObdSessionTest {
         val info = bench.info!!
         assertTrue(info.report, info.report.contains("Long requests: pass as short hand-made frames"))
         assertNotNull(bench.latest(Signal.OIL_TEMP))
-        assertTrue("032211BE" in bench.car.log)
+        assertTrue("032211BD" in bench.car.log)
         assertTrue(bench.hung.isEmpty())
     }
 
@@ -288,7 +288,7 @@ class ObdSessionTest {
         assertTrue(info.report, info.report.contains("Long requests: GARBLED by the adapter"))
         assertFalse(info.longRequests)
         assertFalse(Signal.OIL_TEMP in info.signals)
-        assertTrue(info.report.lines().any { it.contains("22 11BE") && it.contains("cannot be asked with this adapter") })
+        assertTrue(info.report.lines().any { it.contains("22 11BD") && it.contains("cannot be asked with this adapter") })
         // The standard values are not affected.
         assertNotNull(bench.latest(Signal.BOOST))
         assertNotNull(bench.latest(Signal.PEDAL))
@@ -342,7 +342,8 @@ class ObdSessionTest {
         assertTrue("ATAR" in bench.car.log && "ATFCSM0" in bench.car.log)
         assertNotNull(bench.latest(Signal.RPM))
         // What a unit does not know is in the report, and so is what it has.
-        assertTrue(info.report, info.report.lines().any { it.contains("22 2B21 @713") && it.contains("7F 22 31") })
+        assertTrue(info.report, info.report.lines().any { it.startsWith("BRAKE_PRESSURE") && it.contains("22 1816 @713") })
+        assertFalse(info.report.contains("2B21"))
         assertTrue(info.report, info.report.lines().any { it.startsWith("GEAR") && it.contains("22 14CB @7E0") })
     }
 
@@ -401,7 +402,7 @@ class ObdSessionTest {
         assertEquals(2, survey.readings)
         assertTrue(progress > 50)
         val lines = survey.text().lines()
-        assertTrue(lines[0], lines[0].contains("44 identifiers answered"))
+        assertTrue(lines[0], lines[0].contains("46 identifiers answered"))
         assertTrue(lines[1], lines[1].startsWith("#1: ") && lines[1].contains("RPM="))
         // Oil temperature, 11BE: two bytes at each of the two readings.
         val oil = lines.single { it.startsWith("11BE") }.split(" | ")
@@ -409,18 +410,18 @@ class ObdSessionTest {
         assertTrue(oil[1].matches(Regex("[0-9A-F]{2} [0-9A-F]{2}")))
         // The second reading asked only for what had answered the first.
         val asked = bench.car.log.filter { it.startsWith("2211BE") }.size
-        assertTrue(asked >= 3)
+        assertTrue(asked >= 2)
         assertEquals(1, bench.car.log.count { it.startsWith("221000") })
-        // The other control units were asked too, those that are there.
+        // The other control units were asked too, those that are there. The ones this car
+        // does not have are not addressed.
         val units = lines.single { it.startsWith("Other control units: ") }
-        assertTrue(units, units.contains("7E1 gearbox is not there") && units.contains("714 instruments answers"))
-        assertTrue(units, units.contains("713 brakes answers") && units.contains("70F all-wheel drive is not there"))
+        assertTrue(units, units.contains("714 instruments answers") && units.contains("713 brakes answers"))
+        assertFalse(units.contains("7E1") || units.contains("70B") || units.contains("70F"))
+        assertFalse(units.contains("744") || units.contains("74F") || units.contains("752") || units.contains("767"))
+        assertFalse(bench.car.log.any { it.startsWith("ATSH7E1") || it.startsWith("ATSH70B") || it.startsWith("ATSH70F") })
         val odometer = lines.single { it.startsWith("714:2203") }
         assertTrue(odometer, odometer.startsWith("714:2203 | 01 48 F5 | 01 48 F5  # Odometer = 84213 km"))
         assertTrue(lines.any { it.startsWith("713:180C | 00 01 36 01 3E 00 8C 00 90 ") })
-        // Nothing of the gearbox was asked for, which would have taken a while for nothing.
-        val gearbox = bench.car.log.drop(bench.car.log.indexOf("ATSH7E1") + 1).takeWhile { !it.startsWith("ATSH") }
-        assertEquals(listOf("3E001"), gearbox.filter { !it.startsWith("AT") })
         assertTrue(survey.summary().lines().any { it == "714:2294  Distance to empty = 540 km" })
     }
 
