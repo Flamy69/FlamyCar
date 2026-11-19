@@ -100,23 +100,18 @@ class Survey {
         fun unit(tx: Int): Ecu? = UNITS[tx]?.let { Ecu(tx, it.first) }
 
         /**
-         * The control units besides the engine that somebody got values out of: where they
-         * listen, where they answer, and what they are. Not every car has every one of them.
+         * The control units besides the engine that answered on this car: where they listen,
+         * where they answer, and what they are. The gearbox, tyre pressures, all-wheel drive,
+         * charger, front camera, parking brake and emergency call are not on this car and are
+         * not asked.
          */
         private val UNITS: Map<Int, Pair<Int, String>> = linkedMapOf(
-            0x7E1 to (0x7E9 to "gearbox"),
             0x710 to (0x77A to "gateway"),
             0x712 to (0x77C to "steering"),
             0x713 to (0x77D to "brakes"),
             0x714 to (0x77E to "instruments"),
             0x746 to (0x7B0 to "climate"),
-            0x70B to (0x775 to "tyre pressures"),
             0x70E to (0x778 to "body electrics"),
-            0x70F to (0x779 to "all-wheel drive"),
-            0x744 to (0x7AE to "charger"),
-            0x74F to (0x7B9 to "front camera"),
-            0x752 to (0x7BC to "parking brake"),
-            0x767 to (0x7D1 to "emergency call"),
             0x773 to (0x7DD to "radio"),
         )
 
@@ -125,7 +120,7 @@ class Survey {
          * up; these are the oil temperature and the pedal position, should the car keep them
          * there while not offering them as standard values.
          */
-        private val EXTRA = intArrayOf(0xF45C, 0xF45A)
+        private val EXTRA = intArrayOf(0xF45A)
 
         private val REACHABLE = List(256) { it shl 8 }
 

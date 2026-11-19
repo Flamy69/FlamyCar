@@ -342,7 +342,9 @@ class SimulatedCar(
             0x7700 -> ByteArray(13) { (it + 1).toByte() }
             0xF40C -> word(rpm * 4)
             0x105D -> word(if (throttle == 0f && rpm > 1500) 35f / 0.012207f else 0f)
+            0x11BD -> word((oil + 273.1f) * 10)
             0x11BE -> word((oil + 273.1f) * 10)
+            0x14B4 -> word(31.5f * 100)
             0x177D -> word((120 + rpm / 6000 * 330) * 10)
             0x4F70 -> word((130 + rpm / 6000 * 320) * 10)
             0x14CB -> byte(if (rpm < 1000) 0f else 3f)
